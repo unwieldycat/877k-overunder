@@ -1,0 +1,83 @@
+{
+    "py/object": "pros.conductor.project.Project",
+    "py/state": {
+        "project_name": "877k-overunder",
+        "target": "v5",
+        "templates": {
+            "kernel": {
+                "location": "/Users/alex/Library/Application Support/PROS/templates/kernel@4.0.4",
+                "metadata": {
+                    "cold_addr": "58720256",
+                    "cold_output": "bin/cold.package.bin",
+                    "hot_addr": "125829120",
+                    "hot_output": "bin/hot.package.bin",
+                    "origin": "kernel-beta-mainline",
+                    "output": "bin/monolith.bin"
+                },
+                "name": "kernel",
+                "py/object": "pros.conductor.templates.local_template.LocalTemplate",
+                "supported_kernels": null,
+                "system_files": [
+                    "firmware\\v5-hot.ld",
+                    "include\\pros\\imu.hpp",
+                    "include\\pros\\link.hpp",
+                    "include\\pros\\vision.h",
+                    "include\\pros\\optical.h",
+                    "include\\pros\\colors.h",
+                    "include\\pros\\abstract_motor.hpp",
+                    "include\\pros\\adi.h",
+                    "include\\pros\\device.h",
+                    "include\\pros\\error.h",
+                    "include\\pros\\imu.h",
+                    "include\\pros\\distance.hpp",
+                    "include\\pros\\motors.hpp",
+                    "include\\pros\\ext_adi.h",
+                    "include\\pros\\llemu.h",
+                    "include\\pros\\vision.hpp",
+                    "include\\pros\\screen.h",
+                    "include\\pros\\gps.h",
+                    "include\\pros\\optical.hpp",
+                    "firmware\\v5.ld",
+                    "include\\pros\\misc.hpp",
+                    "include\\pros\\rtos.h",
+                    "include\\pros\\screen.hpp",
+                    "include\\pros\\device.hpp",
+                    "firmware\\libpros.a",
+                    "include\\pros\\distance.h",
+                    "include\\pros\\motors.h",
+                    "include\\pros\\serial.h",
+                    "common.mk",
+                    "include\\pros\\gps.hpp",
+                    "include\\pros\\link.h",
+                    "include\\pros\\rtos.hpp",
+                    "include\\pros\\serial.hpp",
+                    "include\\pros\\rotation.hpp",
+                    "firmware\\v5-common.ld",
+                    "include\\pros\\colors.hpp",
+                    "include\\pros\\motor_group.hpp",
+                    "include\\pros\\apix.h",
+                    "include\\api.h",
+                    "firmware\\libc.a",
+                    "firmware\\libm.a",
+                    "include\\pros\\misc.h",
+                    "include\\pros\\adi.hpp",
+                    "include\\pros\\rotation.h",
+                    "include\\pros\\llemu.hpp"
+                ],
+                "target": "v5",
+                "user_files": [
+                    ".gitignore",
+                    "src\\main.cc",
+                    "Makefile",
+                    "include\\main.hh",
+                    "include\\main.h",
+                    "include\\main.hpp",
+                    "src\\main.c",
+                    "src\\main.cpp"
+                ],
+                "version": "4.0.4"
+            }
+        },
+        "upload_options": {}
+    }
+}
