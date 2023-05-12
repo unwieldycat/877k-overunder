@@ -47,4 +47,6 @@ While the formatter will mostly take care of keeping the code consistent, progra
 
 - Use section comments to seperate parts of code
 
+- Create a seperate branch when creating large, breaking features or modifications. Create a pull request to merge into main branch
+
 Following these guidelines will help the codebase be more organized and maintainable.
