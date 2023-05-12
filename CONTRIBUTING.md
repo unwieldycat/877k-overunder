@@ -1,5 +1,6 @@
 Contributing
 ============
+Instructions on how to contribute to the codebase. **Remember to document progress in the notebook!**
 
 Setup Environment
 -----------------
@@ -29,3 +30,21 @@ From there, in the project directory, create a file at `.vscode/settings.json` w
 	"clang-format.style": "file",
 }
 ```
+
+Style Guide
+-----------
+While the formatter will mostly take care of keeping the code consistent, programmers should also adhere to the following guidelines:
+
+- Prefer `struct` for data structures and `class` when using traditional OOP features such as methods and private members 
+
+- Use `snake_case` for variables & functions, `SCREAMING_CASE` for constants, and `PascalCase` for templates & class names
+
+- Give variables meaningful names
+
+- Use comments sparingly, only when a piece of code cannot be explained by reading it
+
+- Avoid too much or too little whitespace
+
+- Use section comments to seperate parts of code
+
+Following these guidelines will help the codebase be more organized and maintainable.
