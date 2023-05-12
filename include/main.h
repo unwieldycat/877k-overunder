@@ -36,9 +36,9 @@
 
 #include "api.h"
 
-/**
- * You should add more #includes here
- */
+#ifdef __cplusplus
+#include "devices.hpp"
+#endif
 
 /**
  * If you find doing pros::Motor() to be tedious and you'd prefer just to do
@@ -67,13 +67,6 @@ void competition_initialize(void);
 void opcontrol(void);
 #ifdef __cplusplus
 }
-#endif
-
-#ifdef __cplusplus
-/**
- * You can add C++-only headers here
- */
-// #include <iostream>
 #endif
 
 #endif // _PROS_MAIN_H_
