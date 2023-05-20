@@ -37,7 +37,6 @@
 #include "api.h"
 
 #ifdef __cplusplus
-#include "devices.hpp"
 #endif
 
 /**
