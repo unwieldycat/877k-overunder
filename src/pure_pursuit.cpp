@@ -1,5 +1,4 @@
-#include "devices.cpp"
-#include "main.h"
+#include "pure_pursuit.hpp"
 
 // Vectors to store all the coordinates for the robot to make a path for
 std::vector<double> points_x;
