@@ -4,16 +4,9 @@
 
 class PIDController {
   private:
-	float kP;
-	float kI;
-	float kD;
-
-	float error_prev;
-	float error_total;
-	float error_change;
-
-	float set_point;
-	float range;
+	float kP, kI, kD;
+	float error_prev, error_total, error_change;
+	float set_point, range;
 
   public:
 	PIDController(float kP, float kI, float kD) {}
