@@ -56,8 +56,10 @@ void pursuit(
 				double const_perp = (robot_y - slope_perp * robot_x);
 				closest_point = (const_perp - const_par) / (slope_par - slope_perp);
 			}
-			if (sqrt(pow(closest_point, 2) + pow((slope_par * closest_point + const_par), 2)) >
-			    lookahead_Distance) {
+			if (sqrt(
+			        pow(closest_point - robot_x, 2) +
+			        pow((slope_par * closest_point + const_par - robot_y), 2)
+			    ) > lookahead_Distance) {
 				// TODO: add action to bring robot back to path
 				drive_left.brake();
 				drive_right.brake();
