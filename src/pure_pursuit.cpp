@@ -26,24 +26,41 @@ void add_point(double x_ft, double y_ft) {
  * The current objective increments each time the point from the list of coordinates is reached to
  * find the next path the robot should be taking.
  * The heading objective is what direction the robot should be facing to return to the path.
+ * Lowest x and y, and highest x and y are coordinates to define a restricted zone that the robot
+ * cannot go in. It is a failsafe to prevent the function from ever finding or going toward an
+ * disqualifying area such as a goal or the opponent's side.
  */
-void pursuit(int lookahead_Distance, int voltage_constant) {
+void pursuit(
+    int lookahead_Distance, int voltage_constant, int lowest_x = 0, int lowest_y = 0,
+    int highest_x = 0, int highest_y = 0
+) {
 	int current_point = 1;
 	double next_objective_x;
 	double next_objective_y;
 	double heading_objective;
+	bool restricted;
+	drive_left.set_brake_mode(pros::E_MOTOR_BRAKE_HOLD);
+	drive_right.set_brake_mode(pros::E_MOTOR_BRAKE_HOLD);
+	if (highest_x - lowest_x != 0 && highest_y - lowest_y != 0) {
+		restricted = true;
+	}
 	while (current_point < points_x.size()) {
 		if (points_x[current_point - 1] != points_x[current_point]) {
 			double slope_par = (points_y[current_point] - points_y[current_point - 1]) /
 			                   (points_x[current_point] - points_x[current_point - 1]);
 			double const_par = (points_y[current_point] - slope_par * points_x[current_point]);
-			double slope_perp = -(points_x[current_point] - points_x[current_point - 1]) /
-			                    (points_y[current_point] - points_y[current_point - 1]);
-			double const_perp = (robot_y - slope_perp * robot_x);
-			double closest_point = (const_perp - const_par) / (slope_par - slope_perp);
+			double closest_point = robot_x;
+			if (fabs(points_y[current_point] - points_y[current_point - 1]) > 0.1) {
+				double slope_perp = -(points_x[current_point] - points_x[current_point - 1]) /
+				                    (points_y[current_point] - points_y[current_point - 1]);
+				double const_perp = (robot_y - slope_perp * robot_x);
+				closest_point = (const_perp - const_par) / (slope_par - slope_perp);
+			}
 			if (sqrt(pow(closest_point, 2) + pow((slope_par * closest_point + const_par), 2)) >
 			    lookahead_Distance) {
-				// No points
+				// TODO: add action to bring robot back to path
+				drive_left.brake();
+				drive_right.brake();
 				controller.set_text(1, 1, "Robot too far from path!");
 				break;
 			}
@@ -71,6 +88,17 @@ void pursuit(int lookahead_Distance, int voltage_constant) {
 				current_point++;
 			}
 		}
+		// Check if goal is in a restricted zone
+		if (restricted &&
+		    (lowest_x < next_objective_x < highest_x || lowest_y < next_objective_y < highest_y)) {
+			// TODO: change coordinates to corner of the goal
+			drive_left.brake();
+			drive_right.brake();
+			controller.set_text(1, 1, "Can't go there! Rerouted-");
+			points_x.insert(points_x.begin(), current_point, 1);
+			points_y.insert(points_y.begin(), current_point, 2);
+			continue;
+		}
 		// The desired heading is converted to a compass heading
 		heading_objective = 90 - atan2(next_objective_x - robot_y, next_objective_y - robot_x);
 		// heading failsafe
@@ -92,8 +120,8 @@ void pursuit(int lookahead_Distance, int voltage_constant) {
 		// delay to prevent brain crashing
 		pros::delay(50);
 	}
-	drive_left.set_brake_mode(pros::E_MOTOR_BRAKE_HOLD);
-	drive_right.set_brake_mode(pros::E_MOTOR_BRAKE_HOLD);
 	drive_left.brake();
 	drive_right.brake();
+	points_x.clear();
+	points_y.clear();
 }
