@@ -1,4 +1,6 @@
 #include "pure_pursuit.hpp"
+#include "devices.hpp"
+#include "pros/motors.h"
 
 // Vectors to store all the coordinates for the robot to make a path for
 std::vector<double> points_x;
@@ -79,12 +81,19 @@ void pursuit(int lookahead_Distance, int voltage_constant) {
 		if (fabs(heading_error) > 180) {
 			heading_error += heading_error > 0 ? -360 : 360;
 		}
-		// FIXME: declare motors and change variables to motor voltages
-		double left_motor = voltage_constant * (180 - fabs(heading_error)) / 180 +
-		                    (127 - voltage_constant) * (heading_error) / 180;
-		double right_motor = voltage_constant * (180 - fabs(heading_error)) / 180 -
-		                     (127 - voltage_constant) * (heading_error) / 180;
+		drive_left.move(
+		    voltage_constant * (180 - fabs(heading_error)) / 180 +
+		    (127 - voltage_constant) * (heading_error) / 180
+		);
+		drive_right.move(
+		    voltage_constant * (180 - fabs(heading_error)) / 180 -
+		    (127 - voltage_constant) * (heading_error) / 180
+		);
 		// delay to prevent brain crashing
 		pros::delay(50);
 	}
+	drive_left.set_brake_mode(pros::E_MOTOR_BRAKE_HOLD);
+	drive_right.set_brake_mode(pros::E_MOTOR_BRAKE_HOLD);
+	drive_left.brake();
+	drive_right.brake();
 }
