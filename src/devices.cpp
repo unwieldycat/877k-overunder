@@ -11,3 +11,5 @@ pros::MotorGroup drive_right({3, 4});
 pros::Rotation odom_left(11);
 pros::Rotation odom_right(12);
 pros::Rotation odom_rear(13);
+pros::Imu imu(14);
+
