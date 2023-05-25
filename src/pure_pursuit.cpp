@@ -1,12 +1,13 @@
 #include "pure_pursuit.hpp"
 #include "devices.hpp"
+#include "odometry.hpp"
 #include "pros/motors.h"
 
 // Vectors to store all the coordinates for the robot to make a path for
 std::vector<double> points_x;
 std::vector<double> points_y;
-// Robot coordinates and heading from odom, temporary placeholder variables
-double robot_x, robot_y, heading;
+// Robot heading from odom, temporary placeholder variable
+double heading;
 
 /* Append an x and y coordinate to the current list
  * Coordinates must be in feet!
@@ -45,20 +46,23 @@ void pursuit(
 		restricted = true;
 	}
 	while (current_point < points_x.size()) {
+		// X coordinates of previous and current points are different
 		if (points_x[current_point - 1] != points_x[current_point]) {
 			double slope_par = (points_y[current_point] - points_y[current_point - 1]) /
 			                   (points_x[current_point] - points_x[current_point - 1]);
 			double const_par = (points_y[current_point] - slope_par * points_x[current_point]);
-			double closest_point = robot_x;
+			double closest_point = Odometry().get_x();
+			// Y coordinates of previous and current points are different
 			if (fabs(points_y[current_point] - points_y[current_point - 1]) > 0.1) {
 				double slope_perp = -(points_x[current_point] - points_x[current_point - 1]) /
 				                    (points_y[current_point] - points_y[current_point - 1]);
-				double const_perp = (robot_y - slope_perp * robot_x);
+				double const_perp = (Odometry().get_y() - slope_perp * Odometry().get_x());
 				closest_point = (const_perp - const_par) / (slope_par - slope_perp);
 			}
+			// Robot is more than the lookahead distance away from the path
 			if (sqrt(
-			        pow(closest_point - robot_x, 2) +
-			        pow((slope_par * closest_point + const_par - robot_y), 2)
+			        pow(closest_point - Odometry().get_x(), 2) +
+			        pow((slope_par * closest_point + const_par - Odometry().get_y()), 2)
 			    ) > lookahead_Distance) {
 				// TODO: add action to bring robot back to path
 				drive_left.brake();
@@ -68,24 +72,30 @@ void pursuit(
 			}
 			int sign = (points_x[current_point] - points_x[current_point - 1]) > 0 ? 1 : -1;
 			next_objective_x =
-			    (-(2 * (slope_par * (const_par - robot_y) - robot_x)) +
-			     sign * sqrt(
-			                pow((2 * (slope_par * (const_par - robot_y) - robot_x)), 2) -
-			                4 * (pow(slope_par, 2) + 1) *
-			                    (pow(robot_x, 2) + pow(const_par - robot_y, 2) -
-			                     pow(lookahead_Distance, 2))
-			            )) /
+			    (-(2 * (slope_par * (const_par - Odometry().get_y()) - Odometry().get_x())) +
+			     sign *
+			         sqrt(
+			             pow((2 *
+			                  (slope_par * (const_par - Odometry().get_y()) - Odometry().get_x())),
+			                 2) -
+			             4 * (pow(slope_par, 2) + 1) *
+			                 (pow(Odometry().get_x(), 2) + pow(const_par - Odometry().get_y(), 2) -
+			                  pow(lookahead_Distance, 2))
+			         )) /
 			    (2 * (pow(slope_par, 2) + 1));
 			next_objective_y = slope_par * next_objective_x + const_par;
+			// Robot is at goal point
 			if (fabs(next_objective_x - points_x[current_point]) < 0.1) {
 				current_point++;
 			}
-		} else {
+		} else { // X coordinates of previous and current point are the same
 			int sign = (points_y[current_point] - points_y[current_point - 1]) > 0 ? 1 : -1;
 			next_objective_x = points_x[current_point];
-			next_objective_y =
-			    sign * sqrt(pow(lookahead_Distance, 2) - pow(next_objective_x - robot_x, 2)) +
-			    robot_y;
+			next_objective_y = sign * sqrt(
+			                              pow(lookahead_Distance, 2) -
+			                              pow(next_objective_x - Odometry().get_x(), 2)
+			                          ) +
+			                   Odometry().get_y();
 			if (fabs(next_objective_y - points_y[current_point]) < 0.1) {
 				current_point++;
 			}
@@ -102,7 +112,10 @@ void pursuit(
 			continue;
 		}
 		// The desired heading is converted to a compass heading
-		heading_objective = 90 - atan2(next_objective_x - robot_y, next_objective_y - robot_x);
+		heading_objective =
+		    90 -
+		    (atan2(next_objective_x - Odometry().get_y(), next_objective_y - Odometry().get_x()) *
+		     180 / M_PI);
 		// heading failsafe
 		if (heading_objective > 180 || heading_objective < -180) {
 			heading_objective += heading_objective > 0 ? -360 : 360;
