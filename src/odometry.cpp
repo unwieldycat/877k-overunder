@@ -89,10 +89,10 @@ void Odometry::track_position() {
 	float local_dist_y = 0;
 
 	while (true) {
-		left_odom_dist = odom_left.get_position() * 100 / 360 *
+		left_odom_dist = odom_left.get_position() * 100 / 360.0 *
 		                 (2.75 * M_PI); // distance traveled by left tracking wheel since last poll
-		right_odom_dist = odom_left.get_position() * 100 / 360 * (2.75 * M_PI);
-		rear_odom_dist = odom_left.get_position() * 100 / 360 * (2.75 * M_PI);
+		right_odom_dist = odom_left.get_position() * 100 / 360.0 * (2.75 * M_PI);
+		rear_odom_dist = odom_left.get_position() * 100 / 360.0 * (2.75 * M_PI);
 
 		imu_heading = imu.get_heading();
 		theta = imu_heading - previous_heading;
