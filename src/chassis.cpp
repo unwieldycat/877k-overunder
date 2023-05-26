@@ -1,5 +1,6 @@
 #include "chassis.hpp"
 #include "devices.hpp"
+#include "odometry.hpp"
 #include "pid.hpp"
 
 PIDController drive_pid(1, 1, 1);
@@ -12,7 +13,7 @@ void chassis::drive(int distance) {
 	float output;
 
 	while (!drive_pid.goal_met()) {
-		current_pos = 0; // TODO: Odometry
+		current_pos = odom::get_x();
 		output = drive_pid.calculate(current_pos);
 		drive_left.move(output);
 		drive_right.move(-output);
