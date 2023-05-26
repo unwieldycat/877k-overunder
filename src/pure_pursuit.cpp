@@ -13,7 +13,7 @@ double heading;
  * Coordinates must be in feet!
  * The positive direction is to the right(x) or forward(y) from the driver box
  */
-void add_point(double x_ft, double y_ft) {
+void pp::add_point(double x_ft, double y_ft) {
 	if (x_ft != points_x[points_x.size() - 1] || y_ft != points_y[points_y.size() - 1]) {
 		points_x.push_back(x_ft);
 		points_y.push_back(y_ft);
@@ -31,7 +31,7 @@ void add_point(double x_ft, double y_ft) {
  * cannot go in. It is a failsafe to prevent the function from ever finding or going toward an
  * disqualifying area such as a goal or the opponent's side.
  */
-void pursuit(
+void pp::pursuit(
     int lookahead_Distance, int voltage_constant, int lowest_x = 0, int lowest_y = 0,
     int highest_x = 0, int highest_y = 0
 ) {
