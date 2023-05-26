@@ -1,7 +1,18 @@
 #include "odometry.hpp"
 #include "devices.hpp"
 
-Odometry::Odometry() {
+#define LEFT_OFFSET 0
+#define RIGHT_OFFSET 0
+#define REAR_OFFSET 0
+
+float odom_x = 0;
+float odom_y = 0;
+float left_odom_dist = 0;
+float right_odom_dist = 0;
+float rear_odom_dist = 0;
+float imu_heading = 0;
+
+void odom::initialize() {
 	odom_left.reset_position();
 	odom_right.reset_position();
 	odom_rear.reset_position();
@@ -12,7 +23,7 @@ Odometry::Odometry() {
 }
 
 // Converts robot-centric coordinates to field-centric
-float Odometry::local_to_global_coords(
+float odom::local_to_global_coords(
     float local_x, float local_y, float robot_heading, bool return_x = true
 ) {
 	float heading_traveled = robot_heading;
@@ -51,7 +62,7 @@ float Odometry::local_to_global_coords(
 }
 
 // Converts field-centric coordinates to robot-centric
-float Odometry::global_to_local_coords(
+float odom::global_to_local_coords(
     float global_x, float global_y, float robot_x, float robot_y, float robot_heading,
     bool return_x = true
 ) {
@@ -80,7 +91,7 @@ float Odometry::global_to_local_coords(
 	}
 }
 
-void Odometry::track_position() {
+void odom::track_position() {
 	float previous_heading = 0;
 	float theta = 0;
 	float tracking_x = 0;
@@ -125,12 +136,12 @@ void Odometry::track_position() {
 	}
 }
 
-void Odometry::calibrate(float robot_x = 0, float robot_y = 0, float heading = 0) {
+void odom::calibrate(float robot_x = 0, float robot_y = 0, float heading = 0) {
 	odom_x = robot_x;
 	odom_y = robot_y;
 	imu.reset();
 	imu.set_heading(heading);
 }
 
-float Odometry::get_x() { return odom_x; }
-float Odometry::get_y() { return odom_y; }
+float odom::get_x() { return odom_x; }
+float odom::get_y() { return odom_y; }
