@@ -2,7 +2,7 @@
 #include "devices.hpp"
 #include "main.h"
 
-namespace pp {
+namespace pursuit {
 
 void add_point(double x_ft, double y_ft);
 
@@ -11,4 +11,4 @@ void pursuit(
     int highest_y
 );
 
-} // namespace pp
+} // namespace pursuit
