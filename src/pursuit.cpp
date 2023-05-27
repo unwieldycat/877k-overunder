@@ -1,6 +1,6 @@
-#include "pure_pursuit.hpp"
+#include "pursuit.hpp"
 #include "devices.hpp"
-#include "odometry.hpp"
+#include "odom.hpp"
 #include "pros/motors.h"
 
 // Vectors to store all the coordinates for the robot to make a path for
