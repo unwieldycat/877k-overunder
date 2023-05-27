@@ -5,26 +5,25 @@
 class PIDController {
   private:
 	float kP, kI, kD;
-	float error_prev, error_total, error_change;
-	float set_point, range;
+	float error, error_prev, error_total, error_change;
 
   public:
-	PIDController(float kP, float kI, float kD) {}
+	PIDController(float kP, float kI, float kD) : kP(kP), kI(kI), kD(kD) {}
 
 	/**
 	 * Run PID calculation
 	 */
-	float calculate(float current_pos);
+	float calculate(float target, float current_pos);
 
 	/**
-	 * Set exit condition
+	 * Configure constants
 	 */
-	void set_goal(float set_point, float range);
+	void set_gains(float kP, float kI, float kD);
 
 	/**
-	 * Checks if the exit condition has been met
+	 * Get the error value
 	 */
-	bool goal_met();
+	float get_error();
 
 	/**
 	 * Reset state
