@@ -6,8 +6,6 @@
 // Vectors to store all the coordinates for the robot to make a path for
 std::vector<double> points_x;
 std::vector<double> points_y;
-// Robot heading from odom, temporary placeholder variable
-double heading;
 
 /* Append an x and y coordinate to the current list
  * Coordinates must be in feet!
@@ -115,7 +113,7 @@ void pursuit::pursuit(
 		if (heading_objective > 180 || heading_objective < -180) {
 			heading_objective += heading_objective > 0 ? -360 : 360;
 		}
-		double heading_error = heading_objective - heading;
+		double heading_error = heading_objective - imu.get_heading();
 		if (fabs(heading_error) > 180) {
 			heading_error += heading_error > 0 ? -360 : 360;
 		}
