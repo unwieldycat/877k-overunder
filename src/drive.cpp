@@ -4,10 +4,7 @@
 #include <string>
 
 #define WHEEL_OFFSET 7.6
-
-void drive::select_drive_mode(std::string drive_mode) {
-
-}
+int drive_mode = 1;
 
 void drive::tank_drive() {
 	int left_power = controller.get_analog(pros::E_CONTROLLER_ANALOG_LEFT_Y);
@@ -34,4 +31,57 @@ void drive::curvature_drive() {
 		drive_left.move(power);
 		drive_right.move(power);
 	}
+}
+
+void drive::drive() {
+	while (true) {
+		switch (drive_mode) {
+		case 1:
+			tank_drive();
+			break;
+		case 2:
+			arcade_drive();
+			break;
+		case 3:
+			curvature_drive();
+			break;
+		}
+
+		pros::delay(50);
+	}
+}
+
+void drive::select_drive_mode(int new_mode) {
+	drive_mode = new_mode;
+}
+
+void drive::select_drive_mode(std::string new_mode) {
+	if (new_mode.compare("tank") == 0) {
+		drive_mode = 1;
+	}
+	if (new_mode.compare("arcade") == 0) {
+		drive_mode = 2;
+	}
+	if (new_mode.compare("curvature") == 0) {
+		drive_mode = 3;
+	}
+}
+
+int drive::get_drive_mode() {
+	return drive_mode;
+}
+
+std::string drive::get_drive_name() {
+	switch (drive_mode) {
+	case 1:
+		return "tank";
+		break;
+	case 2:
+		return "arcade";
+		break;
+	case 3:
+		return "curvature";
+		break;
+	}
+	return "no drive mode";
 }
