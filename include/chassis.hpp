@@ -4,10 +4,10 @@
 
 namespace chassis {
 
-void drive(float distance);
+void drive(double distance);
 
-void turn_abs(float heading);
+void turn_abs(double heading);
 
-void turn_rel(float degrees);
+void turn_rel(double degrees);
 
 } // namespace chassis
