@@ -22,7 +22,8 @@ void drive::arcade_drive() {
 
 void drive::curvature_drive() {
 	int power = controller.get_analog(pros::E_CONTROLLER_ANALOG_LEFT_Y);
-	float curvature = controller.get_analog(pros::E_CONTROLLER_ANALOG_RIGHT_X) / 127.0 * WHEEL_OFFSET;
+	float curvature =
+	    controller.get_analog(pros::E_CONTROLLER_ANALOG_RIGHT_X) / 127.0 * WHEEL_OFFSET;
 	if (curvature != 0.0) {
 		float radius = 1.0 / curvature;
 		drive_left.move(power * (radius + WHEEL_OFFSET) / radius);
@@ -51,9 +52,7 @@ void drive::drive() {
 	}
 }
 
-void drive::select_drive_mode(int new_mode) {
-	drive_mode = new_mode;
-}
+void drive::select_drive_mode(int new_mode) { drive_mode = new_mode; }
 
 void drive::select_drive_mode(std::string new_mode) {
 	if (new_mode.compare("tank") == 0) {
@@ -67,9 +66,7 @@ void drive::select_drive_mode(std::string new_mode) {
 	}
 }
 
-int drive::get_drive_mode() {
-	return drive_mode;
-}
+int drive::get_drive_mode() { return drive_mode; }
 
 std::string drive::get_drive_name() {
 	switch (drive_mode) {
