@@ -7,6 +7,10 @@
 #define kI 0.5
 #define kD 0.5
 
+#define WHEEL_OFFSET 7.6
+
+// ============================ Auton Functions ============================ //
+
 void chassis::drive(double distance) {
 	PIDController drive_pid(kP, kI, kD);
 	PIDController turn_pid(kP, kI, kD);
@@ -52,3 +56,57 @@ void chassis::turn_rel(double degrees) {
 
 	turn_abs(heading);
 }
+
+// ========================= User Control Functions ========================= //
+
+chassis::ControlMode drive_mode;
+
+void tank_drive() {
+	int left_power = controller.get_analog(pros::E_CONTROLLER_ANALOG_LEFT_Y);
+	int right_power = controller.get_analog(pros::E_CONTROLLER_ANALOG_RIGHT_Y);
+	drive_left.move(left_power);
+	drive_right.move(right_power);
+}
+
+void arcade_drive() {
+	int left_y = controller.get_analog(pros::E_CONTROLLER_ANALOG_LEFT_Y);
+	int right_x = controller.get_analog(pros::E_CONTROLLER_ANALOG_RIGHT_X);
+	drive_left.move(left_y + right_x);
+	drive_left.move(left_y + right_x);
+}
+
+void curvature_drive() {
+	int power = controller.get_analog(pros::E_CONTROLLER_ANALOG_LEFT_Y);
+	float curvature =
+	    controller.get_analog(pros::E_CONTROLLER_ANALOG_RIGHT_X) / 127.0 * WHEEL_OFFSET;
+	if (curvature != 0.0) {
+		float radius = 1.0 / curvature;
+		drive_left.move(power * (radius + WHEEL_OFFSET) / radius);
+		drive_left.move(power * (radius - WHEEL_OFFSET) / radius);
+	} else {
+		drive_left.move(power);
+		drive_right.move(power);
+	}
+}
+
+void chassis::user_control() {
+	while (true) {
+		switch (drive_mode) {
+		case ControlMode::TANK:
+			tank_drive();
+			break;
+		case ControlMode::ARCADE:
+			arcade_drive();
+			break;
+		case ControlMode::CURVE:
+			curvature_drive();
+			break;
+		}
+
+		pros::delay(50);
+	}
+}
+
+void chassis::set_mode(chassis::ControlMode new_mode) { drive_mode = new_mode; }
+
+chassis::ControlMode chassis::get_mode() { return drive_mode; }
