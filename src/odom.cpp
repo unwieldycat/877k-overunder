@@ -2,22 +2,18 @@
 #include "devices.hpp"
 
 #define LEFT_OFFSET 0
-#define RIGHT_OFFSET 0
 #define REAR_OFFSET 0
 
 float odom_x = 0;
 float odom_y = 0;
 float left_odom_dist = 0;
-float right_odom_dist = 0;
 float rear_odom_dist = 0;
 float imu_heading = 0;
 
 void odom::initialize() {
 	odom_left.reset_position();
-	odom_right.reset_position();
 	odom_rear.reset_position();
 	odom_left.set_reversed(true);
-	odom_right.set_reversed(false);
 	odom_rear.set_reversed(true);
 	imu.reset();
 }
@@ -102,8 +98,7 @@ void odom::track_position() {
 	while (true) {
 		left_odom_dist = odom_left.get_position() * 100 / 360.0 *
 		                 (2.75 * M_PI); // distance traveled by left tracking wheel since last poll
-		right_odom_dist = odom_left.get_position() * 100 / 360.0 * (2.75 * M_PI);
-		rear_odom_dist = odom_left.get_position() * 100 / 360.0 * (2.75 * M_PI);
+		rear_odom_dist = odom_rear.get_position() * 100 / 360.0 * (2.75 * M_PI);
 
 		imu_heading = imu.get_heading();
 		theta = imu_heading - previous_heading;
@@ -112,23 +107,19 @@ void odom::track_position() {
 		local_dist_y = 0;
 		if (theta != 0) {
 			local_dist_x = 2 * (rear_odom_dist / theta + REAR_OFFSET) * (sin(theta / 2));
-			local_dist_y = (left_odom_dist + right_odom_dist) / theta * (sin(theta / 2));
+			local_dist_y = 2 * (left_odom_dist / theta + LEFT_OFFSET) * (sin(theta / 2));
 		} else {
 			local_dist_x = rear_odom_dist;
-			local_dist_y = (right_odom_dist + left_odom_dist) / 2;
+			local_dist_y = left_odom_dist;
 		}
 
 		tracking_x += local_to_global_coords(local_dist_x, local_dist_y, imu_heading, true);
 		tracking_y += local_to_global_coords(local_dist_x, local_dist_y, imu_heading, false);
 
-		odom_x = tracking_x +
-		         local_to_global_coords(RIGHT_OFFSET - LEFT_OFFSET, REAR_OFFSET, imu_heading, true);
-		odom_y =
-		    tracking_y +
-		    local_to_global_coords(RIGHT_OFFSET - LEFT_OFFSET, REAR_OFFSET, imu_heading, false);
+		odom_x = tracking_x + local_to_global_coords(LEFT_OFFSET, REAR_OFFSET, imu_heading, true);
+		odom_y = tracking_y + local_to_global_coords(LEFT_OFFSET, REAR_OFFSET, imu_heading, false);
 
 		odom_left.reset_position();
-		odom_right.reset_position();
 		odom_rear.reset_position();
 		previous_heading = imu_heading;
 
