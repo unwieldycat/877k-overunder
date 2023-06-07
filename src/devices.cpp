@@ -10,5 +10,5 @@ pros::MotorGroup drive_right({3, 4});
 
 // Odometry sensors
 pros::Rotation odom_left(11);
-pros::Rotation odom_rear(13);
-pros::Imu imu(14);
+pros::Rotation odom_rear(12);
+pros::Imu imu(13);
