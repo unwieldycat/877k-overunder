@@ -1,8 +1,13 @@
 #include "main.h"
+#include "chassis.hpp"
+#include "odom.hpp"
 
 // ========================== Initialize Functions ========================== //
 
-void initialize() {}
+void initialize() {
+	odom::initialize();
+	pros::Task odom_task(odom::track_position, "Odometry");
+}
 
 void competition_initialize() {}
 
@@ -10,6 +15,6 @@ void competition_initialize() {}
 
 void autonomous() {}
 
-void opcontrol() {}
+void opcontrol() { pros::Task user_task(chassis::user_control, "User Chassis Control"); }
 
 void disabled() {}
