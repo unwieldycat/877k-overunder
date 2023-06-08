@@ -59,7 +59,7 @@ void chassis::turn_rel(double degrees) {
 
 // ========================= User Control Functions ========================= //
 
-chassis::ControlMode drive_mode;
+chassis::ControlMode drive_mode = chassis::ControlMode::ARCADE;
 
 void tank_drive() {
 	int left_power = controller.get_analog(pros::E_CONTROLLER_ANALOG_LEFT_Y);
@@ -72,7 +72,7 @@ void arcade_drive() {
 	int left_y = controller.get_analog(pros::E_CONTROLLER_ANALOG_LEFT_Y);
 	int right_x = controller.get_analog(pros::E_CONTROLLER_ANALOG_RIGHT_X);
 	drive_left.move(left_y + right_x);
-	drive_left.move(left_y + right_x);
+	drive_right.move(left_y - right_x);
 }
 
 void curvature_drive() {
