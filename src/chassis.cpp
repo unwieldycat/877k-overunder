@@ -82,7 +82,7 @@ void curvature_drive() {
 	if (curvature != 0.0) {
 		float radius = 1.0 / curvature;
 		drive_left.move(power * (radius + WHEEL_OFFSET) / radius);
-		drive_left.move(power * (radius - WHEEL_OFFSET) / radius);
+		drive_right.move(power * (radius - WHEEL_OFFSET) / radius);
 	} else {
 		drive_left.move(power);
 		drive_right.move(power);
