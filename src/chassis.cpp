@@ -78,15 +78,19 @@ void arcade_drive() {
 void curvature_drive() {
 	int power = controller.get_analog(pros::E_CONTROLLER_ANALOG_LEFT_Y);
 	float curvature =
-	    controller.get_analog(pros::E_CONTROLLER_ANALOG_RIGHT_X) / 127.0 * WHEEL_OFFSET;
-	if (curvature != 0.0) {
-		float radius = 1.0 / curvature;
-		drive_left.move(power * (radius + WHEEL_OFFSET) / radius);
-		drive_right.move(power * (radius - WHEEL_OFFSET) / radius);
-	} else {
-		drive_left.move(power);
-		drive_right.move(power);
+	    controller.get_analog(pros::E_CONTROLLER_ANALOG_RIGHT_X);
+
+	float left = power + power * curvature;
+	float right = power - power * curvature;
+	float max = std::max(std::fabs(left), std::fabs(right));
+
+	if (max > 1.0) {
+		left /= max;
+		right /= max;
 	}
+
+	drive_left.move(left * 127.0);
+	drive_right.move(right * 127.0);
 }
 
 void chassis::user_control() {
