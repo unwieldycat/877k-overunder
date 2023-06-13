@@ -77,9 +77,9 @@ void arcade_drive() {
 
 void curvature_drive() {
 	int power = 
-	    controller.get_analog(pros::E_CONTROLLER_ANALOG_LEFT_Y / 127.0);
+	    controller.get_analog(pros::E_CONTROLLER_ANALOG_LEFT_Y) / 127.0;
 	float curvature =
-	    controller.get_analog(pros::E_CONTROLLER_ANALOG_RIGHT_X / 127.0);
+	    controller.get_analog(pros::E_CONTROLLER_ANALOG_RIGHT_X) / 127.0;
 
 	float left = power + power * curvature;
 	float right = power - power * curvature;
