@@ -4,11 +4,11 @@
 #define LEFT_OFFSET 0
 #define REAR_OFFSET 0
 
-float odom_x = 0;
-float odom_y = 0;
-float left_odom_dist = 0;
-float rear_odom_dist = 0;
-float imu_heading = 0;
+double odom_x = 0;
+double odom_y = 0;
+double left_odom_dist = 0;
+double rear_odom_dist = 0;
+double imu_heading = 0;
 
 void odom::initialize() {
 	odom_left.reset_position();
@@ -19,11 +19,11 @@ void odom::initialize() {
 }
 
 // Converts robot-centric coordinates to field-centric
-float odom::local_to_global_coords(
-    float local_x, float local_y, float robot_heading, bool return_x = true
+double odom::local_to_global_coords(
+    double local_x, double local_y, double robot_heading, bool return_x = true
 ) {
-	float heading_traveled = robot_heading;
-	float distance_traveled = sqrt(pow(local_x, 2) + pow(local_y, 2));
+	double heading_traveled = robot_heading;
+	double distance_traveled = sqrt(pow(local_x, 2) + pow(local_y, 2));
 
 	if (local_x >= 0 && local_y > 0) {
 		heading_traveled =
@@ -47,8 +47,8 @@ float odom::local_to_global_coords(
 		heading_traveled += 2 * M_PI;
 	}
 
-	float global_x = distance_traveled * cos(heading_traveled);
-	float global_y = distance_traveled * sin(heading_traveled);
+	double global_x = distance_traveled * cos(heading_traveled);
+	double global_y = distance_traveled * sin(heading_traveled);
 
 	if (return_x) {
 		return global_x;
@@ -58,14 +58,14 @@ float odom::local_to_global_coords(
 }
 
 // Converts field-centric coordinates to robot-centric
-float odom::global_to_local_coords(
-    float global_x, float global_y, float robot_x, float robot_y, float robot_heading,
+double odom::global_to_local_coords(
+    double global_x, double global_y, double robot_x, double robot_y, double robot_heading,
     bool return_x = true
 ) {
-	float global_x_dist = global_x - robot_x;
-	float global_y_dist = global_y - robot_y;
-	float straight_dist = sqrt(pow(global_x_dist, 2) + pow(global_y_dist, 2));
-	float angle_to_target = 0;
+	double global_x_dist = global_x - robot_x;
+	double global_y_dist = global_y - robot_y;
+	double straight_dist = sqrt(pow(global_x_dist, 2) + pow(global_y_dist, 2));
+	double angle_to_target = 0;
 
 	if (global_x_dist >= 0 && global_y_dist > 0) { // Quadrant 1
 		angle_to_target = fabs(atan(global_y_dist / global_x_dist)) + robot_heading;
@@ -77,8 +77,8 @@ float odom::global_to_local_coords(
 		angle_to_target = M_PI - fabs(atan(global_y_dist / global_x_dist)) + robot_heading;
 	}
 
-	float local_x = straight_dist * cos(angle_to_target);
-	float local_y = straight_dist * sin(angle_to_target);
+	double local_x = straight_dist * cos(angle_to_target);
+	double local_y = straight_dist * sin(angle_to_target);
 
 	if (return_x) {
 		return local_x;
@@ -88,12 +88,12 @@ float odom::global_to_local_coords(
 }
 
 void odom::track_position() {
-	float previous_heading = 0;
-	float theta = 0;
-	float tracking_x = 0;
-	float tracking_y = 0;
-	float local_dist_x = 0;
-	float local_dist_y = 0;
+	double previous_heading = 0;
+	double theta = 0;
+	double tracking_x = 0;
+	double tracking_y = 0;
+	double local_dist_x = 0;
+	double local_dist_y = 0;
 
 	while (true) {
 		left_odom_dist = odom_left.get_position() * 100 / 360.0 *
@@ -127,12 +127,12 @@ void odom::track_position() {
 	}
 }
 
-void odom::calibrate(float robot_x = 0, float robot_y = 0, float heading = 0) {
+void odom::calibrate(double robot_x = 0, double robot_y = 0, double heading = 0) {
 	odom_x = robot_x;
 	odom_y = robot_y;
 	imu.reset();
 	imu.set_heading(heading);
 }
 
-float odom::get_x() { return odom_x; }
-float odom::get_y() { return odom_y; }
+double odom::get_x() { return odom_x; }
+double odom::get_y() { return odom_y; }

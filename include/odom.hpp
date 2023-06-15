@@ -4,13 +4,14 @@
 namespace odom {
 
 void initialize();
-float local_to_global_coords(float local_x, float local_y, float robot_heading, bool return_x);
-float global_to_local_coords(
-    float global_x, float global_y, float robot_x, float robot_y, float robot_heading, bool return_x
+double local_to_global_coords(double local_x, double local_y, double robot_heading, bool return_x);
+double global_to_local_coords(
+    double global_x, double global_y, double robot_x, double robot_y, double robot_heading,
+    bool return_x
 );
 void track_position();
-void calibrate(float robot_x, float robot_y, float heading);
-float get_x();
-float get_y();
+void calibrate(double robot_x, double robot_y, double heading);
+double get_x();
+double get_y();
 
 }; // namespace odom

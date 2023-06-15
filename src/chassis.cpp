@@ -76,14 +76,14 @@ void arcade_drive() {
 }
 
 void curvature_drive() {
-	float power = 
+	double power = 
 	    controller.get_analog(pros::E_CONTROLLER_ANALOG_LEFT_Y) / 127.0;
-	float curvature =
+	double curvature =
 	    controller.get_analog(pros::E_CONTROLLER_ANALOG_RIGHT_X) / 127.0;
 
-	float left = power + power * curvature;
-	float right = power - power * curvature;
-	float max = std::max(std::fabs(left), std::fabs(right));
+	double left = power + power * curvature;
+	double right = power - power * curvature;
+	double max = std::max(std::fabs(left), std::fabs(right));
 
 	if (max > 1.0) {
 		left /= max;
