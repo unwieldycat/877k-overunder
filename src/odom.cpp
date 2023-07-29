@@ -15,7 +15,7 @@ void odom::initialize() {
 	odom_rear.reset_position();
 	odom_left.set_reversed(true);
 	odom_rear.set_reversed(true);
-	imu.reset();
+	imu.reset(true);
 }
 
 // Converts robot-centric coordinates to field-centric
