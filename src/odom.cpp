@@ -1,5 +1,6 @@
 #include "odom.hpp"
 #include "devices.hpp"
+#include <cmath>
 
 #define LEFT_OFFSET 0
 #define REAR_OFFSET 0
@@ -16,6 +17,10 @@ void odom::initialize() {
 	odom_left.set_reversed(true);
 	odom_rear.set_reversed(true);
 	imu.reset(true);
+
+	while (std::isinf(imu.get_heading())) {
+		pros::delay(200);
+	}
 }
 
 // Converts robot-centric coordinates to field-centric
