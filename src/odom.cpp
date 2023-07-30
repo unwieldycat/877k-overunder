@@ -92,6 +92,8 @@ double odom::global_to_local_coords(
 	}
 }
 
+// FIXME: Odom output is wrong
+// FIXME: X and Y accumulate after every loop
 void odom::track_position() {
 	double previous_heading = 0;
 	double theta = 0;
@@ -128,7 +130,7 @@ void odom::track_position() {
 		odom_rear.reset_position();
 		previous_heading = imu_heading;
 
-		pros::delay(100);
+		pros::delay(10);
 	}
 }
 
