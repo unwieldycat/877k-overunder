@@ -5,19 +5,19 @@
 namespace chassis {
 
 /**
- * Drive a distance (feet)
+ * Drive a distance
  */
-void drive(double distance);
+void drive(foot_t distance);
 
 /**
  * Turn to a specific heading
  */
-void turn_abs(double heading);
+void turn_abs(degree_t heading);
 
 /**
  * Turn relative to the robot's current position
  */
-void turn_rel(double degrees);
+void turn_rel(degree_t degrees);
 
 /**
  * User control mode
