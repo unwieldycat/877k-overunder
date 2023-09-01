@@ -53,11 +53,9 @@ void chassis::turn_abs(degree_t heading) {
 void chassis::turn_rel(degree_t degrees) {
 	degree_t heading = degree_t(imu.get_heading()) + degrees;
 	if (heading > 180_deg) heading -= 360_deg;
+	if (heading < 0_deg) heading = units::math::fabs(heading); 
 
-	// TODO: Check if this is the best way to do cmath operations
-	if (heading < 0_deg) heading = degree_t(fabs(heading.to<double>())); 
-
-	turn_abs(degree_t(heading));
+	turn_abs(heading);
 }
 
 // ========================= User Control Functions ========================= //
