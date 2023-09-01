@@ -2,10 +2,13 @@
 #include "devices.hpp"
 #include "main.h"
 
+template <typename U> 
 class PIDController {
+	static_assert(units::traits::is_unit_t<U>::value, "Template parameter \"U\" must be a unit");
+
   private:
 	double kP, kI, kD;
-	double error, error_prev, error_total, error_change;
+	U error, error_prev, error_total, error_change;
 
   public:
 	PIDController(double kP, double kI, double kD) : kP(kP), kI(kI), kD(kD) {}
@@ -13,7 +16,7 @@ class PIDController {
 	/**
 	 * Run PID calculation
 	 */
-	double calculate(double target, double current_pos);
+	double calculate(U target, U current_pos);
 
 	/**
 	 * Configure constants
