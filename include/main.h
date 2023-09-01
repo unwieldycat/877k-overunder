@@ -35,6 +35,13 @@
 #define PROS_USE_LITERALS
 
 #include "api.h"
+#include "units.h"
+
+using namespace units::literals;
+using namespace units::length;
+using namespace units::time;
+using namespace units::velocity;
+using namespace units::angle;
 
 #ifdef __cplusplus
 #endif
