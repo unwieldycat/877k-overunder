@@ -4,26 +4,26 @@
 
 class PIDController {
   private:
-	float kP, kI, kD;
-	float error, error_prev, error_total, error_change;
+	double kP, kI, kD;
+	double error, error_prev, error_total, error_change;
 
   public:
-	PIDController(float kP, float kI, float kD) : kP(kP), kI(kI), kD(kD) {}
+	PIDController(double kP, double kI, double kD) : kP(kP), kI(kI), kD(kD) {}
 
 	/**
 	 * Run PID calculation
 	 */
-	float calculate(float target, float current_pos);
+	double calculate(double target, double current_pos);
 
 	/**
 	 * Configure constants
 	 */
-	void set_gains(float kP, float kI, float kD);
+	void set_gains(double kP, double kI, double kD);
 
 	/**
 	 * Get the error value
 	 */
-	float get_error();
+	double get_error();
 
 	/**
 	 * Reset state
