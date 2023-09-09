@@ -4,17 +4,15 @@
 #include "pros/motors.h"
 
 // Vectors to store all the coordinates for the robot to make a path for
-std::vector<double> points_x = {0};
-std::vector<double> points_y = {0};
+std::vector<std::pair<double, double>> points = {std::make_pair(0, 0)};
 
 /* Append an x and y coordinate to the current list
  * Coordinates must be in feet!
  * The positive direction is to the right(x) or forward(y) from the driver box
  */
 void pursuit::add_point(double x_ft, double y_ft) {
-	if (x_ft != points_x[points_x.size() - 1] || y_ft != points_y[points_y.size() - 1]) {
-		points_x.push_back(x_ft);
-		points_y.push_back(y_ft);
+	if (points[points.size() - 1].first != x_ft || points[points.size() - 1].second != y_ft) {
+		points.push_back({x_ft, y_ft});
 	}
 }
 
@@ -47,19 +45,19 @@ void pursuit::pursuit(
 	}
 
 	// Loops until all points have been passed
-	while (current_point < points_x.size()) {
+	while (current_point < points.size()) {
 		double current_heading = imu.get_heading(), current_posX = odom::get_x(),
 		       current_posY = odom::get_y();
 
 		// BOOKMARK: Begin finding next objective
 		//  Finds closest point when X coordinates of previous and current points are different
-		if (points_x[current_point - 1] != points_x[current_point]) {
-			slope_par = (points_y[current_point] - points_y[current_point - 1]) /
-			            (points_x[current_point] - points_x[current_point - 1]);
-			const_par = (points_y[current_point] - slope_par * points_x[current_point]);
+		if (points[current_point - 1].first != points[current_point].first) {
+			slope_par = (points[current_point].second - points[current_point - 1].second) /
+			            (points[current_point].first - points[current_point - 1].first);
+			const_par = (points[current_point].second - slope_par * points[current_point].first);
 			closest_point = current_posX;
 
-			int sign = (points_x[current_point] - points_x[current_point - 1]) > 0 ? 1 : -1;
+			int sign = (points[current_point].first - points[current_point - 1].first) > 0 ? 1 : -1;
 			next_objective_x =
 			    (-(2 * (slope_par * (const_par - current_posY) - current_posX)) +
 			     sign * sqrt(
@@ -74,8 +72,9 @@ void pursuit::pursuit(
 
 		} else {
 			// X coordinates of previous and current point are the same
-			int sign = (points_y[current_point] - points_y[current_point - 1]) > 0 ? 1 : -1;
-			next_objective_x = points_x[current_point];
+			int sign =
+			    (points[current_point].second - points[current_point - 1].second) > 0 ? 1 : -1;
+			next_objective_x = points[current_point].first;
 			next_objective_y =
 			    sign * sqrt(pow(lookahead_Distance, 2) - pow(next_objective_x - current_posX, 2)) +
 			    current_posY;
@@ -84,9 +83,9 @@ void pursuit::pursuit(
 		// BOOKMARK: Begin distance calculations for closest point
 		//  Finds distance between goal and robot when Y coordinates of previous and current
 		//  points are different
-		if (fabs(points_y[current_point] - points_y[current_point - 1]) > 0.1) {
-			slope_perp = -(points_x[current_point] - points_x[current_point - 1]) /
-			             (points_y[current_point] - points_y[current_point - 1]);
+		if (fabs(points[current_point].second - points[current_point - 1].second) > 0.1) {
+			slope_perp = -(points[current_point].first - points[current_point - 1].first) /
+			             (points[current_point].second - points[current_point - 1].second);
 			const_perp = (current_posY - slope_perp * current_posX);
 			closest_point = (const_perp - const_par) / (slope_par - slope_perp);
 
@@ -110,13 +109,12 @@ void pursuit::pursuit(
 			drive_left.brake();
 			drive_right.brake();
 			controller.set_text(1, 1, "Can't go there! Rerouted-");
-			points_x.insert(points_x.begin(), current_point, 1);
-			points_y.insert(points_y.begin(), current_point, 2);
+			points.insert(points.begin(), current_point, {1, 2});
 			continue;
 		}
 
 		// BOOKMARK: Goal increment
-		if (fabs(next_objective_x - points_x[current_point]) < 0.1) {
+		if (fabs(next_objective_x - points[current_point].first) < 0.1) {
 			current_point++;
 		}
 
@@ -182,6 +180,5 @@ void pursuit::pursuit(
 
 	drive_left.brake();
 	drive_right.brake();
-	points_x.clear();
-	points_y.clear();
+	points.clear();
 }

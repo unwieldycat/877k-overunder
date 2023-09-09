@@ -2,8 +2,7 @@
 #include "devices.hpp"
 #include "main.h"
 
-extern std::vector<double> points_x;
-extern std::vector<double> points_y;
+extern std::vector<std::pair<double, double>> points;
 
 namespace pursuit {
 
