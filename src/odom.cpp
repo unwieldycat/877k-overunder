@@ -24,9 +24,8 @@ void odom::initialize() {
 }
 
 // Converts robot-centric coordinates to field-centric
-std::pair<double, double> odom::local_to_global_coords(
-    double local_x, double local_y, double robot_heading
-) {
+std::pair<double, double>
+odom::local_to_global_coords(double local_x, double local_y, double robot_heading) {
 	double heading_traveled = robot_heading;
 	double distance_traveled = sqrt(pow(local_x, 2) + pow(local_y, 2));
 
@@ -55,11 +54,11 @@ std::pair<double, double> odom::local_to_global_coords(
 	double global_x = distance_traveled * cos(heading_traveled);
 	double global_y = distance_traveled * sin(heading_traveled);
 
-	return { global_x, global_y };
+	return {global_x, global_y};
 }
 
 // Converts field-centric coordinates to robot-centric
-std::pair <double, double> odom::global_to_local_coords(
+std::pair<double, double> odom::global_to_local_coords(
     double global_x, double global_y, double robot_x, double robot_y, double robot_heading
 ) {
 	double global_x_dist = global_x - robot_x;
@@ -80,16 +79,16 @@ std::pair <double, double> odom::global_to_local_coords(
 	double local_x = straight_dist * cos(angle_to_target);
 	double local_y = straight_dist * sin(angle_to_target);
 
-	return { local_x, local_y };
+	return {local_x, local_y};
 }
 
 // FIXME: Odom output is wrong
 // FIXME: X and Y accumulate after every loop
 void odom::track_position() {
-	double previous_heading = 0;
+	double previous_heading = imu.get_heading();
 	double theta = 0;
-	double tracking_x = 0;
-	double tracking_y = 0;
+	double tracking_x = odom_x;
+	double tracking_y = odom_y;
 	double local_dist_x = 0;
 	double local_dist_y = 0;
 
@@ -110,12 +109,14 @@ void odom::track_position() {
 			local_dist_x = rear_odom_dist;
 			local_dist_y = left_odom_dist;
 		}
-		
-		std::pair<double, double> global = local_to_global_coords(local_dist_x, local_dist_y, imu_heading);
+
+		std::pair<double, double> global =
+		    local_to_global_coords(local_dist_x, local_dist_y, imu_heading);
 		tracking_x += global.first;
 		tracking_y += global.second;
 
-		std::pair<double, double> offset = local_to_global_coords(LEFT_OFFSET, REAR_OFFSET, imu_heading);
+		std::pair<double, double> offset =
+		    local_to_global_coords(LEFT_OFFSET, REAR_OFFSET, imu_heading);
 		odom_x = tracking_x + offset.first;
 		odom_y = tracking_y + offset.second;
 
