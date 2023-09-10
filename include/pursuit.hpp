@@ -2,15 +2,15 @@
 #include "devices.hpp"
 #include "main.h"
 
-extern std::vector<std::pair<double, double>> points;
+extern std::vector<std::pair<foot_t, foot_t>> points;
 
 namespace pursuit {
 
-void add_point(double x_ft, double y_ft);
+void add_point(foot_t x_ft, foot_t y_ft);
 
 void pursuit(
-    double lookahead_distance, int voltage_constant, int lowest_x, int lowest_y, int highest_x,
-    int highest_y
+    foot_t lookahead_distance, int voltage_constant, foot_t lowest_x, foot_t lowest_y,
+    foot_t highest_x, foot_t highest_y
 );
 
 } // namespace pursuit
