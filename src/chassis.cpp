@@ -2,6 +2,7 @@
 #include "devices.hpp"
 #include "odom.hpp"
 #include "pid.hpp"
+#include "pros/misc.h"
 
 #define kP 0.5
 #define kI 0.5
@@ -53,7 +54,7 @@ void chassis::turn_abs(degree_t heading) {
 void chassis::turn_rel(degree_t degrees) {
 	degree_t heading = degree_t(imu.get_heading()) + degrees;
 	if (heading > 180_deg) heading -= 360_deg;
-	if (heading < 0_deg) heading = units::math::fabs(heading); 
+	if (heading < 0_deg) heading = units::math::fabs(heading);
 
 	turn_abs(heading);
 }
@@ -77,10 +78,8 @@ void arcade_drive() {
 }
 
 void curvature_drive() {
-	double power = 
-	    controller.get_analog(pros::E_CONTROLLER_ANALOG_LEFT_Y) / 127.0;
-	double curvature =
-	    controller.get_analog(pros::E_CONTROLLER_ANALOG_RIGHT_X) / 127.0;
+	double power = controller.get_analog(pros::E_CONTROLLER_ANALOG_LEFT_Y) / 127.0;
+	double curvature = controller.get_analog(pros::E_CONTROLLER_ANALOG_RIGHT_X) / 127.0;
 
 	double left = power + power * curvature;
 	double right = power - power * curvature;
@@ -109,6 +108,9 @@ void chassis::user_control() {
 			break;
 		}
 
+		if (controller.get_digital_new_press(pros::E_CONTROLLER_DIGITAL_X)) {
+			roller_piston.toggle();
+		}
 		pros::delay(50);
 	}
 }

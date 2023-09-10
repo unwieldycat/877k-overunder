@@ -1,4 +1,6 @@
 #include "devices.hpp"
+#include "pros/adi.h"
+#include "pros/adi.hpp"
 
 // =========================== Device Definitions =========================== //
 
@@ -12,3 +14,6 @@ pros::MotorGroup drive_right({2, -3});
 pros::Rotation odom_left(11);
 pros::Rotation odom_rear(12);
 pros::Imu imu(13);
+
+// Pneumatics
+pros::adi::Pneumatics roller_piston('A', true);
