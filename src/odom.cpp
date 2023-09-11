@@ -84,7 +84,7 @@ std::pair<double, double> odom::global_to_local_coords(
 
 // FIXME: Odom output is wrong
 // FIXME: X and Y accumulate after every loop
-void odom::track_position() {
+[[noreturn]] void odom::track_position() {
 	double previous_heading = imu.get_heading();
 	double theta = 0;
 	double tracking_x = odom_x;
