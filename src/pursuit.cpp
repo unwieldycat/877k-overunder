@@ -5,12 +5,17 @@
 #include "units.h"
 using namespace units::math;
 
-// Vectors to store all the coordinates for the robot to make a path for
+/**
+ * @brief Create vector of pairs to store points for the path with initial point 0, 0
+ *
+ */
 std::vector<std::pair<foot_t, foot_t>> points = {std::make_pair(0_ft, 0_ft)};
 
-/* Append an x and y coordinate to the current list
- * Coordinates must be in feet!
- * The positive direction is to the right(x) or forward(y) from the driver box
+/**
+ * @brief adds a point to the end of the points for the path
+ *
+ * @param x_ft x coordinate in feet
+ * @param y_ft y coordinate in feet
  */
 void pursuit::add_point(foot_t x_ft, foot_t y_ft) {
 	if (points[points.size() - 1].first != x_ft || points[points.size() - 1].second != y_ft) {
@@ -18,16 +23,17 @@ void pursuit::add_point(foot_t x_ft, foot_t y_ft) {
 	}
 }
 
-/*
- * The lookahead distance represents the distance that the robot can drive to in the amount of time
- * of the delay between each while loop (currently 20ms).
- * The voltage constant determines the voltage to the motors if it is driving on a straight path.
- * The current objective increments each time the point from the list of coordinates is reached to
- * find the next path the robot should be taking.
- * The heading objective is what direction the robot should be facing to return to the path.
- * Lowest x and y, and highest x and y are coordinates to define a restricted zone that the robot
- * cannot go in. It is a failsafe to prevent the function from ever finding or going toward an
- * disqualifying area such as a goal or the opponent's side.
+/**
+ * @brief Begins moving the robot following all the points stored previous to the running of this
+ * function, clears the points after running
+ *
+ * @param lookahead_Distance How far away the point the robot is "Chasing" is
+ * @param voltage_constant How fast the robot will be moving forward if it is traveling on a
+ * straight path
+ * @param lowest_x Bottom left x coordinate in feet of the restricted area
+ * @param lowest_y Bottom left y coordinate in feet of the restricted area
+ * @param highest_x Bottom right x coordinate in feet of the restricted area
+ * @param highest_y Bottom right y coordinate in feet of the restricted area
  */
 void pursuit::pursuit(
     foot_t lookahead_Distance, int voltage_constant, foot_t lowest_x = 0_ft, foot_t lowest_y = 0_ft,
