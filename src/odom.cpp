@@ -82,8 +82,6 @@ std::pair<double, double> odom::global_to_local_coords(
 	return {local_x, local_y};
 }
 
-// FIXME: Odom output is wrong
-// FIXME: X and Y accumulate after every loop
 [[noreturn]] void odom::track_position() {
 	double previous_heading = imu.get_heading();
 	double theta = 0;
@@ -93,9 +91,9 @@ std::pair<double, double> odom::global_to_local_coords(
 	double local_dist_y = 0;
 
 	while (true) {
-		left_odom_dist = odom_left.get_position() * 100 / 360.0 *
+		left_odom_dist = (odom_left.get_position() / 100.0) / 360.0 *
 		                 (2.75 * M_PI); // distance traveled by left tracking wheel since last poll
-		rear_odom_dist = odom_rear.get_position() * 100 / 360.0 * (2.75 * M_PI);
+		rear_odom_dist = (odom_rear.get_position() / 100.0) / 360.0 * (2.75 * M_PI);
 
 		imu_heading = imu.get_heading();
 		theta = imu_heading - previous_heading;
