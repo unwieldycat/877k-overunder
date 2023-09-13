@@ -131,7 +131,7 @@ std::pair<double, double> odom::global_to_local_coords(
 void odom::calibrate(double robot_x = 0, double robot_y = 0, double heading = 0) {
 	odom_x = robot_x;
 	odom_y = robot_y;
-	imu.reset();
+	imu.reset(true);
 	imu.set_heading(heading);
 }
 
