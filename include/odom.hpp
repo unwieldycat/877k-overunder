@@ -16,7 +16,7 @@ void initialize();
  * @param robot_heading Current heading
  * @return Global coordinate pair
  */
-std::pair<double, double> local_to_global_coords(inch_t local_x, inch_t local_y, degree_t robot_heading);
+std::pair<inch_t, inch_t> local_to_global_coords(inch_t local_x, inch_t local_y, degree_t robot_heading);
 
 /**
  * @brief Convert global coordinates to local coordinates
@@ -28,7 +28,7 @@ std::pair<double, double> local_to_global_coords(inch_t local_x, inch_t local_y,
  * @param robot_heading Current heading
  * @return Local coordinate pair
  */
-std::pair<double, double> global_to_local_coords(
+std::pair<inch_t, inch_t> global_to_local_coords(
     inch_t global_x, inch_t global_y, inch_t robot_x, inch_t robot_y, degree_t robot_heading
 );
 
@@ -51,13 +51,13 @@ void calibrate(inch_t robot_x, inch_t robot_y, degree_t heading);
  * 
  * @return double 
  */
-double get_x();
+inch_t get_x();
 
 /**
  * @brief Get the current y value
  * 
  * @return double 
  */
-double get_y();
+inch_t get_y();
 
 }; // namespace odom
