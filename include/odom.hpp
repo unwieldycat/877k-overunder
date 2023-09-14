@@ -3,14 +3,11 @@
 
 namespace odom {
 
-// FIXME: Do we need init and calib?
 /**
  * @brief Initialize odometry
  */
 void initialize();
 
-// FIXME: Functions should use pairs
-// FIXME: Should there be a coordinate class?
 /**
  * @brief Convert local coordinates to global coordinates
  * 
@@ -19,7 +16,7 @@ void initialize();
  * @param robot_heading Current heading
  * @return Global coordinate pair
  */
-std::pair<double, double> local_to_global_coords(double local_x, double local_y, double robot_heading);
+std::pair<double, double> local_to_global_coords(inch_t local_x, inch_t local_y, degree_t robot_heading);
 
 /**
  * @brief Convert global coordinates to local coordinates
@@ -32,7 +29,7 @@ std::pair<double, double> local_to_global_coords(double local_x, double local_y,
  * @return Local coordinate pair
  */
 std::pair<double, double> global_to_local_coords(
-    double global_x, double global_y, double robot_x, double robot_y, double robot_heading
+    inch_t global_x, inch_t global_y, inch_t robot_x, inch_t robot_y, degree_t robot_heading
 );
 
 /**
@@ -47,7 +44,7 @@ std::pair<double, double> global_to_local_coords(
  * @param robot_y Start position y
  * @param heading Starting heading
  */
-void calibrate(double robot_x, double robot_y, double heading);
+void calibrate(inch_t robot_x, inch_t robot_y, degree_t heading);
 
 /**
  * @brief Get the current x value
