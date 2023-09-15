@@ -2,7 +2,7 @@
 #include "devices.hpp"
 #include "odom.hpp"
 #include "pros/motors.h"
-#include "units.h"
+#include <ostream>
 using namespace units::math;
 
 std::vector<std::pair<foot_t, foot_t>> points = {std::make_pair(0_ft, 0_ft)};
@@ -14,8 +14,8 @@ void pursuit::add_point(foot_t x_ft, foot_t y_ft) {
 }
 
 void pursuit::pursuit(
-    foot_t lookahead_Distance, int voltage_constant, foot_t lowest_x = 0_ft, foot_t lowest_y = 0_ft,
-    foot_t highest_x = 0_ft, foot_t highest_y = 0_ft
+    foot_t lookahead_Distance, int voltage_constant, foot_t lowest_x, foot_t lowest_y,
+    foot_t highest_x, foot_t highest_y
 ) {
 	int current_point = 1;
 	units::dimensionless::scalar_t slope_par, slope_perp;
@@ -108,8 +108,7 @@ void pursuit::pursuit(
 
 		// BOOKMARK: Heading calculations
 		//  Find math heading objective
-		heading_objective =
-		    atan2(next_objective_x - current_posY, next_objective_y - current_posX) * 180 / M_PI;
+		heading_objective = atan2(next_objective_x - current_posY, next_objective_y - current_posX);
 		if (heading_objective < 0_deg) {
 			heading_objective += 360_deg;
 		}
@@ -134,10 +133,13 @@ void pursuit::pursuit(
 		*/
 
 		degree_t heading_error = heading_objective - current_heading;
-		if (heading_error > 180_deg)
-			heading_error -= 360_deg;
-		else if (heading_error < -180_deg)
+		if (heading_error > 359_deg)
+			heading_error = fmod(heading_error, 359.0_deg);
+
+		else if (heading_error < 0_deg) {
+			heading_error = fmod(heading_error, 359.0_deg);
 			heading_error += 360_deg;
+		}
 
 		if (fabs(heading_error) > 360_deg) heading_error = heading_objective;
 
@@ -154,14 +156,21 @@ void pursuit::pursuit(
 		*/
 
 		// BOOKMARK: Movement
-		drive_left.move(
-		    voltage_constant * (180 - fabs(heading_error.to<double>())) / 360 +
-		    (127 - voltage_constant) * (heading_error.to<double>()) / 360
-		);
-		drive_right.move(
-		    voltage_constant * (180 - fabs(heading_error.to<double>())) / 360 -
-		    (127 - voltage_constant) * (heading_error.to<double>()) / 360
-		);
+		double leftspeed = voltage_constant * (180 - fabs(heading_error.to<double>())) / 180 +
+		                   (127 - voltage_constant) * (heading_error.to<double>()) / 180;
+
+		double rightspeed = voltage_constant * (180 - fabs(heading_error.to<double>())) / 180 -
+		                    (127 - voltage_constant) * (heading_error.to<double>()) / 180;
+
+		drive_left.move(leftspeed);
+		drive_right.move(rightspeed);
+		std::cout << "dist: "
+		          << sqrt(
+		                 pow<2>(closest_point - current_posX) +
+		                 pow<2>(slope_par * closest_point + const_par - current_posY)
+		             )
+		          << "x: " << current_posX << "y" << current_posY << "Left: " << leftspeed
+		          << "Right: " << rightspeed << std::endl;
 		// delay to prevent brain crashing
 		pros::delay(20);
 	}

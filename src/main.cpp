@@ -1,6 +1,7 @@
 #include "main.h"
 #include "chassis.hpp"
 #include "odom.hpp"
+#include "pursuit.hpp"
 
 // ========================== Initialize Functions ========================== //
 

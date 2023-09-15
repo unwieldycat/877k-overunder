@@ -1,6 +1,7 @@
 #pragma once
 #include "devices.hpp"
 #include "main.h"
+#include "units.h"
 
 /**
  * @brief Create vector of pairs to store points for the path with initial point 0, 0
@@ -31,8 +32,8 @@ void add_point(foot_t x_ft, foot_t y_ft);
  * @param highest_y Bottom right y coordinate in feet of the restricted area
  */
 void pursuit(
-    foot_t lookahead_distance, int voltage_constant, foot_t lowest_x, foot_t lowest_y,
-    foot_t highest_x, foot_t highest_y
+    foot_t lookahead_distance, int voltage_constant, foot_t lowest_x = 0_ft, foot_t lowest_y = 0_ft,
+    foot_t highest_x = 0_ft, foot_t highest_y = 0_ft
 );
 
 } // namespace pursuit
