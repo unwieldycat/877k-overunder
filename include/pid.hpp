@@ -2,7 +2,7 @@
 #include "devices.hpp"
 #include "main.h"
 
-template <typename U> 
+template <typename U>
 class PIDController {
 	static_assert(units::traits::is_unit_t<U>::value, "Template parameter \"U\" must be a unit");
 
@@ -16,20 +16,35 @@ class PIDController {
 	/**
 	 * Run PID calculation
 	 */
-	double calculate(U target, U current_pos);
+	inline double calculate(U set_point, U current_pos) {
+		error = current_pos - set_point;
+		error_change = error - error_prev;
+		error_total += error;
+		error_prev = error;
+
+		return (error * kP + error_total * kI + error_change * kD);
+	}
 
 	/**
 	 * Configure constants
 	 */
-	void set_gains(double kP, double kI, double kD);
+	inline void set_gains(double kP, double kI, double kD) {
+		this->kP = kP;
+		this->kI = kI;
+		this->kD = kD;
+	}
 
 	/**
 	 * Get the error value
 	 */
-	double get_error();
+	inline double get_error() { return error; }
 
 	/**
 	 * Reset state
 	 */
-	void reset();
+	inline void reset() {
+		error_change = 0;
+		error_prev = 0;
+		error_total = 0;
+	}
 };
