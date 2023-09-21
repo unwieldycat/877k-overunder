@@ -2,6 +2,7 @@
 #include "devices.hpp"
 #include "odom.hpp"
 #include "pros/motors.h"
+#include "units.h"
 #include <ostream>
 using namespace units::math;
 
@@ -22,6 +23,7 @@ void pursuit::pursuit(
 	foot_t closest_point, next_objective_x, next_objective_y, const_par, const_perp;
 	degree_t heading_objective;
 	bool restricted = false;
+	double left_speed, right_speed;
 
 	drive_left.set_brake_mode(pros::E_MOTOR_BRAKE_HOLD);
 	drive_right.set_brake_mode(pros::E_MOTOR_BRAKE_HOLD);
@@ -31,10 +33,10 @@ void pursuit::pursuit(
 		restricted = true;
 	}
 
-	// Loops until all points have been passed NOTE: remove type conversion after odom has units
+	// Loops until all points have been passed
 	while (current_point < points.size()) {
 		degree_t current_heading = (degree_t)imu.get_heading();
-		foot_t current_posX = (foot_t)odom::get_x(), current_posY = (foot_t)odom::get_y();
+		foot_t current_posX = odom::get_x(), current_posY = odom::get_y();
 
 		// BOOKMARK: Begin finding next objective
 		//  Finds closest point when X coordinates of previous and current points are different
@@ -108,69 +110,43 @@ void pursuit::pursuit(
 
 		// BOOKMARK: Heading calculations
 		//  Find math heading objective
-		heading_objective = atan2(next_objective_x - current_posY, next_objective_y - current_posX);
+		heading_objective = atan2(next_objective_y - current_posY, next_objective_x - current_posX);
 		if (heading_objective < 0_deg) {
 			heading_objective += 360_deg;
 		}
 
-		/* convert to inertial heading
-		if (0 <= heading_objective && heading_objective <= 90) {
-		    heading_objective = 90 - heading_objective;
-		} else if (90 < heading_objective && heading_objective <= 180) {
-		    heading_objective += 90;
-		} else if (180 < heading_objective && heading_objective <= 270) {
-		    heading_objective = 270 - heading_objective + 180;
-		} else if (270 < heading_objective && heading_objective < 360) {
-		    heading_objective = 360 - heading_objective + 180;
-		}
-
-		// failsafe
-		if (heading_objective >= 360) {
-		    heading_objective -= 360;
-		} else if (heading_objective < 0) {
-		    heading_objective += 360;
-		}
-		*/
-
 		degree_t heading_error = heading_objective - current_heading;
-		if (heading_error > 359_deg)
-			heading_error = fmod(heading_error, 359.0_deg);
 
-		else if (heading_error < 0_deg) {
-			heading_error = fmod(heading_error, 359.0_deg);
+		if (heading_error < -180_deg)
 			heading_error += 360_deg;
-		}
-
-		if (fabs(heading_error) > 360_deg) heading_error = heading_objective;
-
-		/*
-		// heading failsafe
-		if (heading_objective > 180 || heading_objective < -180) {
-		    heading_objective += heading_objective > 0 ? -360 : 360;
-		}
-
-		double heading_error = heading_objective - current_heading;
-		if (fabs(heading_error) > 180) {
-		    heading_error += heading_error > 0 ? -360 : 360;
-		}
-		*/
+		else if (heading_error > 180_deg)
+			heading_error -= 360_deg;
 
 		// BOOKMARK: Movement
-		double leftspeed = voltage_constant * (180 - fabs(heading_error.to<double>())) / 180 +
-		                   (127 - voltage_constant) * (heading_error.to<double>()) / 180;
+		if (fabs(heading_error) < 2_deg) {
+			left_speed = 127;
+			right_speed = 127;
 
-		double rightspeed = voltage_constant * (180 - fabs(heading_error.to<double>())) / 180 -
-		                    (127 - voltage_constant) * (heading_error.to<double>()) / 180;
+		} else if (fabs(heading_error) < 15_deg) {
+			left_speed = voltage_constant * (180 - fabs(heading_error.to<double>())) / 180 +
+			             (127 - voltage_constant) * (heading_error.to<double>()) / 180;
+			right_speed = voltage_constant * (180 - fabs(heading_error.to<double>())) / 180 -
+			              (127 - voltage_constant) * (heading_error.to<double>()) / 180;
 
-		drive_left.move(leftspeed);
-		drive_right.move(rightspeed);
-		std::cout << "dist: "
-		          << sqrt(
-		                 pow<2>(closest_point - current_posX) +
-		                 pow<2>(slope_par * closest_point + const_par - current_posY)
-		             )
-		          << "x: " << current_posX << "y" << current_posY << "Left: " << leftspeed
-		          << "Right: " << rightspeed << std::endl;
+		} else if (fabs(heading_error) < 45_deg) {
+			left_speed = voltage_constant * (180 - fabs(heading_error.to<double>())) / 360 +
+			             (127 - voltage_constant) * (heading_error.to<double>()) / 90;
+			right_speed = voltage_constant * (180 - fabs(heading_error.to<double>())) / 360 -
+			              (127 - voltage_constant) * (heading_error.to<double>()) / 90;
+
+		} else {
+			left_speed = voltage_constant * heading_error.to<double>() / 90;
+			right_speed = -voltage_constant * heading_error.to<double>() / 90;
+		}
+
+		drive_left.move(left_speed);
+		drive_right.move(right_speed);
+
 		// delay to prevent brain crashing
 		pros::delay(20);
 	}
