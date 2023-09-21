@@ -10,19 +10,24 @@ using namespace units::math;
 inch_t current_x;
 inch_t current_y;
 
+// NOTE: (known issue) the true heading fluctuates a lot by 90 to 180 degrees, but the end
+// coordinates are correct.
 void alt_odom::track_pos() {
-	degree_t robot_heading = (degree_t)(imu.get_heading()), true_heading;
+	degree_t robot_heading = (degree_t)(imu.get_heading()), true_heading, moving_angle;
 	inch_t left_dist, rear_dist, total_dist;
 
 	while (true) {
-		left_dist = (radian_t((degree_t)(odom_left.get_position() / 100.0))).to<double>() *
+		robot_heading = (degree_t)imu.get_heading();
+		left_dist = -(radian_t((degree_t)(odom_left.get_position() / 100.0))).to<double>() *
 		            ((inch_t)DIAMETRE / 2);
 		rear_dist = (radian_t((degree_t)(odom_rear.get_position() / 100.0))).to<double>() *
 		            ((inch_t)DIAMETRE / 2);
 
 		total_dist = sqrt(pow<2>(left_dist) + pow<2>(rear_dist));
 
-		true_heading = robot_heading + atan2(left_dist, rear_dist);
+		moving_angle = atan2(left_dist, rear_dist);
+
+		true_heading = robot_heading + moving_angle;
 
 		if (true_heading >= 360_deg)
 			true_heading -= 360_deg;
