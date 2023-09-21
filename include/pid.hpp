@@ -1,13 +1,14 @@
 #pragma once
 #include "devices.hpp"
 #include "main.h"
+#include "units.h"
 
 template <typename U>
 class PIDController {
 	static_assert(units::traits::is_unit_t<U>::value, "Template parameter \"U\" must be a unit");
 
   private:
-	double kP, kI, kD;
+	units::dimensionless::scalar_t kP, kI, kD;
 	U error, error_prev, error_total, error_change;
 
   public:
@@ -22,7 +23,7 @@ class PIDController {
 		error_total += error;
 		error_prev = error;
 
-		return (error * kP + error_total * kI + error_change * kD);
+		return (error * kP + error_total * kI + error_change * kD).template to<double>();
 	}
 
 	/**
@@ -37,7 +38,7 @@ class PIDController {
 	/**
 	 * Get the error value
 	 */
-	inline double get_error() { return error; }
+	inline double get_error() { return error.template to<double>(); }
 
 	/**
 	 * Reset state
