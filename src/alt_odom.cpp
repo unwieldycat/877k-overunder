@@ -3,7 +3,7 @@
 #include "odom.hpp"
 #include "units.h"
 
-#define DIAMETRE 2.75_in
+#define DIAMETRE 2.75
 
 using namespace units::math;
 
@@ -15,8 +15,8 @@ void alt_odom::track_pos() {
 	inch_t left_dist, rear_dist, total_dist;
 
 	while (true) {
-		left_dist = (radian_t)((degree_t)(odom_left.get_position() / 100.0)) * (DIAMETRE / 2);
-		rear_dist = (radian_t)((degree_t)(odom_rear.get_position() / 100.0)) * (DIAMETRE / 2);
+		left_dist = (inch_t)((odom_left.get_position() / 100.0) / 360.0 * M_PI * DIAMETRE);
+		rear_dist = (inch_t)((odom_rear.get_position() / 100.0) / 360.0 * M_PI * DIAMETRE);
 
 		total_dist = sqrt(pow<2>(left_dist) + pow<2>(rear_dist));
 
