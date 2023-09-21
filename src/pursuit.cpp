@@ -90,6 +90,15 @@ void pursuit::pursuit(
 				std::cout << "Robot too far from path!" << std::endl;
 				break;
 			}
+		} else {
+			// if both points have the same y coordinates, the x coordinates of the robot cannot be
+			// more than lookahead distance to the found point
+			if (fabs(points[current_point].first - current_posX) > lookahead_Distance) {
+				drive_left.brake();
+				drive_right.brake();
+				std::cout << "Robot too far from path!" << std::endl;
+				break;
+			}
 		}
 
 		// BOOKMARK: Check if goal is in a restricted zone
@@ -98,13 +107,28 @@ void pursuit::pursuit(
 			// NOTE: change coordinates to corner of the goal
 			drive_left.brake();
 			drive_right.brake();
-			controller.set_text(1, 1, "Can't go there! Rerouted-");
-			points.insert(points.begin(), current_point, {1_ft, 2_ft});
+			std::cout << "Can't go there! Rerouted-" << std::endl;
+
+			if (lowest_x < points[current_point].first && points[current_point].first < highest_x &&
+			    lowest_y < points[current_point].second &&
+			    points[current_point].second < highest_y) {
+				std::cout << "invalid point" << std::endl;
+				current_point++;
+				continue;
+			}
+
+			if (points[current_point].first > points[current_point - 1].first) {
+				points.insert(points.begin(), current_point, {lowest_x - 5_in, highest_y + 5_in});
+			} else if (points[current_point].first < points[current_point - 1].first) {
+				points.insert(points.begin(), current_point, {highest_x + 5_in, highest_y + 5_in});
+			}
+
 			continue;
 		}
 
 		// BOOKMARK: Goal increment
-		if (fabs(next_objective_x - points[current_point].first) < 0.1_ft) {
+		if (fabs(next_objective_x - points[current_point].first) < 0.1_ft &&
+		    fabs(next_objective_y - points[current_point].second) < 0.1_ft) {
 			current_point++;
 		}
 
