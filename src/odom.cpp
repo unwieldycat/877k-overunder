@@ -32,17 +32,17 @@ odom::local_to_global_coords(inch_t local_x, inch_t local_y, degree_t robot_head
 	inch_t distance_traveled = sqrt(pow<2>(local_x) + pow<2>(local_y));
 
 	if (local_x >= 0_in && local_y > 0_in) {
-		heading_traveled =
-		    degree_t(M_PI / 2) - (robot_heading + degree_t(M_PI / 2) - fabs(atan(local_y / local_x)));
+		heading_traveled = degree_t(M_PI / 2) -
+		                   (robot_heading + degree_t(M_PI / 2) - fabs(atan(local_y / local_x)));
 	} else if (local_x > 0_in && local_y <= 0_in) {
-		heading_traveled =
-		    degree_t(M_PI / 2) - (robot_heading + degree_t(M_PI / 2) + fabs(atan(local_y / local_x)));
+		heading_traveled = degree_t(M_PI / 2) -
+		                   (robot_heading + degree_t(M_PI / 2) + fabs(atan(local_y / local_x)));
 	} else if (local_x <= 0_in && local_y < 0_in) {
-		heading_traveled =
-		    degree_t(M_PI / 2) - (robot_heading + degree_t(3 * M_PI / 2) - fabs(atan(local_y / local_x)));
+		heading_traveled = degree_t(M_PI / 2) -
+		                   (robot_heading + degree_t(3 * M_PI / 2) - fabs(atan(local_y / local_x)));
 	} else if (local_x < 0_in && local_y >= 0_in) {
-		heading_traveled =
-		    degree_t(M_PI / 2) - (robot_heading + degree_t(3 * M_PI / 2) + fabs(atan(local_y / local_x)));
+		heading_traveled = degree_t(M_PI / 2) -
+		                   (robot_heading + degree_t(3 * M_PI / 2) + fabs(atan(local_y / local_x)));
 	}
 
 	while (heading_traveled >= 2_deg * M_PI) {
@@ -71,11 +71,14 @@ std::pair<inch_t, inch_t> odom::global_to_local_coords(
 	if (global_x_dist >= 0_in && global_y_dist > 0_in) { // Quadrant 1
 		angle_to_target = fabs(atan(global_y_dist / global_x_dist)) + robot_heading;
 	} else if (global_x_dist > 0_in && global_y_dist <= 0_in) { // Quadrant 4
-		angle_to_target = degree_t(2 * M_PI) - fabs(atan(global_y_dist / global_x_dist)) + robot_heading;
+		angle_to_target =
+		    degree_t(2 * M_PI) - fabs(atan(global_y_dist / global_x_dist)) + robot_heading;
 	} else if (global_x_dist <= 0_in && global_y_dist < 0_in) { // Quadrant 3
-		angle_to_target = degree_t(M_PI) + fabs(atan(global_y_dist / global_x_dist)) - robot_heading;
+		angle_to_target =
+		    degree_t(M_PI) + fabs(atan(global_y_dist / global_x_dist)) - robot_heading;
 	} else if (global_x_dist < 0_in && global_y_dist >= 0_in) { // Quadrant 2
-		angle_to_target = degree_t(M_PI) - fabs(atan(global_y_dist / global_x_dist)) + robot_heading;
+		angle_to_target =
+		    degree_t(M_PI) - fabs(atan(global_y_dist / global_x_dist)) + robot_heading;
 	}
 
 	inch_t local_x = straight_dist * cos(angle_to_target);
@@ -93,8 +96,9 @@ std::pair<inch_t, inch_t> odom::global_to_local_coords(
 	inch_t local_dist_y;
 
 	while (true) {
-		left_odom_dist = radian_t((odom_left.get_position() / 100.0) / 360.0 *
-		                 (2.75 * M_PI)); // distance traveled by left tracking wheel since last poll
+		left_odom_dist = radian_t(
+		    (odom_left.get_position() / 100.0) / 360.0 * (2.75 * M_PI)
+		); // distance traveled by left tracking wheel since last poll
 		rear_odom_dist = radian_t((odom_rear.get_position() / 100.0) / 360.0 * (2.75 * M_PI));
 
 		imu_heading = degree_t(imu.get_heading());
