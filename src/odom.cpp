@@ -9,8 +9,8 @@ using namespace units::math;
 
 inch_t odom_x = 0_in;
 inch_t odom_y = 0_in;
-radian_t left_odom_dist = 0_rad;
-radian_t rear_odom_dist = 0_rad;
+inch_t left_odom_dist = 0_in;
+inch_t rear_odom_dist = 0_in;
 degree_t imu_heading = 0_deg;
 
 void odom::initialize() {
@@ -96,10 +96,9 @@ std::pair<inch_t, inch_t> odom::global_to_local_coords(
 	inch_t local_dist_y;
 
 	while (true) {
-		left_odom_dist = radian_t(
-		    (odom_left.get_position() / 100.0) / 360.0 * (2.75 * M_PI)
-		); // distance traveled by left tracking wheel since last poll
-		rear_odom_dist = radian_t((odom_rear.get_position() / 100.0) / 360.0 * (2.75 * M_PI));
+		// distance traveled by left tracking wheel since last poll
+		left_odom_dist = inch_t((odom_left.get_position() / 100.0) / 360.0 * (2.75 * M_PI));
+		rear_odom_dist = inch_t((odom_rear.get_position() / 100.0) / 360.0 * (2.75 * M_PI));
 
 		imu_heading = degree_t(imu.get_heading());
 		theta = imu_heading - previous_heading;
@@ -108,8 +107,15 @@ std::pair<inch_t, inch_t> odom::global_to_local_coords(
 		local_dist_y = 0_in;
 
 		if (theta != 0_deg) {
-			local_dist_x = 2 * (rear_odom_dist / theta + REAR_OFFSET) * (sin(theta / 2));
-			local_dist_y = 2 * (left_odom_dist / theta + LEFT_OFFSET) * (sin(theta / 2));
+
+			// FIXME: The math here does not return inches, it does not make sense regardless of
+			// if the units library was installed or not. I don't know what it returns at all but
+			// its not what we think it is or want it to be.
+			/*
+			local_dist_x =
+			    (2 * (rear_odom_dist / (theta + degree_t(REAR_OFFSET))) * sin(theta / 2));
+			local_dist_y =
+			    (2 * (left_odom_dist / (theta + degree_t(LEFT_OFFSET))) * sin(theta / 2));*/
 		} else {
 			local_dist_x = rear_odom_dist;
 			local_dist_y = left_odom_dist;
