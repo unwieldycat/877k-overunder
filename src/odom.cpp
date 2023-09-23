@@ -2,8 +2,11 @@
 #include "devices.hpp"
 #include "units.h"
 
-#define LEFT_OFFSET 0
-#define REAR_OFFSET 0
+// TODO: left odom wheel must be moved to left side of robot
+
+// FIXME: these should be constants but I don't know how to do that with units
+std::pair<inch_t, inch_t> LEFT_OFFSET = {-3.354_in, 4.244_in};
+std::pair<inch_t, inch_t> REAR_OFFSET = {0_in, -5.571_in};
 
 using namespace units::math;
 
@@ -94,6 +97,8 @@ std::pair<inch_t, inch_t> odom::global_to_local_coords(
 	inch_t tracking_y = odom_y;
 	inch_t local_dist_x;
 	inch_t local_dist_y;
+	inch_t x_radius;
+	inch_t y_radius;
 
 	while (true) {
 		// distance traveled by left tracking wheel since last poll
@@ -107,15 +112,10 @@ std::pair<inch_t, inch_t> odom::global_to_local_coords(
 		local_dist_y = 0_in;
 
 		if (theta != 0_deg) {
-
-			// FIXME: The math here does not return inches, it does not make sense regardless of
-			// if the units library was installed or not. I don't know what it returns at all but
-			// its not what we think it is or want it to be.
-			/*
-			local_dist_x =
-			    (2 * (rear_odom_dist / (theta + degree_t(REAR_OFFSET))) * sin(theta / 2));
-			local_dist_y =
-			    (2 * (left_odom_dist / (theta + degree_t(LEFT_OFFSET))) * sin(theta / 2));*/
+			x_radius = inch_t(unit_cast<double>(rear_odom_dist / theta)) + REAR_OFFSET.second;
+			y_radius = inch_t(unit_cast<double>(left_odom_dist / theta)) + LEFT_OFFSET.first;
+			local_dist_x = 2 * x_radius * (sin(theta / 2));
+			local_dist_y = 2 * y_radius * (sin(theta / 2));
 		} else {
 			local_dist_x = rear_odom_dist;
 			local_dist_y = left_odom_dist;
@@ -126,8 +126,9 @@ std::pair<inch_t, inch_t> odom::global_to_local_coords(
 		tracking_x += global.first;
 		tracking_y += global.second;
 
-		std::pair<inch_t, inch_t> offset =
-		    local_to_global_coords(inch_t(LEFT_OFFSET), inch_t(REAR_OFFSET), imu_heading);
+		std::pair<inch_t, inch_t> offset = local_to_global_coords(
+		    inch_t(LEFT_OFFSET.second), inch_t(REAR_OFFSET.first), imu_heading
+		);
 		odom_x = tracking_x + offset.first;
 		odom_y = tracking_y + offset.second;
 
