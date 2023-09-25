@@ -9,6 +9,7 @@
  */
 extern std::vector<std::pair<foot_t, foot_t>> points;
 
+namespace chassis {
 namespace pursuit {
 
 /**
@@ -37,3 +38,4 @@ void pursuit(
 );
 
 } // namespace pursuit
+} // namespace chassis

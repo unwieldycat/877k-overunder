@@ -8,13 +8,13 @@ using namespace units::math;
 
 std::vector<std::pair<foot_t, foot_t>> points = {std::make_pair(0_ft, 0_ft)};
 
-void pursuit::add_point(foot_t x_ft, foot_t y_ft) {
+void chassis::pursuit::add_point(foot_t x_ft, foot_t y_ft) {
 	if (points[points.size() - 1].first != x_ft || points[points.size() - 1].second != y_ft) {
 		points.push_back({x_ft, y_ft});
 	}
 }
 
-void pursuit::pursuit(
+void chassis::pursuit::pursuit(
     foot_t lookahead_Distance, int voltage_constant, foot_t lowest_x, foot_t lowest_y,
     foot_t highest_x, foot_t highest_y
 ) {
