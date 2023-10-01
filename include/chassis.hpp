@@ -1,4 +1,5 @@
 #pragma once
+#include "input.hpp"
 #include "main.h"
 #include "pid.hpp"
 
@@ -19,26 +20,12 @@ void turn_abs(degree_t heading);
  */
 void turn_rel(degree_t degrees);
 
-/**
- * User control mode
- */
-enum class ControlMode { TANK, ARCADE, CURVE };
+// User control functions
 
-/**
- * User control function
- *
- * This function is blocking and should be ran inside a task
- */
-void user_control();
+void curvature_drive(input::analog_inputs_t inputs);
 
-/**
- * Set the user control mode
- */
-void set_mode(ControlMode drive_mode);
+void tank_drive(input::analog_inputs_t inputs);
 
-/**
- * Get the user control mode
- */
-ControlMode get_mode();
+void arcade_drive(input::analog_inputs_t inputs);
 
 } // namespace chassis

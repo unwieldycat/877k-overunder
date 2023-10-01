@@ -19,7 +19,6 @@ void initialize() {
 	});
 
 	pros::Task odom_task(odom::track_position, "Odometry");
-	pros::Task buttons_task(input::watcher, "Button watcher");
 }
 
 void competition_initialize() {}
@@ -28,6 +27,9 @@ void competition_initialize() {}
 
 void autonomous() {}
 
-void opcontrol() { pros::Task user_task(chassis::user_control, "User Chassis Control"); }
+void opcontrol() {
+	pros::Task drive_task(input::driver, "User Chassis Control");
+	pros::Task buttons_task(input::watcher, "Button watcher");
+}
 
 void disabled() {}
