@@ -2,11 +2,8 @@
 #include "devices.hpp"
 #include "units.h"
 
-// TODO: left odom wheel must be moved to left side of robot
-
-// FIXME: these should be constants but I don't know how to do that with units
-std::pair<inch_t, inch_t> LEFT_OFFSET = {-3.354_in, 4.244_in};
-std::pair<inch_t, inch_t> REAR_OFFSET = {0_in, -5.571_in};
+const std::pair<inch_t, inch_t> left_offset = {-3.354_in, 4.244_in};
+const std::pair<inch_t, inch_t> rear_offset = {0_in, -5.571_in};
 
 using namespace units::math;
 
@@ -112,8 +109,8 @@ std::pair<inch_t, inch_t> odom::global_to_local_coords(
 		local_dist_y = 0_in;
 
 		if (theta != 0_deg) {
-			x_radius = inch_t(unit_cast<double>(rear_odom_dist / theta)) + REAR_OFFSET.second;
-			y_radius = inch_t(unit_cast<double>(left_odom_dist / theta)) + LEFT_OFFSET.first;
+			x_radius = inch_t(unit_cast<double>(rear_odom_dist / theta)) + rear_offset.second;
+			y_radius = inch_t(unit_cast<double>(left_odom_dist / theta)) + left_offset.first;
 			local_dist_x = 2 * x_radius * (sin(theta / 2));
 			local_dist_y = 2 * y_radius * (sin(theta / 2));
 		} else {
@@ -127,7 +124,7 @@ std::pair<inch_t, inch_t> odom::global_to_local_coords(
 		tracking_y += global.second;
 
 		std::pair<inch_t, inch_t> offset = local_to_global_coords(
-		    inch_t(LEFT_OFFSET.second), inch_t(REAR_OFFSET.first), imu_heading
+		    inch_t(left_offset.second), inch_t(rear_offset.first), imu_heading
 		);
 		odom_x = tracking_x + offset.first;
 		odom_y = tracking_y + offset.second;
