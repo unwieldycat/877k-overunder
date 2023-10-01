@@ -1,5 +1,7 @@
 #include "main.h"
 #include "chassis.hpp"
+#include "devices.hpp"
+#include "input.hpp"
 #include "odom.hpp"
 #include "pursuit.hpp"
 
@@ -7,7 +9,17 @@
 
 void initialize() {
 	odom::initialize();
+
+	input::set_buttons({
+	    {pros::E_CONTROLLER_DIGITAL_X, member_func(roller_piston.toggle)},
+	    {pros::E_CONTROLLER_DIGITAL_R1, member_func(right_wing.toggle)},
+	    {pros::E_CONTROLLER_DIGITAL_L1, member_func(left_wing.toggle)},
+	    {pros::E_CONTROLLER_DIGITAL_UP, member_func(transmission.retract)},
+	    {pros::E_CONTROLLER_DIGITAL_DOWN, member_func(transmission.extend)},
+	});
+
 	pros::Task odom_task(odom::track_position, "Odometry");
+	pros::Task buttons_task(input::watcher, "Button watcher");
 }
 
 void competition_initialize() {}
