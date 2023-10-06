@@ -14,11 +14,13 @@ int calc_deadzone(int value) {
 
 // ============================ Setter Functions ============================ //
 
-void set_deadzone(int deadzone) { deadzone = deadzone; }
+void input::set_deadzone(int deadzone) { deadzone = deadzone; }
 
-void set_buttons(std::vector<input::button_pair_t> map) { button_map = map; }
+void input::set_buttons(std::vector<input::button_pair_t> map) { button_map = map; }
 
-void set_drive(std::function<void(input::analog_inputs_t)> drive_func) { driver_func = drive_func; }
+void input::set_drive(std::function<void(input::analog_inputs_t)> drive_func) {
+	driver_func = drive_func;
+}
 
 // ============================= Task Functions ============================= //
 
