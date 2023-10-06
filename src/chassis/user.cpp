@@ -3,17 +3,17 @@
 
 // ========================= User Control Functions ========================= //
 
-void tank_drive(input::analog_inputs_t inputs) {
+void chassis::tank_drive(input::analog_inputs_t inputs) {
 	drive_left.move(inputs.left.y);
 	drive_right.move(inputs.right.y);
 }
 
-void arcade_drive(input::analog_inputs_t inputs) {
+void chassis::arcade_drive(input::analog_inputs_t inputs) {
 	drive_left.move(inputs.left.y + inputs.right.x);
 	drive_right.move(inputs.left.y - inputs.right.x);
 }
 
-void curvature_drive(input::analog_inputs_t inputs) {
+void chassis::curvature_drive(input::analog_inputs_t inputs) {
 	double power = inputs.left.y / 127.0;
 	double curvature = inputs.right.x / 127.0;
 
