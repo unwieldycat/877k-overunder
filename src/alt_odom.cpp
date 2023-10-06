@@ -20,7 +20,7 @@ void alt_odom::track_pos() {
 		robot_heading = (degree_t)imu.get_heading();
 		left_dist = -(radian_t((degree_t)(odom_left.get_position() / 100.0))).to<double>() *
 		            ((inch_t)DIAMETRE / 2);
-		rear_dist = (radian_t((degree_t)(odom_rear.get_position() / 100.0))).to<double>() *
+		rear_dist = -(radian_t((degree_t)(odom_rear.get_position() / 100.0))).to<double>() *
 		            ((inch_t)DIAMETRE / 2);
 
 		total_dist = sqrt(pow<2>(left_dist) + pow<2>(rear_dist));

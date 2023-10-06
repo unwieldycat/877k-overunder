@@ -8,6 +8,7 @@
  *
  */
 extern std::vector<std::pair<foot_t, foot_t>> points;
+extern std::vector<std::pair<int, degree_t>> specify_angles;
 
 namespace chassis {
 namespace pursuit {
@@ -18,7 +19,7 @@ namespace pursuit {
  * @param x_ft x coordinate in feet
  * @param y_ft y coordinate in feet
  */
-void add_point(foot_t x_ft, foot_t y_ft);
+void add_point(foot_t x_ft, foot_t y_ft, bool need_angle = false, degree_t = 0.0_deg);
 
 /**
  * @brief Begins moving the robot following all the points stored previous to the running of this

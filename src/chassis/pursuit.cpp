@@ -4,13 +4,20 @@
 #include "pros/motors.h"
 #include "units.h"
 #include <ostream>
+#include <utility>
 using namespace units::math;
 
+std::vector<std::pair<int, degree_t>> specify_angles;
 std::vector<std::pair<foot_t, foot_t>> points = {std::make_pair(0_ft, 0_ft)};
 
-void chassis::pursuit::add_point(foot_t x_ft, foot_t y_ft) {
+void chassis::pursuit::add_point(
+    foot_t x_ft, foot_t y_ft, bool need_angle, degree_t specify_angle
+) {
 	if (points[points.size() - 1].first != x_ft || points[points.size() - 1].second != y_ft) {
 		points.push_back({x_ft, y_ft});
+	}
+	if (need_angle) {
+		specify_angles.push_back({points.size() - 1, specify_angle});
 	}
 }
 
@@ -31,6 +38,31 @@ void chassis::pursuit::pursuit(
 	// Checking if a restriction zone is set
 	if (highest_x - lowest_x != 0_ft && highest_y - lowest_y != 0_ft) {
 		restricted = true;
+	}
+
+	// Checking if there are any points that need a specific angle
+	// Needs calculations for second point and inf slope
+	if (specify_angles.size() == 0) {
+		for (int i = 0; i < specify_angles.size(); i++) {
+			if (specify_angles[i].first > 1 &&
+			    (points[specify_angles[i].first - 1].second -
+			     points[specify_angles[i].first - 2].second) != 0_ft) {
+				double prev_slope = (points[specify_angles[i].first - 1].second -
+				                     points[specify_angles[i].first - 2].second) /
+				                    (points[specify_angles[i].first - 1].first -
+				                     points[specify_angles[i].first - 2].first),
+				       new_slope = sin((radian_t)specify_angles[i].second) /
+				                   cos((radian_t)specify_angles[i].second);
+				foot_t const_prev = prev_slope * points[specify_angles[i].first - 2].first -
+				                    points[specify_angles[i].first - 2].second,
+				       new_const = new_slope * points[specify_angles[i].first].first -
+				                   points[specify_angles[i].first].second;
+				foot_t intersect_x = (new_const - const_prev) / (prev_slope - new_slope),
+				       intersect_y = new_slope * intersect_x;
+				points.insert(points.begin(), specify_angles[i].first, {intersect_x, intersect_y});
+			} else {
+			}
+		}
 	}
 
 	// Loops until all points have been passed
