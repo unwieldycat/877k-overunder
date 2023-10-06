@@ -3,7 +3,7 @@
 #include "devices.hpp"
 
 std::vector<input::button_pair_t> button_map;
-std::function<void(input::analog_inputs_t)> driver_func = chassis::curvature_drive;
+std::function<void(input::analog_inputs_t)> driver_func = chassis::arcade_drive;
 int deadzone = 1;
 
 int calc_deadzone(int value) {
