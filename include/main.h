@@ -40,7 +40,7 @@
 // Workaround because of stupid C++ weirdness:
 // Use this to contain a member function in a lamba function for giving to
 // std::function parameters
-#define member_func(func) []() { func(); }
+#define wrap_func(func) []() { func(); }
 
 using namespace units::literals;
 using namespace units::length;
