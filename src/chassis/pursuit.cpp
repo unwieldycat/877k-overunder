@@ -26,6 +26,8 @@ void chassis::pursuit::pursuit(
     foot_t highest_x, foot_t highest_y
 ) {
 	int current_point = 1;
+	int current_angle_tracker = -1;
+	if (specify_angles.size() > 1) current_angle_tracker++;
 	units::dimensionless::scalar_t slope_par, slope_perp;
 	foot_t closest_point, next_objective_x, next_objective_y, const_par, const_perp;
 	degree_t heading_objective;
@@ -59,16 +61,46 @@ void chassis::pursuit::pursuit(
 				                   points[specify_angles[i].first].second;
 				foot_t intersect_x = (new_const - const_prev) / (prev_slope - new_slope),
 				       intersect_y = new_slope * intersect_x;
-				points.insert(points.begin(), specify_angles[i].first, {intersect_x, intersect_y});
-			} else {
+				points.insert(
+				    points.begin(), specify_angles[i].first + i, {intersect_x, intersect_y}
+				);
+				specify_angles[i].first += i;
+			} else if (specify_angles[i].first == 1 ||
+						points[specify_angles[i].first - 1].second - 
+						points[specify_angles[i].first - 2].second == 0_ft) {
+				double new_slope = sin((radian_t)specify_angles[i].second) /
+				                   cos((radian_t)specify_angles[i].second);
+				foot_t new_const = new_slope * points[specify_angles[i].first].first -
+				                   points[specify_angles[i].first].second,
+				       intersect_x = points[specify_angles[i].first - 1].first,
+				       intersect_y = new_slope * intersect_x + new_const;
+				points.insert(
+				    points.begin(), specify_angles[i].first + i, {intersect_x, intersect_y}
+				);
+				specify_angles[i].first += i;
 			}
 		}
 	}
 
 	// Loops until all points have been passed
 	while (current_point < points.size()) {
-		degree_t current_heading = (degree_t)imu.get_heading();
+		degree_t current_heading = (degree_t)imu.get_heading(), heading_error;
 		foot_t current_posX = odom::get_x(), current_posY = odom::get_y();
+		// BOOKMARK: Make robot actually follow specified angles
+		while (current_angle_tracker > -1 &&
+		       specify_angles[current_angle_tracker].first == current_point - 1 &&
+		       fabs(current_heading - specify_angles[current_angle_tracker].second) > 1_deg) {
+			heading_objective = specify_angles[current_angle_tracker].second;
+			heading_error = heading_objective - current_heading;
+
+			if (heading_error < -180_deg)
+				heading_error += 360_deg;
+			else if (heading_error > 180_deg)
+				heading_error -= 360_deg;
+
+			drive_left.move(voltage_constant * heading_error.to<double>() / 90);
+			drive_right.move(-voltage_constant * heading_error.to<double>() / 90);
+		}
 
 		// BOOKMARK: Begin finding next objective
 		//  Finds closest point when X coordinates of previous and current points are different
@@ -171,7 +203,7 @@ void chassis::pursuit::pursuit(
 			heading_objective += 360_deg;
 		}
 
-		degree_t heading_error = heading_objective - current_heading;
+		heading_error = heading_objective - current_heading;
 
 		if (heading_error < -180_deg)
 			heading_error += 360_deg;
