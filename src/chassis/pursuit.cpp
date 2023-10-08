@@ -27,7 +27,6 @@ void chassis::pursuit::pursuit(
 ) {
 	int current_point = 1;
 	int current_angle_tracker = -1;
-	if (specify_angles.size() > 1) current_angle_tracker++;
 	units::dimensionless::scalar_t slope_par, slope_perp;
 	foot_t closest_point, next_objective_x, next_objective_y, const_par, const_perp;
 	degree_t heading_objective;
@@ -44,7 +43,8 @@ void chassis::pursuit::pursuit(
 
 	// Checking if there are any points that need a specific angle
 	// Needs calculations for second point and inf slope
-	if (specify_angles.size() == 0) {
+	if (specify_angles.size() > 0) {
+		current_angle_tracker = 0;
 		for (int i = 0; i < specify_angles.size(); i++) {
 			if (specify_angles[i].first > 1 &&
 			    (points[specify_angles[i].first - 1].second -
