@@ -3,15 +3,29 @@
 #include "main.h"
 #include "units.h"
 
+namespace chassis {
+namespace pursuit {
+
+class Point {
+  public:
+	int position;
+	foot_t xCoord, yCoord;
+	bool specify_angle;
+	degree_t angle;
+	static int with_angle;
+	Point(foot_t x, foot_t y, int pos) : xCoord(x), yCoord(y), position(pos) {}
+	Point(foot_t x, foot_t y, bool sp_a, degree_t a, int pos)
+	    : xCoord(x), yCoord(y), specify_angle(sp_a), angle(a), position(pos) {}
+	static units::dimensionless::scalar_t calc_par_slope(Point a, Point b);
+	static units::dimensionless::scalar_t calc_perp_slope(Point a, Point b);
+	static foot_t calc_const(Point a, units::dimensionless::scalar_t slope);
+};
+
 /**
  * @brief Create vector of pairs to store points for the path with initial point 0, 0
  *
  */
-extern std::vector<std::pair<foot_t, foot_t>> points;
-extern std::vector<std::pair<int, degree_t>> specify_angles;
-
-namespace chassis {
-namespace pursuit {
+extern std::vector<chassis::pursuit::Point> points;
 
 /**
  * @brief adds a point to the end of the points for the path
