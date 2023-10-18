@@ -13,11 +13,34 @@ class Point {
 	bool specify_angle;
 	degree_t angle;
 	static int with_angle;
+	Point(foot_t x, foot_t y) : xCoord(x), yCoord(y) {}
 	Point(foot_t x, foot_t y, int pos) : xCoord(x), yCoord(y), position(pos) {}
 	Point(foot_t x, foot_t y, bool sp_a, degree_t a, int pos)
 	    : xCoord(x), yCoord(y), specify_angle(sp_a), angle(a), position(pos) {}
+	void push() { position++; };
+	/**
+	 * @brief Finds slope from point a to point b
+	 *
+	 * @param a beginning of line segment
+	 * @param b end of line segment
+	 * @return units::dimensionless::scalar_t
+	 */
 	static units::dimensionless::scalar_t calc_par_slope(Point a, Point b);
+	/**
+	 * @brief Finds slope perpendicular of point a to point b
+	 *
+	 * @param a beginning of line segment
+	 * @param b end of line segment
+	 * @return units::dimensionless::scalar_t
+	 */
 	static units::dimensionless::scalar_t calc_perp_slope(Point a, Point b);
+	/**
+	 * @brief Find constant of an equation in the form y = mx + b
+	 *
+	 * @param a random point on the line
+	 * @param slope slope of line
+	 * @return foot_t
+	 */
 	static foot_t calc_const(Point a, units::dimensionless::scalar_t slope);
 };
 
