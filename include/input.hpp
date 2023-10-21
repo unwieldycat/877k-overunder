@@ -39,6 +39,13 @@ void set_buttons(std::vector<button_pair_t> map);
 void set_deadzone(int deadzone);
 
 /**
+ * @brief Toggle the drive control
+ *
+ * @param state
+ */
+void set_drive_toggle(bool state);
+
+/**
  * @brief Task function to watch for button actions
  */
 [[noreturn]] void watcher();

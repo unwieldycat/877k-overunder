@@ -5,6 +5,7 @@
 std::vector<input::button_pair_t> button_map;
 std::function<void(input::analog_inputs_t)> driver_func = chassis::arcade_drive;
 int deadzone = 1;
+bool enable_drive = true;
 
 int calc_deadzone(int value) {
 	if (abs(value) < deadzone) return 0;
@@ -22,6 +23,8 @@ void input::set_drive(std::function<void(input::analog_inputs_t)> drive_func) {
 	driver_func = drive_func;
 }
 
+void input::set_drive_toggle(bool state) { enable_drive = state; }
+
 // ============================= Task Functions ============================= //
 
 [[noreturn]] void input::watcher() {
@@ -37,6 +40,11 @@ void input::set_drive(std::function<void(input::analog_inputs_t)> drive_func) {
 
 [[noreturn]] void input::driver() {
 	while (true) {
+		if (!enable_drive) {
+			pros::delay(10);
+			continue;
+		};
+
 		input::analog_inputs_t inputs;
 		inputs.left.x = calc_deadzone(controller.get_analog(pros::E_CONTROLLER_ANALOG_LEFT_X));
 		inputs.left.y = calc_deadzone(controller.get_analog(pros::E_CONTROLLER_ANALOG_LEFT_Y));
