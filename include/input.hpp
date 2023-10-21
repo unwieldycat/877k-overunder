@@ -1,6 +1,8 @@
 #pragma once
 #include "main.h"
 
+// TODO: Add button layers (& maybe konami codes)
+
 // ============================== Input Manager ============================== //
 
 namespace input {
