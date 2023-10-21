@@ -6,11 +6,12 @@ std::vector<input::button_pair_t> button_map;
 std::function<void(input::analog_inputs_t)> driver_func = chassis::arcade_drive;
 int deadzone = 1;
 bool enable_drive = true;
+bool reverse_drive = false;
 
-int calc_deadzone(int value) {
+int process_input(int value) {
 	if (abs(value) < deadzone) return 0;
 	int rescaled = ((double)value - deadzone) / (127 - deadzone) * 127;
-	return rescaled;
+	return (reverse_drive) ? -rescaled : rescaled;
 }
 
 // ============================ Setter Functions ============================ //
@@ -24,6 +25,8 @@ void input::set_drive(std::function<void(input::analog_inputs_t)> drive_func) {
 }
 
 void input::set_drive_toggle(bool state) { enable_drive = state; }
+
+void input::set_drive_reverse(bool state) { reverse_drive = state; }
 
 // ============================= Task Functions ============================= //
 
@@ -46,10 +49,10 @@ void input::set_drive_toggle(bool state) { enable_drive = state; }
 		};
 
 		input::analog_inputs_t inputs;
-		inputs.left.x = calc_deadzone(controller.get_analog(pros::E_CONTROLLER_ANALOG_LEFT_X));
-		inputs.left.y = calc_deadzone(controller.get_analog(pros::E_CONTROLLER_ANALOG_LEFT_Y));
-		inputs.right.x = calc_deadzone(controller.get_analog(pros::E_CONTROLLER_ANALOG_RIGHT_X));
-		inputs.right.y = calc_deadzone(controller.get_analog(pros::E_CONTROLLER_ANALOG_RIGHT_Y));
+		inputs.left.x = process_input(controller.get_analog(pros::E_CONTROLLER_ANALOG_LEFT_X));
+		inputs.left.y = process_input(controller.get_analog(pros::E_CONTROLLER_ANALOG_LEFT_Y));
+		inputs.right.x = process_input(controller.get_analog(pros::E_CONTROLLER_ANALOG_RIGHT_X));
+		inputs.right.y = process_input(controller.get_analog(pros::E_CONTROLLER_ANALOG_RIGHT_Y));
 
 		driver_func(inputs);
 		pros::delay(10);
