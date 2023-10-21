@@ -46,6 +46,13 @@ void set_deadzone(int deadzone);
 void set_drive_toggle(bool state);
 
 /**
+ * @brief Set drive control direction
+ *
+ * @param state True if reversed
+ */
+void set_drive_reverse(bool state);
+
+/**
  * @brief Task function to watch for button actions
  */
 [[noreturn]] void watcher();
