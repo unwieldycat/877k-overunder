@@ -43,12 +43,12 @@ void chassis::pursuit::pursuit(
 		if (points[i].specify_angle) {
 			if (points[i].position > 1 && points[i - 1].yCoord - points[i - 2].yCoord != 0_ft &&
 			    points[i - 1].xCoord - points[i - 2].xCoord != 0_ft) {
-				// BOOKMARK: Begin writing hereeeee
 				double prev_slope =
 				           chassis::pursuit::Point::calc_par_slope(points[i - 1], points[i - 2]),
 				       new_slope = sin((radian_t)points[i].angle) / cos((radian_t)points[i].angle);
 				foot_t const_prev = chassis::pursuit::Point::calc_const(points[i - 2], prev_slope),
 				       new_const = chassis::pursuit::Point::calc_const(points[i], new_slope);
+				if (prev_slope == new_slope) continue;
 				foot_t intersect_x = (new_const - const_prev) / (prev_slope - new_slope),
 				       intersect_y = new_slope * intersect_x;
 				points.insert(points.begin(), i, chassis::pursuit::Point(intersect_x, intersect_y));
@@ -56,9 +56,10 @@ void chassis::pursuit::pursuit(
 					points[t].push();
 				}
 			} else if (points[i].position == 1 || points[i - 1].xCoord - points[i - 2].xCoord == 0_ft) {
+				if (cos((radian_t)points[i].angle) == 0.0) continue;
 				double new_slope = sin((radian_t)points[i].angle) / cos((radian_t)points[i].angle);
-				foot_t new_const = chassis::pursuit::Point::calc_const(points[i], new_slope),
-				       intersect_x = points[i - 1].xCoord,
+				foot_t new_const = chassis::pursuit::Point::calc_const(points[i], new_slope);
+				foot_t intersect_x = points[i - 1].xCoord,
 				       intersect_y = new_slope * intersect_x + new_const;
 				points.insert(points.begin(), i, chassis::pursuit::Point(intersect_x, intersect_y));
 				for (int t = i; t < points.size(); t++) {
@@ -74,7 +75,7 @@ void chassis::pursuit::pursuit(
 		foot_t current_posX = odom::get_x(), current_posY = odom::get_y();
 		// BOOKMARK: Make robot actually follow specified angles
 		while (points[current_point].specify_angle &&
-		       fabs(current_heading - points[current_point].angle) > 3_deg) {
+		       fabs(current_heading - points[current_point].angle) > 2_deg) {
 			heading_objective = points[current_point].angle;
 			heading_error = heading_objective - current_heading;
 			if (heading_error < -180_deg)
