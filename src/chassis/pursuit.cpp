@@ -7,7 +7,7 @@
 #include <utility>
 using namespace units::math;
 
-std::vector<chassis::pursuit::Point> chassis::pursuit::points = {Point(0_ft, 0_ft, 1)};
+std::vector<chassis::pursuit::Point> chassis::pursuit::points = {Point(0_ft, 0_ft, 0)};
 
 void chassis::pursuit::add_point(
     foot_t x_ft, foot_t y_ft, bool need_angle, degree_t specify_angle
@@ -237,6 +237,7 @@ void chassis::pursuit::pursuit(
 	drive_left.brake();
 	drive_right.brake();
 	points.clear();
+	points.push_back(Point(0_ft, 0_ft, 0));
 }
 
 static units::dimensionless::scalar_t
