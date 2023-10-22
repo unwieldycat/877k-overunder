@@ -11,7 +11,6 @@ class Point {
 	foot_t xCoord, yCoord;
 	bool specify_angle;
 	degree_t angle;
-	static int with_angle;
 	Point(foot_t x, foot_t y) : xCoord(x), yCoord(y) {}
 	Point(foot_t x, foot_t y, bool sp_a, degree_t a)
 	    : xCoord(x), yCoord(y), specify_angle(sp_a), angle(a) {}

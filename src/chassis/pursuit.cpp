@@ -14,7 +14,6 @@ void chassis::pursuit::add_point(
 ) {
 	if (points[points.size() - 1].xCoord != x_ft || points[points.size() - 1].yCoord != y_ft) {
 		points.push_back(Point(x_ft, y_ft, need_angle, specify_angle));
-		if (need_angle) Point::with_angle++;
 	}
 }
 
@@ -23,20 +22,13 @@ void chassis::pursuit::pursuit(
     foot_t highest_x, foot_t highest_y
 ) {
 	int current_point = 1;
-	int current_angle_tracker = -1;
 	units::dimensionless::scalar_t slope_par, slope_perp;
 	foot_t closest_point, next_objective_x, next_objective_y, const_par, const_perp;
 	degree_t heading_objective;
-	bool restricted = false;
 	double left_speed, right_speed;
 
 	drive_left.set_brake_mode(pros::E_MOTOR_BRAKE_HOLD);
 	drive_right.set_brake_mode(pros::E_MOTOR_BRAKE_HOLD);
-
-	// Checking if a restriction zone is set
-	if (highest_x - lowest_x != 0_ft && highest_y - lowest_y != 0_ft) {
-		restricted = true;
-	}
 
 	// Checking if there are any points that need a specific angle
 	for (int i = 1; i < points.size(); i++) {
@@ -56,7 +48,7 @@ void chassis::pursuit::pursuit(
 				       new_const = chassis::pursuit::Point::calc_const(points[i], new_slope);
 				if (prev_slope == new_slope) continue;
 				foot_t intersect_x = (new_const - const_prev) / (prev_slope - new_slope),
-				       intersect_y = new_slope * intersect_x;
+				       intersect_y = new_slope * intersect_x + new_const;
 				points.insert(points.begin(), i, chassis::pursuit::Point(intersect_x, intersect_y));
 			} else if (i == 1 || points[i - 1].xCoord - points[i - 2].xCoord == 0_ft) {
 				if (cos((radian_t)points[i].angle) == 0.0) continue;
@@ -154,8 +146,8 @@ void chassis::pursuit::pursuit(
 		}
 
 		// BOOKMARK: Check if goal is in a restricted zone
-		if (restricted && ((lowest_x < next_objective_x && next_objective_x < highest_x) ||
-		                   (lowest_y < next_objective_y && next_objective_y < highest_y))) {
+		if ((lowest_x < next_objective_x && next_objective_x < highest_x) ||
+		    (lowest_y < next_objective_y && next_objective_y < highest_y)) {
 			// NOTE: change coordinates to corner of the goal
 			drive_left.brake();
 			drive_right.brake();
