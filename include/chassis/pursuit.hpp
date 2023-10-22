@@ -8,16 +8,13 @@ namespace pursuit {
 
 class Point {
   public:
-	int position;
 	foot_t xCoord, yCoord;
 	bool specify_angle;
 	degree_t angle;
 	static int with_angle;
 	Point(foot_t x, foot_t y) : xCoord(x), yCoord(y) {}
-	Point(foot_t x, foot_t y, int pos) : xCoord(x), yCoord(y), position(pos) {}
-	Point(foot_t x, foot_t y, bool sp_a, degree_t a, int pos)
-	    : xCoord(x), yCoord(y), specify_angle(sp_a), angle(a), position(pos) {}
-	void push() { position++; };
+	Point(foot_t x, foot_t y, bool sp_a, degree_t a)
+	    : xCoord(x), yCoord(y), specify_angle(sp_a), angle(a) {}
 	/**
 	 * @brief Finds slope from point a to point b
 	 *
