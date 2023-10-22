@@ -7,13 +7,13 @@
 #include <utility>
 using namespace units::math;
 
-std::vector<chassis::pursuit::Point> chassis::pursuit::points = {Point(0_ft, 0_ft, 0)};
+std::vector<chassis::pursuit::Point> chassis::pursuit::points = {Point(0_ft, 0_ft)};
 
 void chassis::pursuit::add_point(
     foot_t x_ft, foot_t y_ft, bool need_angle, degree_t specify_angle
 ) {
 	if (points[points.size() - 1].xCoord != x_ft || points[points.size() - 1].yCoord != y_ft) {
-		points.push_back(Point(x_ft, y_ft, need_angle, specify_angle, points.size() + 1));
+		points.push_back(Point(x_ft, y_ft, need_angle, specify_angle));
 		if (need_angle) Point::with_angle++;
 	}
 }
@@ -39,9 +39,15 @@ void chassis::pursuit::pursuit(
 	}
 
 	// Checking if there are any points that need a specific angle
-	for (int i = 0; i < points.size(); i++) {
+	for (int i = 1; i < points.size(); i++) {
+		// Removes points within restricted area
+		if (lowest_x < points[current_point].xCoord && points[current_point].xCoord < highest_x &&
+		    lowest_y < points[current_point].yCoord && points[current_point].yCoord < highest_y) {
+			std::cout << "invalid point" << std::endl;
+			points.erase(points.begin() + i);
+		}
 		if (points[i].specify_angle) {
-			if (points[i].position > 1 && points[i - 1].yCoord - points[i - 2].yCoord != 0_ft &&
+			if (i > 1 && points[i - 1].yCoord - points[i - 2].yCoord != 0_ft &&
 			    points[i - 1].xCoord - points[i - 2].xCoord != 0_ft) {
 				double prev_slope =
 				           chassis::pursuit::Point::calc_par_slope(points[i - 1], points[i - 2]),
@@ -52,19 +58,13 @@ void chassis::pursuit::pursuit(
 				foot_t intersect_x = (new_const - const_prev) / (prev_slope - new_slope),
 				       intersect_y = new_slope * intersect_x;
 				points.insert(points.begin(), i, chassis::pursuit::Point(intersect_x, intersect_y));
-				for (int t = i; t < points.size(); t++) {
-					points[t].push();
-				}
-			} else if (points[i].position == 1 || points[i - 1].xCoord - points[i - 2].xCoord == 0_ft) {
+			} else if (i == 1 || points[i - 1].xCoord - points[i - 2].xCoord == 0_ft) {
 				if (cos((radian_t)points[i].angle) == 0.0) continue;
 				double new_slope = sin((radian_t)points[i].angle) / cos((radian_t)points[i].angle);
 				foot_t new_const = chassis::pursuit::Point::calc_const(points[i], new_slope);
 				foot_t intersect_x = points[i - 1].xCoord,
 				       intersect_y = new_slope * intersect_x + new_const;
 				points.insert(points.begin(), i, chassis::pursuit::Point(intersect_x, intersect_y));
-				for (int t = i; t < points.size(); t++) {
-					points[t].push();
-				}
 			}
 		}
 	}
@@ -161,24 +161,13 @@ void chassis::pursuit::pursuit(
 			drive_right.brake();
 			std::cout << "Can't go there! Rerouted-" << std::endl;
 
-			if (lowest_x < points[current_point].xCoord &&
-			    points[current_point].xCoord < highest_x &&
-			    lowest_y < points[current_point].yCoord &&
-			    points[current_point].yCoord < highest_y) {
-				std::cout << "invalid point" << std::endl;
-				current_point++;
-				continue;
-			}
-
 			if (points[current_point].xCoord > points[current_point - 1].xCoord) {
 				points.insert(
-				    points.begin(), current_point,
-				    Point(lowest_x - 5_in, highest_y + 5_in, current_point)
+				    points.begin(), current_point, Point(lowest_x - 5_in, highest_y + 5_in)
 				);
 			} else if (points[current_point].xCoord < points[current_point - 1].xCoord) {
 				points.insert(
-				    points.begin(), current_point,
-				    Point(highest_x + 5_in, highest_y + 5_in, current_point)
+				    points.begin(), current_point, Point(highest_x + 5_in, highest_y + 5_in)
 				);
 			}
 
@@ -237,7 +226,7 @@ void chassis::pursuit::pursuit(
 	drive_left.brake();
 	drive_right.brake();
 	points.clear();
-	points.push_back(Point(0_ft, 0_ft, 0));
+	points.push_back(Point(0_ft, 0_ft));
 }
 
 static units::dimensionless::scalar_t
