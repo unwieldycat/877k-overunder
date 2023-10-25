@@ -55,6 +55,13 @@ void set_drive_toggle(bool state);
 void set_drive_reverse(bool state);
 
 /**
+ * @brief Get drive control direction
+ *
+ * @return bool
+ */
+bool get_drive_reverse();
+
+/**
  * @brief Task function to watch for button actions
  */
 [[noreturn]] void watcher();

@@ -28,6 +28,8 @@ void input::set_drive_toggle(bool state) { enable_drive = state; }
 
 void input::set_drive_reverse(bool state) { reverse_drive = state; }
 
+bool input::get_drive_reverse() { return reverse_drive; }
+
 // ============================= Task Functions ============================= //
 
 [[noreturn]] void input::watcher() {
