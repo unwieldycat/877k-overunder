@@ -10,15 +10,14 @@
 void initialize() {
 	odom::initialize();
 
-	// TODO: Add button to reverse robot controls and turn it around
-
-	input::set_buttons({
-	    {pros::E_CONTROLLER_DIGITAL_X, wrap_func(roller_piston.toggle)},
-	    {pros::E_CONTROLLER_DIGITAL_R1, wrap_func(right_wing.toggle)},
-	    {pros::E_CONTROLLER_DIGITAL_L1, wrap_func(left_wing.toggle)},
-	    {pros::E_CONTROLLER_DIGITAL_UP, wrap_func(transmission.retract)},
-	    {pros::E_CONTROLLER_DIGITAL_DOWN, wrap_func(transmission.extend)},
-	});
+	input::set_buttons(
+	    {{pros::E_CONTROLLER_DIGITAL_X, wrap_func(roller_piston.toggle)},
+	     {pros::E_CONTROLLER_DIGITAL_R1, wrap_func(right_wing.toggle)},
+	     {pros::E_CONTROLLER_DIGITAL_L1, wrap_func(left_wing.toggle)},
+	     {pros::E_CONTROLLER_DIGITAL_UP, wrap_func(transmission.retract)},
+	     {pros::E_CONTROLLER_DIGITAL_DOWN, wrap_func(transmission.extend)},
+	     {pros::E_CONTROLLER_DIGITAL_UP, reverse}}
+	);
 
 	pros::Task odom_task(odom::track_position, "Odometry");
 }
