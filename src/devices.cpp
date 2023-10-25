@@ -21,3 +21,8 @@ pros::adi::Pneumatics roller_piston('A', true);
 pros::adi::Pneumatics left_wing('B', false);
 pros::adi::Pneumatics right_wing('C', false);
 pros::adi::Pneumatics transmission('D', false);
+
+// Addressable LEDs
+// (Requires ADI expander on port 10)
+pros::adi::Led strip_left({10, 'A'}, 24);
+pros::adi::Led strip_right({10, 'B'}, 24);
