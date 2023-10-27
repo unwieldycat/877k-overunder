@@ -1,11 +1,9 @@
 #include "main.h"
 #include "autons.hpp"
-#include "chassis.hpp"
 #include "devices.hpp"
 #include "input.hpp"
 #include "macros.hpp"
 #include "odom.hpp"
-#include "pursuit.hpp"
 
 rd::SelectorView selector;
 rd::ImageView logo("Logo", "/usd/logo.bin");
