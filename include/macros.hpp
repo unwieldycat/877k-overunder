@@ -8,4 +8,9 @@ namespace macros {
  */
 void reverse();
 
+/**
+ * @brief Release catapult
+ */
+void catapult();
+
 } // namespace macros

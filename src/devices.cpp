@@ -16,6 +16,9 @@ pros::Rotation odom_left(14);
 pros::Rotation odom_rear(12);
 pros::Imu imu(13);
 
+// ADI inputs
+pros::adi::DigitalIn cata_switch('D');
+
 // Pneumatics
 pros::adi::Pneumatics roller_piston('A', true);
 pros::adi::Pneumatics left_wing('B', false);
