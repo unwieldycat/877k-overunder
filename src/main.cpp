@@ -1,10 +1,14 @@
 #include "main.h"
+#include "autons.hpp"
 #include "chassis.hpp"
 #include "devices.hpp"
 #include "input.hpp"
 #include "macros.hpp"
 #include "odom.hpp"
 #include "pursuit.hpp"
+
+rd::SelectorView selector;
+rd::ImageView logo("Logo", "/usd/logo.bin");
 
 // ========================== Initialize Functions ========================== //
 
@@ -20,16 +24,25 @@ void initialize() {
 	     {pros::E_CONTROLLER_DIGITAL_UP, macros::reverse}}
 	);
 
+	rd::initialize();
+	rd::register_views({&selector, &logo});
+
+	selector.add_autons({
+	    {"Park (left)", park_left},
+	    {"Park (right)", park_right},
+	});
+
 	pros::Task odom_task(odom::track_position, "Odometry");
 }
 
-void competition_initialize() {}
+void competition_initialize() { rd::set_view(&selector); }
 
 // ============================ Match Functions ============================ //
 
-void autonomous() {}
+void autonomous() { rd::set_view(&logo); }
 
 void opcontrol() {
+	rd::set_view(&logo);
 	pros::Task drive_task(input::driver, "User Chassis Control");
 	pros::Task buttons_task(input::watcher, "Button watcher");
 }
