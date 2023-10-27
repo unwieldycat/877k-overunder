@@ -1,5 +1,5 @@
 #include "input.hpp"
-#include "chassis.hpp"
+#include "chassis/user.hpp"
 #include "devices.hpp"
 
 std::vector<input::button_pair_t> button_map;

@@ -20,12 +20,4 @@ void turn_abs(degree_t heading);
  */
 void turn_rel(degree_t degrees);
 
-// User control functions
-
-void curvature_drive(input::analog_inputs_t inputs);
-
-void tank_drive(input::analog_inputs_t inputs);
-
-void arcade_drive(input::analog_inputs_t inputs);
-
 } // namespace chassis
