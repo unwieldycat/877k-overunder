@@ -2,6 +2,7 @@
 #include "chassis.hpp"
 #include "devices.hpp"
 #include "input.hpp"
+#include "macros.hpp"
 #include "odom.hpp"
 #include "pursuit.hpp"
 
@@ -16,7 +17,7 @@ void initialize() {
 	     {pros::E_CONTROLLER_DIGITAL_L1, wrap_func(left_wing.toggle)},
 	     {pros::E_CONTROLLER_DIGITAL_UP, wrap_func(transmission.retract)},
 	     {pros::E_CONTROLLER_DIGITAL_DOWN, wrap_func(transmission.extend)},
-	     {pros::E_CONTROLLER_DIGITAL_UP, reverse}}
+	     {pros::E_CONTROLLER_DIGITAL_UP, macros::reverse}}
 	);
 
 	pros::Task odom_task(odom::track_position, "Odometry");
