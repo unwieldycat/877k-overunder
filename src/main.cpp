@@ -29,6 +29,8 @@ void initialize() {
 	selector.add_autons({
 	    {"Park (left)", park_left},
 	    {"Park (right)", park_right},
+	    {"Field Triball Push", push_field},
+	    {"Preload Triball Push", push_preload},
 	});
 
 	pros::Task odom_task(odom::track_position, "Odometry");
