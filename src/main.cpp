@@ -26,12 +26,13 @@ void initialize() {
 	rd::initialize();
 	rd::register_views({&selector, &logo});
 
-	selector.add_autons({
-	    {"Park (left)", park_left},
-	    {"Park (right)", park_right},
-	    {"Field Triball Push", push_field},
-	    {"Preload Triball Push", push_preload},
-	});
+	selector.add_autons(
+	    {{"Park (left)", park_left},
+	     {"Park (right)", park_right},
+	     {"Field Triball Push", push_field},
+	     {"Preload Triball Push", push_preload},
+	     {"Skills", skills}}
+	);
 
 	pros::Task odom_task(odom::track_position, "Odometry");
 }
