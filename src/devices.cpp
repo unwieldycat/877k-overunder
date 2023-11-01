@@ -16,8 +16,9 @@ pros::Rotation odom_left(14);
 pros::Rotation odom_rear(12);
 pros::Imu imu(13);
 
-// ADI inputs
+// Catapult
 pros::adi::DigitalIn cata_switch('D');
+pros::Optical cata_optical(15);
 
 // Pneumatics
 pros::adi::Pneumatics roller_piston('A', true);
