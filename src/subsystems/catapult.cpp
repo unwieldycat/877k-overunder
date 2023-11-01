@@ -9,6 +9,8 @@ void cata::prime() {
 }
 
 void cata::release() {
+	if (!cata_switch.get_value()) return; // Make sure cata is primed
+
 	catapult.move(16);
 	while (cata_switch.get_value())
 		pros::delay(50);
