@@ -9,7 +9,7 @@ namespace pursuit {
 class Point {
   public:
 	foot_t xCoord, yCoord;
-	bool specify_angle;
+	bool specify_angle, left, right;
 	degree_t angle;
 	Point(foot_t x, foot_t y) : xCoord(x), yCoord(y) {}
 	Point(foot_t x, foot_t y, bool sp_a, degree_t a)
@@ -70,6 +70,13 @@ void pursuit(
     foot_t lookahead_distance, int voltage_constant, foot_t lowest_x = 0_ft, foot_t lowest_y = 0_ft,
     foot_t highest_x = 0_ft, foot_t highest_y = 0_ft
 );
+
+/**
+ * @brief Toggles the wings at a certain point or in a certain area
+ *
+ * @param side Side to change (L, R, or B)
+ */
+void wing(char side);
 
 } // namespace pursuit
 } // namespace chassis
