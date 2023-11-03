@@ -17,6 +17,18 @@ void chassis::pursuit::add_point(
 	}
 }
 
+void chassis::pursuit::wing(char side) {
+	side = std::tolower(side);
+	if (side == 'b') {
+		points[points.size() - 1].left = true;
+		points[points.size() - 1].right = true;
+	} else if (side == 'l') {
+		points[points.size() - 1].left = true;
+	} else if (side == 'r') {
+		points[points.size() - 1].right = true;
+	}
+}
+
 void chassis::pursuit::pursuit(
     foot_t lookahead_Distance, int voltage_constant, foot_t lowest_x, foot_t lowest_y,
     foot_t highest_x, foot_t highest_y
@@ -65,6 +77,7 @@ void chassis::pursuit::pursuit(
 	while (current_point < points.size()) {
 		degree_t current_heading = (degree_t)imu.get_heading(), heading_error;
 		foot_t current_posX = odom::get_x(), current_posY = odom::get_y();
+
 		// BOOKMARK: Make robot actually follow specified angles
 		while (points[current_point].specify_angle &&
 		       fabs(current_heading - points[current_point].angle) > 2_deg) {
@@ -170,6 +183,8 @@ void chassis::pursuit::pursuit(
 		if (fabs(next_objective_x - points[current_point].xCoord) < 0.1_ft &&
 		    fabs(next_objective_y - points[current_point].yCoord) < 0.1_ft) {
 			current_point++;
+			if (points[current_point].left) left_wing.toggle();
+			if (points[current_point].right) right_wing.toggle();
 		}
 
 		// BOOKMARK: Heading calculations
