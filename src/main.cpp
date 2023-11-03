@@ -13,6 +13,8 @@ rd::ImageView logo("Logo", "/usd/logo.bin");
 void initialize() {
 	rd::initialize();
 	odom::initialize();
+	strip_left.set_all(0xff6600);
+	strip_right.set_all(0xff6600);
 
 	// Configure GUI
 	rd::register_views({&selector, &logo});
