@@ -13,7 +13,7 @@ void macros::reverse() {
 }
 
 void macros::catapult() {
-	if (!cata_switch.get_value()) cata::prime();
+	if (!cata::is_primed()) cata::prime();
 	cata::release();
 	cata::prime();
 }

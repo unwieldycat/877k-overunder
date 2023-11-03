@@ -1,7 +1,5 @@
 #pragma once
 #include "main.h"
-#include "pros/adi.hpp"
-#include "pros/optical.hpp"
 
 // ========================== Device Declarations ========================== //
 
@@ -15,7 +13,7 @@ extern pros::Rotation odom_left;
 extern pros::Rotation odom_rear;
 extern pros::Imu imu;
 
-extern pros::adi::DigitalIn cata_switch;
+extern pros::Rotation cata_rot;
 extern pros::Optical cata_optical;
 
 extern pros::adi::Pneumatics roller_piston;

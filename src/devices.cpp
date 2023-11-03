@@ -1,6 +1,4 @@
 #include "devices.hpp"
-#include "pros/adi.h"
-#include "pros/adi.hpp"
 
 // =========================== Device Definitions =========================== //
 
@@ -17,7 +15,7 @@ pros::Rotation odom_rear(12);
 pros::Imu imu(13);
 
 // Catapult
-pros::adi::DigitalIn cata_switch('H');
+pros::Rotation cata_rot(16);
 pros::Optical cata_optical(15);
 
 // Pneumatics
