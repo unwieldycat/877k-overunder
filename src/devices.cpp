@@ -17,7 +17,7 @@ pros::Rotation odom_rear(12);
 pros::Imu imu(13);
 
 // Catapult
-pros::adi::DigitalIn cata_switch('D');
+pros::adi::DigitalIn cata_switch('H');
 pros::Optical cata_optical(15);
 
 // Pneumatics
@@ -25,6 +25,7 @@ pros::adi::Pneumatics roller_piston('A', true);
 pros::adi::Pneumatics left_wing('B', false);
 pros::adi::Pneumatics right_wing('C', false);
 pros::adi::Pneumatics transmission('D', false);
+pros::adi::Pneumatics odom_pistons('E', false);
 
 // Addressable LEDs
 // (Requires ADI expander on port 10)
