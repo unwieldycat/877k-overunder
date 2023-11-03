@@ -41,7 +41,15 @@ void competition_initialize() { rd::set_view(&selector); }
 
 // ============================ Match Functions ============================ //
 
-void autonomous() { rd::set_view(&logo); }
+void autonomous() {
+	rd::set_view(&logo);
+
+	odom_pistons.extend();
+	pros::delay(1000);
+	odom_pistons.retract();
+
+	selector.do_auton();
+}
 
 void opcontrol() {
 	rd::set_view(&logo);
