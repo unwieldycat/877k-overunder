@@ -5,7 +5,7 @@
 pros::Controller controller(pros::E_CONTROLLER_MASTER);
 
 // Motors
-pros::MotorGroup drive_left({19, -20});
+pros::MotorGroup drive_left({-19, 20});
 pros::MotorGroup drive_right({-2, 3});
 pros::MotorGroup catapult({6, -7});
 
@@ -22,7 +22,7 @@ pros::Optical cata_optical(15);
 pros::adi::Pneumatics roller_piston('A', true);
 pros::adi::Pneumatics left_wing('B', false);
 pros::adi::Pneumatics right_wing('C', false);
-pros::adi::Pneumatics transmission('D', false);
+pros::adi::Pneumatics transmission('D', true);
 pros::adi::Pneumatics odom_pistons('E', false);
 
 // Addressable LEDs

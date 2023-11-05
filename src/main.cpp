@@ -15,6 +15,7 @@ void initialize() {
 	odom::initialize();
 	strip_left.set_all(0xff6600);
 	strip_right.set_all(0xff6600);
+	cata_rot.reset_position();
 
 	// Configure GUI
 	rd::register_views({&selector, &logo});
