@@ -7,12 +7,12 @@
 #include <utility>
 using namespace units::math;
 
-std::vector<chassis::pursuit::Point> chassis::pursuit::points = {Point(0_ft, 0_ft)};
+std::vector<Point> Points = {Point(0_ft, 0_ft)};
 
 void chassis::pursuit::add_point(
     foot_t x_ft, foot_t y_ft, bool need_angle, degree_t specify_angle
 ) {
-	if (points[points.size() - 1].xCoord != x_ft || points[points.size() - 1].yCoord != y_ft) {
+	if (points[points.size() - 1].x != x_ft || points[points.size() - 1].y != y_ft) {
 		points.push_back(Point(x_ft, y_ft, need_angle, specify_angle));
 	}
 }
@@ -45,30 +45,29 @@ void chassis::pursuit::pursuit(
 	// Checking if there are any points that need a specific angle
 	for (int i = 1; i < points.size(); i++) {
 		// Removes points within restricted area
-		if (lowest_x < points[current_point].xCoord && points[current_point].xCoord < highest_x &&
-		    lowest_y < points[current_point].yCoord && points[current_point].yCoord < highest_y) {
+		if (lowest_x < points[current_point].x && points[current_point].x < highest_x &&
+		    lowest_y < points[current_point].y && points[current_point].y < highest_y) {
 			std::cout << "invalid point" << std::endl;
 			points.erase(points.begin() + i);
 		}
 		if (points[i].specify_angle) {
-			if (i > 1 && points[i - 1].yCoord - points[i - 2].yCoord != 0_ft &&
-			    points[i - 1].xCoord - points[i - 2].xCoord != 0_ft) {
-				double prev_slope =
-				           chassis::pursuit::Point::calc_par_slope(points[i - 1], points[i - 2]),
+			if (i > 1 && points[i - 1].y - points[i - 2].y != 0_ft &&
+			    points[i - 1].x - points[i - 2].x != 0_ft) {
+				double prev_slope = Point::calc_par_slope(points[i - 1], points[i - 2]),
 				       new_slope = sin((radian_t)points[i].angle) / cos((radian_t)points[i].angle);
-				foot_t const_prev = chassis::pursuit::Point::calc_const(points[i - 2], prev_slope),
-				       new_const = chassis::pursuit::Point::calc_const(points[i], new_slope);
+				foot_t const_prev = Point::calc_const(points[i - 2], prev_slope),
+				       new_const = Point::calc_const(points[i], new_slope);
 				if (prev_slope == new_slope) continue;
 				foot_t intersect_x = (new_const - const_prev) / (prev_slope - new_slope),
 				       intersect_y = new_slope * intersect_x + new_const;
-				points.insert(points.begin(), i, chassis::pursuit::Point(intersect_x, intersect_y));
-			} else if (i == 1 || points[i - 1].xCoord - points[i - 2].xCoord == 0_ft) {
+				points.insert(points.begin(), i, Point(intersect_x, intersect_y));
+			} else if (i == 1 || points[i - 1].x - points[i - 2].x == 0_ft) {
 				if (cos((radian_t)points[i].angle) == 0.0) continue;
 				double new_slope = sin((radian_t)points[i].angle) / cos((radian_t)points[i].angle);
-				foot_t new_const = chassis::pursuit::Point::calc_const(points[i], new_slope);
-				foot_t intersect_x = points[i - 1].xCoord,
+				foot_t new_const = Point::calc_const(points[i], new_slope);
+				foot_t intersect_x = points[i - 1].x,
 				       intersect_y = new_slope * intersect_x + new_const;
-				points.insert(points.begin(), i, chassis::pursuit::Point(intersect_x, intersect_y));
+				points.insert(points.begin(), i, Point(intersect_x, intersect_y));
 			}
 		}
 	}
@@ -94,15 +93,12 @@ void chassis::pursuit::pursuit(
 
 		// BOOKMARK: Begin finding next objective
 		//  Finds closest point when X coordinates of previous and current points are different
-		if (points[current_point - 1].xCoord != points[current_point].xCoord) {
-			slope_par = chassis::pursuit::Point::calc_par_slope(
-			    points[current_point - 1], points[current_point]
-			);
-			const_par = chassis::pursuit::Point::calc_const(points[current_point], slope_par);
+		if (points[current_point - 1].x != points[current_point].x) {
+			slope_par = Point::calc_par_slope(points[current_point - 1], points[current_point]);
+			const_par = Point::calc_const(points[current_point], slope_par);
 			closest_point = current_posX;
 
-			int sign =
-			    (points[current_point].xCoord - points[current_point - 1].xCoord) > 0_ft ? 1 : -1;
+			int sign = (points[current_point].x - points[current_point - 1].x) > 0_ft ? 1 : -1;
 			next_objective_x =
 			    (-(2 * (slope_par * (const_par - current_posY) - current_posX)) +
 			     sign * sqrt(
@@ -117,9 +113,8 @@ void chassis::pursuit::pursuit(
 
 		} else {
 			// X coordinates of previous and current point are the same
-			int sign =
-			    (points[current_point].yCoord - points[current_point - 1].yCoord) > 0_ft ? 1 : -1;
-			next_objective_x = points[current_point].xCoord;
+			int sign = (points[current_point].y - points[current_point - 1].y) > 0_ft ? 1 : -1;
+			next_objective_x = points[current_point].x;
 			next_objective_y =
 			    sign * sqrt(pow<2>(lookahead_Distance) - pow<2>(next_objective_x - current_posX)) +
 			    current_posY;
@@ -128,12 +123,9 @@ void chassis::pursuit::pursuit(
 		// BOOKMARK: Begin distance calculations for closest point
 		//  Finds distance between goal and robot when Y coordinates of previous and current
 		//  points are different
-		if (fabs(points[current_point].yCoord - points[current_point - 1].yCoord) > 0.1_ft) {
-			slope_perp = chassis::pursuit::Point::calc_perp_slope(
-			    points[current_point - 1], points[current_point]
-			);
-			const_perp =
-			    chassis::pursuit::Point::calc_const(Point(current_posX, current_posY), slope_perp);
+		if (fabs(points[current_point].y - points[current_point - 1].y) > 0.1_ft) {
+			slope_perp = Point::calc_perp_slope(points[current_point - 1], points[current_point]);
+			const_perp = Point::calc_const(Point(current_posX, current_posY), slope_perp);
 			closest_point = (const_perp - const_par) / (slope_par - slope_perp);
 
 			// Robot is more than the lookahead distance away from the path
@@ -150,7 +142,7 @@ void chassis::pursuit::pursuit(
 		} else {
 			// if both points have the same y coordinates, the x coordinates of the robot cannot be
 			// more than lookahead distance to the found point
-			if (fabs(points[current_point].xCoord - current_posX) > lookahead_Distance) {
+			if (fabs(points[current_point].x - current_posX) > lookahead_Distance) {
 				drive_left.brake();
 				drive_right.brake();
 				std::cout << "Robot too far from path!" << std::endl;
@@ -166,11 +158,11 @@ void chassis::pursuit::pursuit(
 			drive_right.brake();
 			std::cout << "Can't go there! Rerouted-" << std::endl;
 
-			if (points[current_point].xCoord > points[current_point - 1].xCoord) {
+			if (points[current_point].x > points[current_point - 1].x) {
 				points.insert(
 				    points.begin(), current_point, Point(lowest_x - 5_in, highest_y + 5_in)
 				);
-			} else if (points[current_point].xCoord < points[current_point - 1].xCoord) {
+			} else if (points[current_point].x < points[current_point - 1].x) {
 				points.insert(
 				    points.begin(), current_point, Point(highest_x + 5_in, highest_y + 5_in)
 				);
@@ -180,8 +172,8 @@ void chassis::pursuit::pursuit(
 		}
 
 		// BOOKMARK: Goal increment
-		if (fabs(next_objective_x - points[current_point].xCoord) < 0.1_ft &&
-		    fabs(next_objective_y - points[current_point].yCoord) < 0.1_ft) {
+		if (fabs(next_objective_x - points[current_point].x) < 0.1_ft &&
+		    fabs(next_objective_y - points[current_point].y) < 0.1_ft) {
 			current_point++;
 			if (points[current_point].left) left_wing.toggle();
 			if (points[current_point].right) right_wing.toggle();
@@ -236,15 +228,13 @@ void chassis::pursuit::pursuit(
 	points.push_back(Point(0_ft, 0_ft));
 }
 
-static units::dimensionless::scalar_t
-calc_par_slope(chassis::pursuit::Point a, chassis::pursuit::Point b) {
-	return (b.yCoord - a.yCoord) / (b.xCoord - a.xCoord);
+static units::dimensionless::scalar_t calc_par_slope(Point a, Point b) {
+	return (b.y - a.y) / (b.x - a.x);
 }
-static units::dimensionless::scalar_t
-calc_per_slope(chassis::pursuit::Point a, chassis::pursuit::Point b) {
-	return -(b.xCoord - a.xCoord) / (b.yCoord - a.yCoord);
+static units::dimensionless::scalar_t calc_per_slope(Point a, Point b) {
+	return -(b.x - a.x) / (b.y - a.y);
 }
 
-static foot_t calc_const(chassis::pursuit::Point a, units::dimensionless::scalar_t slope) {
-	return a.yCoord - slope * a.xCoord;
+static foot_t calc_const(Point a, units::dimensionless::scalar_t slope) {
+	return a.y - slope * a.x;
 }
