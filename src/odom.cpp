@@ -50,10 +50,6 @@ void odom::initialize() {
 			local_x = rear_dist / 1_rad;
 			local_y = left_dist / 1_rad;
 		}
-		
-		std::cout << "x: " << odom_x << " y: " << odom_y << " lx: " << local_x << " ly: " << local_y << 
-		" left: " << left_odom.to<double>() << " rear: " << rear_odom.to<double>() << " theta: " << heading_change
-		<< " IMUH:"<< imu.get_heading() << " GH: " << global_true_heading << " LTH: " << local_true_heading << std::endl;
 
 		local_true_heading = atan2(local_y, local_x);
 		if(local_x == 0_in && local_y == 0_in) local_true_heading = 0_deg;
