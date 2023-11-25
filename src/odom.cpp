@@ -2,8 +2,8 @@
 #include "devices.hpp"
 #include "units.h"
 
-const std::pair<inch_t, inch_t> left_offset = {6_in, -2.25_in};
-const std::pair<inch_t, inch_t> rear_offset = {0_in, -2.5_in};
+const std::pair<inch_t, inch_t> left_offset = {-6_in, 0_in};
+const std::pair<inch_t, inch_t> rear_offset = {0_in, 0_in};
 
 using namespace units::math;
 
@@ -66,7 +66,6 @@ void odom::initialize() {
 		left_odom = 0_deg;
 		rear_odom = 0_deg;
 		prev_heading = robot_heading;
-
 		
 		pros::delay(20);
 
