@@ -7,7 +7,7 @@
 #include <utility>
 using namespace units::math;
 
-std::vector<Point> Points = {Point(0_ft, 0_ft)};
+ std::vector<Point> chassis::pursuit::points = {Point(0_ft, 0_ft)};
 
 void chassis::pursuit::add_point(
     foot_t x_ft, foot_t y_ft, bool need_angle, degree_t specify_angle
@@ -124,7 +124,7 @@ void chassis::pursuit::pursuit(
 		//  Finds distance between goal and robot when Y coordinates of previous and current
 		//  points are different
 		if (fabs(points[current_point].y - points[current_point - 1].y) > 0.1_ft) {
-			slope_perp = Point::calc_perp_slope(points[current_point - 1], points[current_point]);
+			slope_perp = Point::calc_per_slope(points[current_point - 1], points[current_point]);
 			const_perp = Point::calc_const(Point(current_posX, current_posY), slope_perp);
 			closest_point = (const_perp - const_par) / (slope_par - slope_perp);
 
@@ -226,15 +226,4 @@ void chassis::pursuit::pursuit(
 	drive_right.brake();
 	points.clear();
 	points.push_back(Point(0_ft, 0_ft));
-}
-
-static units::dimensionless::scalar_t calc_par_slope(Point a, Point b) {
-	return (b.y - a.y) / (b.x - a.x);
-}
-static units::dimensionless::scalar_t calc_per_slope(Point a, Point b) {
-	return -(b.x - a.x) / (b.y - a.y);
-}
-
-static foot_t calc_const(Point a, units::dimensionless::scalar_t slope) {
-	return a.y - slope * a.x;
 }

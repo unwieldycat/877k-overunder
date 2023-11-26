@@ -25,7 +25,7 @@ class Point {
 	 * @param b end of line segment
 	 * @return units::dimensionless::scalar_t
 	 */
-	static units::dimensionless::scalar_t calc_perp_slope(Point a, Point b);
+	static units::dimensionless::scalar_t calc_per_slope(Point a, Point b);
 
 	/**
 	 * @brief Find constant of an equation in the form y = mx + b
