@@ -1,5 +1,6 @@
 #include "subsystems/catapult.hpp"
 #include "devices.hpp"
+#include "pros/misc.h"
 #include "pros/rtos.hpp"
 
 bool cata::is_primed() { return cata_rot.get_position() < 40; }
@@ -23,6 +24,11 @@ void cata::release() {
 
 void cata::user() {
 	while (true) {
+		if (!controller.get_digital(pros::E_CONTROLLER_DIGITAL_A)) {
+			pros::delay(20);
+			return;
+		}
+
 		if (!cata::is_primed()) cata::prime();
 		cata::release();
 		cata::prime();
