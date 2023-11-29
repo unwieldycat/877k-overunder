@@ -1,12 +1,22 @@
-#include "input.hpp"
 #include "main.h"
 
 namespace chassis {
 
-void curvature_drive(input::analog_inputs_t inputs);
+typedef enum drive_mode { DRIVE_MODE_ARCADE, DRIVE_MODE_CURVE, DRIVE_MODE_TANK } drive_mode_t;
 
-void tank_drive(input::analog_inputs_t inputs);
+/**
+ * @brief Set the drive mode
+ */
+void set_drive_mode(drive_mode_t mode);
 
-void arcade_drive(input::analog_inputs_t inputs);
+/**
+ * @brief User drive control function
+ */
+void user_drive();
+
+/**
+ * @brief Reverse the drive direction
+ */
+void reverse();
 
 } // namespace chassis

@@ -20,3 +20,12 @@ void cata::release() {
 		pros::delay(50);
 	catapult.move(0);
 }
+
+void cata::user() {
+	while (true) {
+		if (!cata::is_primed()) cata::prime();
+		cata::release();
+		cata::prime();
+		pros::delay(20);
+	}
+}

@@ -19,4 +19,9 @@ void prime();
  */
 void release();
 
+/**
+ * @brief User function for catapult
+ */
+void user();
+
 } // namespace cata

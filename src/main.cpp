@@ -1,9 +1,10 @@
 #include "main.h"
 #include "autons.hpp"
+#include "chassis/user.hpp"
 #include "devices.hpp"
-#include "input.hpp"
-#include "macros.hpp"
 #include "odom.hpp"
+#include "subsystems/catapult.hpp"
+#include "subsystems/misc.hpp"
 
 rd::SelectorView selector;
 rd::ImageView logo("Logo", "/usd/logo.bin");
@@ -28,17 +29,6 @@ void initialize() {
 	     {"Skills", skills}}
 	);
 
-	// Configure button map
-	input::set_buttons({
-	    {pros::E_CONTROLLER_DIGITAL_X, wrap_func(roller_piston.toggle)},
-	    {pros::E_CONTROLLER_DIGITAL_R1, wrap_func(right_wing.toggle)},
-	    {pros::E_CONTROLLER_DIGITAL_L1, wrap_func(left_wing.toggle)},
-	    {pros::E_CONTROLLER_DIGITAL_UP, wrap_func(transmission.retract)},
-	    {pros::E_CONTROLLER_DIGITAL_DOWN, wrap_func(transmission.extend)},
-	    {pros::E_CONTROLLER_DIGITAL_UP, macros::reverse},
-	    {pros::E_CONTROLLER_DIGITAL_A, macros::catapult},
-	});
-
 	// Tasks
 	pros::Task odom_task(odom::track_position, "Odometry");
 }
@@ -59,8 +49,9 @@ void autonomous() {
 
 void opcontrol() {
 	rd::set_view(&logo);
-	pros::Task drive_task(input::driver, "User Chassis Control");
-	pros::Task buttons_task(input::watcher, "Button watcher");
+	pros::Task drive_task(chassis::user_drive, "User Chassis Control");
+	pros::Task cata_task(cata::user, "Catapult Control");
+	pros::Task misc_task(user, "Misc User Control");
 }
 
 void disabled() {}
