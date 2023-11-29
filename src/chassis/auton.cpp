@@ -2,6 +2,7 @@
 #include "devices.hpp"
 #include "odom.hpp"
 #include "pid.hpp"
+#include "units.h"
 
 #define kP 0.5
 #define kI 0.5
@@ -13,14 +14,14 @@
 
 void chassis::drive(foot_t distance) {
 	PIDController<foot_t> drive_pid(kP, kI, kD);
-	PIDController<foot_t> turn_pid(kP, kI, kD);
+	PIDController<degree_t> turn_pid(kP, kI, kD);
 
 	double drive;
 	double turn;
 
 	do {
 		drive = drive_pid.calculate(distance, foot_t(odom::get_x()));
-		turn = turn_pid.calculate(0_ft, foot_t(odom::get_y()));
+		turn = turn_pid.calculate(0_deg, degree_t(imu.get_heading()));
 		drive_left.move(-drive - turn);
 		drive_right.move(-drive + turn);
 		pros::delay(20);
