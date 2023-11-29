@@ -7,7 +7,7 @@ extern pros::Controller controller;
 
 extern pros::MotorGroup drive_left;
 extern pros::MotorGroup drive_right;
-extern pros::MotorGroup catapult;
+extern pros::Motor catapult;
 
 extern pros::Rotation odom_left;
 extern pros::Rotation odom_rear;

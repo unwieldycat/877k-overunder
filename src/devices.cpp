@@ -7,7 +7,7 @@ pros::Controller controller(pros::E_CONTROLLER_MASTER);
 // Motors
 pros::MotorGroup drive_left({-19, 20});
 pros::MotorGroup drive_right({-2, 3});
-pros::MotorGroup catapult({6, -7});
+pros::Motor catapult(6);
 
 // Odometry sensors
 pros::Rotation odom_left(14);
