@@ -1,5 +1,6 @@
 #include "main.h"
 #include "autons.hpp"
+#include "chassis/auton.hpp"
 #include "chassis/user.hpp"
 #include "devices.hpp"
 #include "odom.hpp"
