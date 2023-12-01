@@ -18,10 +18,11 @@ void chassis::drive(foot_t distance) {
 
 	double drive;
 	double turn;
+	degree_t heading = (degree_t)imu.get_heading();
 
 	do {
 		drive = drive_pid.calculate(distance, foot_t(odom::get_x()));
-		turn = turn_pid.calculate(0_deg, degree_t(imu.get_heading()));
+		turn = turn_pid.calculate(0_deg, heading);
 		drive_left.move(-drive - turn);
 		drive_right.move(-drive + turn);
 		pros::delay(20);
