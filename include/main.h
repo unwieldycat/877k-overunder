@@ -35,7 +35,7 @@
 #define PROS_USE_LITERALS
 
 #include "api.h"
-#include "robodash/api.hpp"
+#include "robodash/api.h"
 #include "units.h"
 
 using namespace units::literals;
