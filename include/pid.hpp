@@ -23,6 +23,10 @@ class PIDController {
 		error_total += error;
 		error_prev = error;
 
+		// Reset integral on pass through 0
+		if ((error_prev < U(0) && error > U(0)) || (error_prev > U(0) && error < U(0)))
+			error_total = U(0);
+
 		return (error * kP + error_total * kI + error_change * kD).template to<double>();
 	}
 
