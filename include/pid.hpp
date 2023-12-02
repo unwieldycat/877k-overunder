@@ -18,7 +18,7 @@ class PIDController {
 	 * Run PID calculation
 	 */
 	inline double calculate(U set_point, U current_pos) {
-		error = current_pos - set_point;
+		error = set_point - current_pos;
 		error_change = error - error_prev;
 		error_total += error;
 		error_prev = error;
