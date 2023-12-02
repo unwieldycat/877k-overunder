@@ -10,6 +10,8 @@
 
 #define WHEEL_OFFSET 7.6
 
+using namespace units::math;
+
 // ============================ Auton Functions ============================ //
 
 void chassis::drive(foot_t distance) {
@@ -28,27 +30,24 @@ void chassis::drive(foot_t distance) {
 		drive_left.move(drive - turn);
 		drive_right.move(drive + turn);
 		pros::delay(20);
-	} while (drive_pid.get_error() != 0); // TODO: Don't do != 0
+	} while (abs(drive_pid.get_error()) > 0.5_ft); // TODO: Don't do != 0
 
 	drive_left.brake();
 	drive_right.brake();
 }
 
 void chassis::turn_abs(degree_t heading) {
-	PIDController<degree_t> pid(kP, kI, kD);
+	PIDController<degree_t> pid(1, 0.02, 20);
 
 	double output;
-	double dir = 1;
-	degree_t current_hdg = degree_t(imu.get_heading());
-
-	if ((heading - current_hdg) > 180_deg) dir = -1;
+	degree_t current_hdg = degree_t(imu.get_rotation());
 
 	do {
-		output = pid.calculate(heading, degree_t(imu.get_heading()));
-		drive_left.move(-output * dir);
-		drive_right.move(output * dir);
+		output = pid.calculate(heading, degree_t(imu.get_rotation()));
+		drive_left.move(output);
+		drive_right.move(-output);
 		pros::delay(20);
-	} while (pid.get_error() != 0);
+	} while (abs(pid.get_error()) > 0.5_deg);
 
 	drive_left.brake();
 	drive_right.brake();
