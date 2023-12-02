@@ -38,7 +38,7 @@ class PIDController {
 	/**
 	 * Get the error value
 	 */
-	inline double get_error() { return error.template to<double>(); }
+	inline U get_error() { return error; }
 
 	/**
 	 * Reset state
