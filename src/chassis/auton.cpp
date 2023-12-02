@@ -4,10 +4,6 @@
 #include "pid.hpp"
 #include "units.h"
 
-#define kP 0.5
-#define kI 0.5
-#define kD 0.5
-
 #define WHEEL_OFFSET 7.6
 
 using namespace units::math;
@@ -15,8 +11,8 @@ using namespace units::math;
 // ============================ Auton Functions ============================ //
 
 void chassis::drive(foot_t distance) {
-	PIDController<foot_t> drive_pid(kP, kI, kD);
-	PIDController<degree_t> turn_pid(kP, kI, kD);
+	PIDController<foot_t> drive_pid(20, 0.3, 1);
+	PIDController<degree_t> turn_pid(1, 0.02, 20);
 
 	double drive;
 	double turn;
@@ -26,11 +22,12 @@ void chassis::drive(foot_t distance) {
 	do {
 		current_hdg = (degree_t)imu.get_heading();
 		drive = drive_pid.calculate(distance, odom::get_y());
-		turn = turn_pid.calculate(target_hdg, current_hdg);
+		// FIXME: Turning returns nan
+		turn = 0; // turn_pid.calculate(target_hdg, current_hdg);
 		drive_left.move(drive - turn);
 		drive_right.move(drive + turn);
-		pros::delay(20);
-	} while (abs(drive_pid.get_error()) > 0.5_ft); // TODO: Don't do != 0
+		pros::delay(50);
+	} while (abs(drive_pid.get_error()) > 0.5_ft);
 
 	drive_left.brake();
 	drive_right.brake();
