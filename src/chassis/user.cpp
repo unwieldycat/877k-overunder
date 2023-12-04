@@ -36,7 +36,7 @@ void curvature_drive(int left_x, int left_y, int right_x, int right_y) {
 const int deadzone = 1;
 bool enable_drive = true;
 bool reverse_drive = false;
-std::function<void(int, int, int, int)> driver_func = curvature_drive;
+std::function<void(int, int, int, int)> driver_func = arcade_drive;
 
 int process_input(int value) {
 	if (abs(value) < deadzone) return 0;
