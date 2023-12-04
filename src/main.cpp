@@ -19,6 +19,11 @@ void initialize() {
 	strip_right.set_all(0xff6600);
 	cata_rot.reset_position();
 
+	// Tasks
+	pros::Task odom_task(odom::track_position, "Odometry");
+}
+
+void competition_initialize() {
 	selector.add_autons(
 	    {{"Park (left)", park_left},
 	     {"Park (right)", park_right},
@@ -27,11 +32,8 @@ void initialize() {
 	     {"Skills", skills}}
 	);
 
-	// Tasks
-	pros::Task odom_task(odom::track_position, "Odometry");
+	selector.focus();
 }
-
-void competition_initialize() { selector.focus(); }
 
 // ============================ Match Functions ============================ //
 
