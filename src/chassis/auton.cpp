@@ -11,7 +11,8 @@ using namespace units::math;
 // ============================ Auton Functions ============================ //
 
 void chassis::drive(foot_t distance) {
-	PIDController<foot_t> drive_pid(20, 0.3, 1);
+	// TODO: Tune
+	PIDController<inch_t> drive_pid(1, 0, 0);
 	PIDController<degree_t> turn_pid(1, 0.02, 20);
 
 	double drive;
