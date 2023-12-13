@@ -1,9 +1,11 @@
 #pragma once
 #include "main.h"
+#include "units.h"
 
 class Point {
   public:
 	foot_t x, y;
+	units::dimensionless::scalar_t max_velocity;
 	bool specify_angle, left, right;
 	degree_t angle;
 
@@ -35,4 +37,8 @@ class Point {
 	 * @return foot_t
 	 */
 	static foot_t calc_const(Point a, units::dimensionless::scalar_t slope);
+
+	static foot_t calc_dist(Point a, Point b);
+
+	static std::pair<foot_t, foot_t> xy_dist(Point a, Point b);
 };
