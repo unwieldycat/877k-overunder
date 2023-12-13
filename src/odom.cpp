@@ -38,11 +38,11 @@ void odom::initialize() {
 		rear_dist = (radian_t)(rear_odom)*2.75_in / 2;
 		heading_change = robot_heading - prev_heading;
 
-		// TODO: prevent heading change from being 359 in turns
-
 		if (heading_change != 0_deg) {
-			x_radius = (rear_dist / heading_change) + rear_offset.second;
-			y_radius = (left_dist / heading_change) + left_offset.first;
+			int sign = (rear_offset.second > rear_offset.first)? 1 : -1;
+			x_radius = (rear_dist / heading_change) + sign * sqrt(pow<2>(rear_offset.second) + pow<2>(rear_offset.first));
+			sign = (left_offset.second > left_offset.first)? 1 : -1;
+			y_radius = (left_dist / heading_change) + sign * sqrt(pow<2>(left_offset.second) + pow<2>(left_offset.first));
 			local_x = 2 * x_radius * sin(heading_change / 2);
 			local_y = 2 * y_radius * sin(heading_change / 2);
 		} else {
