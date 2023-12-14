@@ -19,7 +19,7 @@ extern std::vector<Point> points;
  * @param x_ft x coordinate in feet
  * @param y_ft y coordinate in feet
  */
-void add_point(foot_t x_ft, foot_t y_ft, bool need_angle = false, degree_t = 0.0_deg);
+void add_point(foot_t x_ft, foot_t y_ft, units::dimensionless::scalar_t curvature);
 
 /**
  * @brief Begins moving the robot following all the points stored previous to the running of this
@@ -33,10 +33,7 @@ void add_point(foot_t x_ft, foot_t y_ft, bool need_angle = false, degree_t = 0.0
  * @param highest_x Bottom right x coordinate in feet of the restricted area
  * @param highest_y Bottom right y coordinate in feet of the restricted area
  */
-void pursuit(
-    foot_t lookahead_distance, int voltage_constant, foot_t lowest_x = 0_ft, foot_t lowest_y = 0_ft,
-    foot_t highest_x = 0_ft, foot_t highest_y = 0_ft
-);
+void pursuit();
 
 /**
  * @brief Toggles the wings at a certain point or in a certain area

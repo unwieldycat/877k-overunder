@@ -7,32 +7,20 @@
 #include <utility>
 using namespace units::math;
 
- std::vector<Point> chassis::pursuit::points = {Point(0_ft, 0_ft)};
+std::vector<Point> chassis::pursuit::points = {Point(0_ft, 0_ft)};
 
 void chassis::pursuit::add_point(
-    foot_t x_ft, foot_t y_ft, bool need_angle, degree_t specify_angle
+    foot_t x_ft, foot_t y_ft, units::dimensionless::scalar_t curvature
 ) {
 	if (points[points.size() - 1].x != x_ft || points[points.size() - 1].y != y_ft) {
-		points.push_back(Point(x_ft, y_ft, need_angle, specify_angle));
+		points.push_back(Point(x_ft, y_ft, curvature));
 	}
 }
 
-void chassis::pursuit::wing(char side) {
-	side = std::tolower(side);
-	if (side == 'b') {
-		points[points.size() - 1].left = true;
-		points[points.size() - 1].right = true;
-	} else if (side == 'l') {
-		points[points.size() - 1].left = true;
-	} else if (side == 'r') {
-		points[points.size() - 1].right = true;
-	}
-}
+// TODO: wing toggle function
+void chassis::pursuit::wing(char side) {}
 
-void chassis::pursuit::pursuit(
-    foot_t lookahead_Distance, int voltage_constant, foot_t lowest_x, foot_t lowest_y,
-    foot_t highest_x, foot_t highest_y
-) {
+void chassis::pursuit::pursuit() {
 	int current_point = 1;
 	units::dimensionless::scalar_t slope_par, slope_perp;
 	foot_t closest_point, next_objective_x, next_objective_y, const_par, const_perp;
@@ -42,54 +30,14 @@ void chassis::pursuit::pursuit(
 	drive_left.set_brake_mode(pros::E_MOTOR_BRAKE_HOLD);
 	drive_right.set_brake_mode(pros::E_MOTOR_BRAKE_HOLD);
 
-	// Checking if there are any points that need a specific angle
-	for (int i = 1; i < points.size(); i++) {
-		// Removes points within restricted area
-		if (lowest_x < points[current_point].x && points[current_point].x < highest_x &&
-		    lowest_y < points[current_point].y && points[current_point].y < highest_y) {
-			std::cout << "invalid point" << std::endl;
-			points.erase(points.begin() + i);
-		}
-		if (points[i].specify_angle) {
-			if (i > 1 && points[i - 1].y - points[i - 2].y != 0_ft &&
-			    points[i - 1].x - points[i - 2].x != 0_ft) {
-				double prev_slope = Point::calc_par_slope(points[i - 1], points[i - 2]),
-				       new_slope = sin((radian_t)points[i].angle) / cos((radian_t)points[i].angle);
-				foot_t const_prev = Point::calc_const(points[i - 2], prev_slope),
-				       new_const = Point::calc_const(points[i], new_slope);
-				if (prev_slope == new_slope) continue;
-				foot_t intersect_x = (new_const - const_prev) / (prev_slope - new_slope),
-				       intersect_y = new_slope * intersect_x + new_const;
-				points.insert(points.begin(), i, Point(intersect_x, intersect_y));
-			} else if (i == 1 || points[i - 1].x - points[i - 2].x == 0_ft) {
-				if (cos((radian_t)points[i].angle) == 0.0) continue;
-				double new_slope = sin((radian_t)points[i].angle) / cos((radian_t)points[i].angle);
-				foot_t new_const = Point::calc_const(points[i], new_slope);
-				foot_t intersect_x = points[i - 1].x,
-				       intersect_y = new_slope * intersect_x + new_const;
-				points.insert(points.begin(), i, Point(intersect_x, intersect_y));
-			}
-		}
-	}
-
 	// Loops until all points have been passed
 	while (current_point < points.size()) {
 		degree_t current_heading = (degree_t)imu.get_heading(), heading_error;
 		foot_t current_posX = odom::get_x(), current_posY = odom::get_y();
-
-		// BOOKMARK: Make robot actually follow specified angles
-		while (points[current_point].specify_angle &&
-		       fabs(current_heading - points[current_point].angle) > 2_deg) {
-			heading_objective = points[current_point].angle;
-			heading_error = heading_objective - current_heading;
-			if (heading_error < -180_deg)
-				heading_error += 360_deg;
-			else if (heading_error > 180_deg)
-				heading_error -= 360_deg;
-
-			drive_left.move(voltage_constant * heading_error.to<double>() / 90);
-			drive_right.move(-voltage_constant * heading_error.to<double>() / 90);
-		}
+		auto lookahead_distance =
+		    (1_ft / (points[current_point - 1].curvature) > 6_ft
+		         ? 6_ft
+		         : 1_ft / (points[current_point - 1].curvature));
 
 		// BOOKMARK: Begin finding next objective
 		//  Finds closest point when X coordinates of previous and current points are different
@@ -105,7 +53,7 @@ void chassis::pursuit::pursuit(
 			                pow<2>(2 * (slope_par * (const_par - current_posY) - current_posX)) -
 			                4 * (pow<2>(slope_par) + 1) *
 			                    (pow<2>(current_posX) + pow<2>(const_par - current_posY) -
-			                     pow<2>(lookahead_Distance))
+			                     pow<2>(lookahead_distance))
 			            )) /
 			    (2 * (pow<2>(slope_par) + 1));
 
@@ -116,7 +64,7 @@ void chassis::pursuit::pursuit(
 			int sign = (points[current_point].y - points[current_point - 1].y) > 0_ft ? 1 : -1;
 			next_objective_x = points[current_point].x;
 			next_objective_y =
-			    sign * sqrt(pow<2>(lookahead_Distance) - pow<2>(next_objective_x - current_posX)) +
+			    sign * sqrt(pow<2>(lookahead_distance) - pow<2>(next_objective_x - current_posX)) +
 			    current_posY;
 		}
 
@@ -132,7 +80,7 @@ void chassis::pursuit::pursuit(
 			if (sqrt(
 			        pow<2>(closest_point - current_posX) +
 			        pow<2>(slope_par * closest_point + const_par - current_posY)
-			    ) > lookahead_Distance) {
+			    ) > lookahead_distance) {
 				// NOTE: add action to bring robot back to path
 				drive_left.brake();
 				drive_right.brake();
@@ -142,33 +90,12 @@ void chassis::pursuit::pursuit(
 		} else {
 			// if both points have the same y coordinates, the x coordinates of the robot cannot be
 			// more than lookahead distance to the found point
-			if (fabs(points[current_point].x - current_posX) > lookahead_Distance) {
+			if (fabs(points[current_point].x - current_posX) > lookahead_distance) {
 				drive_left.brake();
 				drive_right.brake();
 				std::cout << "Robot too far from path!" << std::endl;
 				break;
 			}
-		}
-
-		// BOOKMARK: Check if goal is in a restricted zone
-		if ((lowest_x < next_objective_x && next_objective_x < highest_x) ||
-		    (lowest_y < next_objective_y && next_objective_y < highest_y)) {
-			// NOTE: change coordinates to corner of the goal
-			drive_left.brake();
-			drive_right.brake();
-			std::cout << "Can't go there! Rerouted-" << std::endl;
-
-			if (points[current_point].x > points[current_point - 1].x) {
-				points.insert(
-				    points.begin(), current_point, Point(lowest_x - 5_in, highest_y + 5_in)
-				);
-			} else if (points[current_point].x < points[current_point - 1].x) {
-				points.insert(
-				    points.begin(), current_point, Point(highest_x + 5_in, highest_y + 5_in)
-				);
-			}
-
-			continue;
 		}
 
 		// BOOKMARK: Goal increment
@@ -194,26 +121,10 @@ void chassis::pursuit::pursuit(
 			heading_error -= 360_deg;
 
 		// BOOKMARK: Movement
-		if (fabs(heading_error) < 2_deg) {
-			left_speed = 127;
-			right_speed = 127;
-
-		} else if (fabs(heading_error) < 15_deg) {
-			left_speed = voltage_constant * (180 - fabs(heading_error.to<double>())) / 180 +
-			             (127 - voltage_constant) * (heading_error.to<double>()) / 180;
-			right_speed = voltage_constant * (180 - fabs(heading_error.to<double>())) / 180 -
-			              (127 - voltage_constant) * (heading_error.to<double>()) / 180;
-
-		} else if (fabs(heading_error) < 45_deg) {
-			left_speed = voltage_constant * (180 - fabs(heading_error.to<double>())) / 360 +
-			             (127 - voltage_constant) * (heading_error.to<double>()) / 90;
-			right_speed = voltage_constant * (180 - fabs(heading_error.to<double>())) / 360 -
-			              (127 - voltage_constant) * (heading_error.to<double>()) / 90;
-
-		} else {
-			left_speed = voltage_constant * heading_error.to<double>() / 90;
-			right_speed = -voltage_constant * heading_error.to<double>() / 90;
-		}
+		left_speed =
+		    127 * (1 - points[current_point - 1].curvature * 3) + 127 * heading_error / 360_deg;
+		right_speed =
+		    127 * (1 - points[current_point - 1].curvature * 3) - 127 * heading_error / 360_deg;
 
 		drive_left.move(left_speed);
 		drive_right.move(right_speed);
