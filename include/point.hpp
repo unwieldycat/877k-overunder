@@ -5,12 +5,11 @@
 class Point {
   public:
 	foot_t x, y;
-	units::dimensionless::scalar_t max_velocity;
-	bool specify_angle, left, right;
-	degree_t angle;
+	units::dimensionless::scalar_t curvature;
+	bool left, right;
 
 	Point(foot_t x, foot_t y) : x(x), y(y) {}
-	Point(foot_t x, foot_t y, bool sp_a, degree_t a) : x(x), y(y), specify_angle(sp_a), angle(a) {}
+	Point(foot_t x, foot_t y, units::dimensionless::scalar_t curvature) : x(x), y(y), curvature(curvature) {}
 
 	/**
 	 * @brief Finds slope from point a to point b
