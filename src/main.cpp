@@ -25,9 +25,7 @@ void initialize() {
 
 void competition_initialize() {
 	selector.add_autons(
-	    {{"Park (left)", park_left},
-	     {"Park (right)", park_right},
-	     {"Field Triball Push", push_field},
+	    {{"Field Triball Push", push_field},
 	     {"Preload Triball Push", push_preload},
 	     {"Skills", skills}}
 	);
