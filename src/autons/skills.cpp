@@ -1,14 +1,18 @@
 #include "autons.hpp"
 #include "chassis/auton.hpp"
 #include "chassis/pursuit.hpp"
+#include "devices.hpp"
 #include "odom.hpp"
 #include "subsystems/catapult.hpp"
+
+const int launches = 50;
 
 void skills() {
 	// Drive to match loader
 	chassis::drive(2_ft);
-	chassis::turn_rel(-45_deg);
-	chassis::drive(-2.82_ft);
+	chassis::turn_rel(-135_deg);
+	chassis::drive(2_ft);
+	chassis::drive(64);
 
 	// Match load
 	// TODO: Display countdown on screen & change LED colors
@@ -16,14 +20,9 @@ void skills() {
 	cata_optical.set_led_pwm(100);
 	int end_time = pros::millis() + 30000;
 
-	while (pros::millis() < end_time) {
+	for (int i = 0; i < launches; i++) {
 		cata::prime();
-		while (cata_optical.get_rgb().green > 200 && pros::millis() < end_time)
-			pros::delay(20);
-
-		pros::delay(500);
 		cata::release();
-
 		pros::delay(20);
 	}
 
