@@ -7,7 +7,7 @@
 #include <utility>
 using namespace units::math;
 
-std::vector<Point> chassis::pursuit::points = {Point(0_ft, 0_ft)};
+std::vector<Point> chassis::pursuit::points = {};
 
 void chassis::pursuit::add_point(
     foot_t x_ft, foot_t y_ft, units::dimensionless::scalar_t curvature
@@ -102,8 +102,6 @@ void chassis::pursuit::pursuit() {
 		if (fabs(next_objective_x - points[current_point].x) < 0.1_ft &&
 		    fabs(next_objective_y - points[current_point].y) < 0.1_ft) {
 			current_point++;
-			if (points[current_point].left) left_wing.toggle();
-			if (points[current_point].right) right_wing.toggle();
 		}
 
 		// BOOKMARK: Heading calculations

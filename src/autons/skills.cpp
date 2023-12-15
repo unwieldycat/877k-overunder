@@ -1,5 +1,7 @@
 #include "autons.hpp"
 #include "chassis/auton.hpp"
+#include "chassis/pursuit.hpp"
+#include "odom.hpp"
 #include "subsystems/catapult.hpp"
 
 void skills() {
@@ -32,4 +34,16 @@ void skills() {
 	chassis::turn_rel(45_deg);
 
 	// TODO: Pursuit
+}
+
+void cata_only() {
+	odom::calibrate(1_ft, 3_ft, 90_deg);
+	chassis::pursuit::add_point(1_ft, 3_ft, 0.24845);
+	chassis::pursuit::add_point(1.5625_ft, 2.3125_ft, 0.08615);
+	chassis::pursuit::add_point(1.75_ft, 1.75_ft, 0.09843);
+	chassis::pursuit::add_point(1.5625_ft, 1.3125_ft, 0.08362);
+	chassis::pursuit::add_point(1_ft, 1_ft, 0.04141);
+	chassis::pursuit::pursuit();
+
+	// TODO: Cata stuff here
 }
