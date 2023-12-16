@@ -13,7 +13,7 @@ void skills() {
 	chassis::drive(0);
 	chassis::turn_rel(-135_deg);
 	chassis::drive(90);
-	pros::delay(500);
+	pros::delay(750);
 	chassis::drive(32);
 	catapult.move(96);
 	/*
