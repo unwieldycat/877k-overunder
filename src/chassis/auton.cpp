@@ -16,9 +16,8 @@ void chassis::drive(int power) {
 }
 
 void chassis::drive(foot_t distance) {
-	// TODO: Tune
-	PIDController<inch_t> drive_pid(1, 0, 0);
-	PIDController<degree_t> turn_pid(1, 0.02, 20);
+	PIDController<inch_t> drive_pid(2, 0, 0);
+	PIDController<degree_t> turn_pid(1, 0, 0);
 
 	double drive;
 	double turn;
@@ -28,12 +27,11 @@ void chassis::drive(foot_t distance) {
 	do {
 		current_hdg = (degree_t)imu.get_heading();
 		drive = drive_pid.calculate(distance, odom::get_y());
-		// FIXME: Turning returns nan
-		turn = 0; // turn_pid.calculate(target_hdg, current_hdg);
+		turn = turn_pid.calculate(target_hdg, current_hdg);
 		drive_left.move(drive - turn);
 		drive_right.move(drive + turn);
-		pros::delay(50);
-	} while (abs(drive_pid.get_error()) > 0.5_ft);
+		pros::delay(20);
+	} while (!drive_pid.settled());
 
 	drive_left.brake();
 	drive_right.brake();
