@@ -15,7 +15,13 @@ void skills() {
 	chassis::drive(90);
 	pros::delay(750);
 	chassis::drive(32);
-	catapult.move(96);
+
+	while (true) {
+		cata::prime();
+		pros::delay(1000);
+		cata::release();
+	}
+
 	/*
 	// Drive to match loader
 	chassis::drive(2_ft);
