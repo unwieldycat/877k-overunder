@@ -40,17 +40,18 @@ void chassis::drive(foot_t distance) {
 }
 
 void chassis::turn_abs(degree_t heading) {
-	PIDController<degree_t> pid(1, 0.02, 20);
+	PIDController<degree_t> pid(3, 0.1, 1);
 
 	double output;
-	degree_t current_hdg = degree_t(imu.get_rotation());
+	degree_t current_hdg;
 
 	do {
-		output = pid.calculate(heading, degree_t(imu.get_rotation()));
+		current_hdg = degree_t(imu.get_rotation());
+		output = pid.calculate(heading, current_hdg);
 		drive_left.move(output);
 		drive_right.move(-output);
 		pros::delay(20);
-	} while (abs(pid.get_error()) > 0.5_deg);
+	} while (!pid.settled());
 
 	drive_left.brake();
 	drive_right.brake();
