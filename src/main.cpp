@@ -26,6 +26,8 @@ void initialize() {
 }
 
 void competition_initialize() {
+	initialize();
+
 	selector.add_autons(
 	    {{"Field Triball Push", push_field},
 	     {"Preload Triball Push", push_preload},
