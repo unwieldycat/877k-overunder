@@ -11,13 +11,15 @@ void push_field() {
 }
 
 void push_preload() {
-	chassis::drive(90);
-	pros::delay(2500);
+	chassis::drive(45);
+	pros::delay(5000);
 	chassis::drive(0);
 	chassis::turn_rel(90_deg);
+	left_wing.extend();
 	chassis::drive(127);
 	pros::delay(750);
 	chassis::drive(-127);
-	pros::delay(1000);
+	pros::delay(750);
 	chassis::drive(0);
+	left_wing.retract();
 }
