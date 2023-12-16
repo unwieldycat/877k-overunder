@@ -11,8 +11,8 @@ using namespace units::math;
 // ============================ Auton Functions ============================ //
 
 void chassis::drive(int power) {
-	drive_left.move(power + (0.25 * power));
-	drive_right.move(power - (0.25 * power));
+	drive_left.move(power);
+	drive_right.move(power);
 }
 
 void chassis::drive(foot_t distance) {
