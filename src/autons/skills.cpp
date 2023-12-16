@@ -8,6 +8,8 @@
 const int launches = 50;
 
 void skills() {
+	catapult.move(96);
+	/*
 	// Drive to match loader
 	chassis::drive(2_ft);
 	chassis::turn_rel(-135_deg);
@@ -21,9 +23,9 @@ void skills() {
 	int end_time = pros::millis() + 30000;
 
 	for (int i = 0; i < launches; i++) {
-		cata::prime();
-		cata::release();
-		pros::delay(20);
+	    cata::prime();
+	    cata::release();
+	    pros::delay(20);
 	}
 
 	// Prepare for pursuit
@@ -31,6 +33,7 @@ void skills() {
 	chassis::turn_rel(-45_deg);
 	chassis::drive(1.41_ft);
 	chassis::turn_rel(45_deg);
+	*/
 
 	// TODO: Pursuit
 }
