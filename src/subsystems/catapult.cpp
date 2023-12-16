@@ -29,11 +29,13 @@ void cata::release() {
 void cata::user() {
 	bool continuous = false;
 	bool brake = false;
-	catapult.set_brake_mode(pros::E_MOTOR_BRAKE_COAST);
+	cata_rot.reset_position();
 	while (true) {
-		// if (controller.get_digital(pros::E_CONTROLLER_DIGITAL_A)) continuous = !continuous;
+		if (controller.get_digital_new_press(pros::E_CONTROLLER_DIGITAL_A))
+			continuous = !continuous;
 
-		if (controller.get_digital_new_press(pros::E_CONTROLLER_DIGITAL_B)) {
+		if (controller.get_digital_new_press(pros::E_CONTROLLER_DIGITAL_B) && !continuous) {
+			std::cout << cata_rot.get_position() << "\n";
 			std::cout << cata::is_primed() << "\n";
 			if (!cata::is_primed())
 				cata::prime();
@@ -45,14 +47,11 @@ void cata::user() {
 
 			pros::delay(20);
 			continue;
-		}
-
-		/*
-		if (continuous) {
-		    catapult.move(104);
+		} else if (continuous) {
+			catapult.move(104);
 		} else {
-		    catapult.brake();
-		}*/
+			catapult.brake();
+		}
 
 		pros::delay(20);
 	}
