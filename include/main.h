@@ -24,7 +24,7 @@
  * E_CONTROLLER_MASTER is pedantically correct within the PROS styleguide, but
  * not convienent for most student programmers.
  */
-// #define PROS_USE_SIMPLE_NAMES
+#define PROS_USE_SIMPLE_NAMES
 
 /**
  * If defined, C++ literals will be available for use. All literals are in the
@@ -35,17 +35,11 @@
 #define PROS_USE_LITERALS
 
 #include "api.h"
-#include "robodash/api.h"
-#include "units.h"
 
-using namespace units::literals;
-using namespace units::length;
-using namespace units::time;
-using namespace units::velocity;
-using namespace units::angle;
-
-#ifdef __cplusplus
-#endif
+/**
+ * You should add more #includes here
+ */
+//#include "okapi/api.hpp"
 
 /**
  * If you find doing pros::Motor() to be tedious and you'd prefer just to do
@@ -76,4 +70,11 @@ void opcontrol(void);
 }
 #endif
 
-#endif // _PROS_MAIN_H_
+#ifdef __cplusplus
+/**
+ * You can add C++-only headers here
+ */
+//#include <iostream>
+#endif
+
+#endif  // _PROS_MAIN_H_
