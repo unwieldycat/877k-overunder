@@ -8,8 +8,10 @@ class PIDController {
 	static_assert(units::traits::is_unit_t<U>::value, "Template parameter \"U\" must be a unit");
 
   private:
-	units::dimensionless::scalar_t kP, kI, kD;
-	U error, error_prev, error_total, error_change;
+	double kP, kI, kD;
+	double time_change;
+	double prev_time = -1;
+	U error, error_prev, error_total, error_change, derivative;
 
   public:
 	PIDController(double kP, double kI, double kD) : kP(kP), kI(kI), kD(kD) {}
@@ -23,11 +25,20 @@ class PIDController {
 		error_total += error;
 		error_prev = error;
 
+		double time = pros::millis() / 1000.0;
+
+		if (prev_time == -1) prev_time = time;
+
+		time_change = time - prev_time;
+		prev_time = time;
+
+		derivative = error_change / prev_time;
+
 		// Reset integral on pass through 0
 		if ((error_prev < U(0) && error > U(0)) || (error_prev > U(0) && error < U(0)))
 			error_total = U(0);
 
-		return (error * kP + error_total * kI + error_change * kD).template to<double>();
+		return (error * kP + error_total * kI + derivative * kD).template to<double>();
 	}
 
 	/**
