@@ -1,5 +1,6 @@
 #include "subsystems/catapult.hpp"
 #include "devices.hpp"
+#include "pros/misc.h"
 #include "pros/motors.h"
 
 const int release_angle = 7500;
@@ -35,8 +36,6 @@ void cata::user() {
 			continuous = !continuous;
 
 		if (controller.get_digital_new_press(pros::E_CONTROLLER_DIGITAL_B) && !continuous) {
-			std::cout << cata_rot.get_position() << "\n";
-			std::cout << cata::is_primed() << "\n";
 			if (!cata::is_primed())
 				cata::prime();
 			else {
@@ -49,6 +48,12 @@ void cata::user() {
 			continue;
 		} else if (continuous) {
 			catapult.move(104);
+
+		} else if (controller.get_digital_new_press(pros::E_CONTROLLER_DIGITAL_Y)) {
+			catapult.move(-127);
+			pros::delay(500);
+			catapult.set_brake_mode(pros::E_MOTOR_BRAKE_COAST);
+			catapult.brake();
 		} else {
 			catapult.brake();
 		}
