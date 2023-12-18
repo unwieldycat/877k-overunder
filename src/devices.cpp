@@ -7,7 +7,7 @@ pros::Controller controller(pros::E_CONTROLLER_MASTER);
 // Motors
 pros::MotorGroup drive_left({6, -7, 8});
 pros::MotorGroup drive_right({-16, 17, -18});
-pros::Motor catapult(5);
+pros::MotorGroup catapult({-4, 5});
 
 // Odometry sensors
 pros::Rotation odom_left(9);
@@ -15,8 +15,8 @@ pros::Rotation odom_rear(10);
 pros::Imu imu(20);
 
 // Catapult
-pros::Rotation cata_rot(4);
-pros::Optical cata_optical(3);
+pros::Rotation cata_rot(3);
+pros::Optical cata_optical(2);
 
 // Pneumatics
 pros::adi::Pneumatics roller_piston('A', true);
