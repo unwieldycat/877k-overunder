@@ -12,7 +12,7 @@ void set_drive_mode(drive_mode_t mode);
 /**
  * @brief User drive control function
  */
-void user_drive();
+void user();
 
 /**
  * @brief Reverse the drive direction

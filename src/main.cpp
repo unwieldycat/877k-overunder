@@ -36,7 +36,7 @@ void autonomous() {
 }
 
 void opcontrol() {
-	pros::Task drive_task(chassis::user_drive, "User Chassis Control");
+	pros::Task drive_task(chassis::user, "User Chassis Control");
 	pros::Task cata_task(cata::user, "Catapult Control");
 	pros::Task misc_task(user, "Misc User Control");
 }

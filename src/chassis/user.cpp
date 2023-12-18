@@ -60,7 +60,7 @@ void chassis::set_drive_mode(chassis::drive_mode_t mode) {
 		driver_func = tank_drive;
 }
 
-void chassis::user_drive() {
+void chassis::user() {
 	while (true) {
 		if (!enable_drive) {
 			pros::delay(10);
