@@ -45,7 +45,7 @@ class PIDController {
 	 * Check if at or very close to desired point
 	 */
 	inline bool settled() {
-		return units::math::abs(error_change) < U(0.05) && units::math::abs(error) < U(0.1) * kP;
+		return units::math::abs(error_change) < U(0.09) && units::math::abs(error) < U(0.1) * kP;
 	}
 
 	/**
