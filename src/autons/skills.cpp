@@ -1,9 +1,4 @@
-#include "autons.hpp"
-#include "chassis/auton.hpp"
-#include "chassis/pursuit.hpp"
-#include "devices.hpp"
-#include "odom.hpp"
-#include "subsystems/catapult.hpp"
+#include "main.h"
 
 const int launches = 50;
 

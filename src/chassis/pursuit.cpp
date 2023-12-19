@@ -1,8 +1,4 @@
-#include "pursuit.hpp"
-#include "devices.hpp"
-#include "odom.hpp"
-#include "pros/motors.h"
-#include "units.h"
+#include "main.h"
 #include <ostream>
 #include <utility>
 using namespace units::math;

@@ -1,8 +1,4 @@
-#include "auton.hpp"
-#include "devices.hpp"
-#include "odom.hpp"
-#include "pid.hpp"
-#include "units.h"
+#include "main.h"
 
 #define WHEEL_OFFSET 7.6
 

@@ -1,6 +1,4 @@
-#include "autons.hpp"
-#include "chassis/auton.hpp"
-#include "devices.hpp"
+#include "main.h"
 
 void awp() {
 	// TODO: Make it do stuff

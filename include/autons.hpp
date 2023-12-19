@@ -1,5 +1,4 @@
 #pragma once
-#include "main.h"
 
 /**
  * Push the field triball into goal

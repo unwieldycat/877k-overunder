@@ -1,7 +1,4 @@
-#include "subsystems/catapult.hpp"
-#include "devices.hpp"
-#include "pros/misc.h"
-#include "pros/motors.h"
+#include "main.h"
 
 const int release_angle = 7500;
 

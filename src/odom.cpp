@@ -1,6 +1,4 @@
-#include "odom.hpp"
-#include "devices.hpp"
-#include "units.h"
+#include "main.h"
 
 const std::pair<inch_t, inch_t> left_offset = {-4.829_in, 1.4675_in};
 const std::pair<inch_t, inch_t> rear_offset = {1.1655_in, 0.825_in};
@@ -39,10 +37,12 @@ void odom::initialize() {
 		heading_change = robot_heading - prev_heading;
 
 		if (heading_change != 0_deg) {
-			int sign = (rear_offset.second > rear_offset.first)? 1 : -1;
-			x_radius = (rear_dist / heading_change) + sign * sqrt(pow<2>(rear_offset.second) + pow<2>(rear_offset.first));
-			sign = (left_offset.second > left_offset.first)? 1 : -1;
-			y_radius = (left_dist / heading_change) + sign * sqrt(pow<2>(left_offset.second) + pow<2>(left_offset.first));
+			int sign = (rear_offset.second > rear_offset.first) ? 1 : -1;
+			x_radius = (rear_dist / heading_change) +
+			           sign * sqrt(pow<2>(rear_offset.second) + pow<2>(rear_offset.first));
+			sign = (left_offset.second > left_offset.first) ? 1 : -1;
+			y_radius = (left_dist / heading_change) +
+			           sign * sqrt(pow<2>(left_offset.second) + pow<2>(left_offset.first));
 			local_x = 2 * x_radius * sin(heading_change / 2);
 			local_y = 2 * y_radius * sin(heading_change / 2);
 		} else {

@@ -1,6 +1,4 @@
-#include "user.hpp"
-#include "auton.hpp"
-#include "devices.hpp"
+#include "main.h"
 
 // ========================= User Control Functions ========================= //
 

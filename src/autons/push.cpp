@@ -1,6 +1,4 @@
-#include "autons.hpp"
-#include "chassis/auton.hpp"
-#include "devices.hpp"
+#include "main.h"
 
 void push_field() {
 	chassis::drive(4_ft);

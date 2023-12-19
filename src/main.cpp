@@ -1,12 +1,4 @@
 #include "main.h"
-#include "autons.hpp"
-#include "chassis/auton.hpp"
-#include "chassis/user.hpp"
-#include "devices.hpp"
-#include "odom.hpp"
-#include "subsystems/catapult.hpp"
-#include "subsystems/misc.hpp"
-#include <sys/select.h>
 
 rd::Selector selector({
     {"Field Triball Push", push_field},

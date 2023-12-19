@@ -1,6 +1,5 @@
 #pragma once
 #include "main.h"
-#include "units.h"
 
 class Point {
   public:
@@ -9,7 +8,8 @@ class Point {
 	bool left, right;
 
 	Point(foot_t x, foot_t y) : x(x), y(y) {}
-	Point(foot_t x, foot_t y, units::dimensionless::scalar_t curvature) : x(x), y(y), curvature(curvature) {}
+	Point(foot_t x, foot_t y, units::dimensionless::scalar_t curvature)
+	    : x(x), y(y), curvature(curvature) {}
 
 	/**
 	 * @brief Finds slope from point a to point b

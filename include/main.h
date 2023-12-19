@@ -45,6 +45,20 @@ using namespace units::velocity;
 using namespace units::angle;
 
 #ifdef __cplusplus
+
+#include "autons.hpp"
+#include "devices.hpp"
+#include "odom.hpp"
+#include "pid.hpp"
+#include "point.hpp"
+
+#include "chassis/auton.hpp"
+#include "chassis/pursuit.hpp"
+#include "chassis/user.hpp"
+
+#include "subsystems/catapult.hpp"
+#include "subsystems/misc.hpp"
+
 #endif
 
 /**
