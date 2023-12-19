@@ -1,5 +1,6 @@
 #pragma once
-#include "main.h"
+#include "point.hpp"
+#include <vector>
 
 namespace chassis {
 namespace pursuit {

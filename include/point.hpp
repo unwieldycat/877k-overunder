@@ -1,5 +1,7 @@
 #pragma once
-#include "main.h"
+#include "units.h"
+
+using namespace units::length;
 
 class Point {
   public:
