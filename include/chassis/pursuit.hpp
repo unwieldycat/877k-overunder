@@ -23,8 +23,10 @@ void add_point(foot_t x_ft, foot_t y_ft, units::dimensionless::scalar_t curvatur
 /**
  * @brief Begins moving the robot following all the points stored previous to the running of this
  * function, clears the points after running
+ *
+ * @param backwards determines if the bot should move backwards for this pursuit cycle
  */
-void pursuit();
+void pursuit(bool backwards = false);
 
 /**
  * @brief Toggles the wings at a certain point or in a certain area

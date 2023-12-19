@@ -16,7 +16,7 @@ void chassis::pursuit::add_point(
 // TODO: wing toggle function
 void chassis::pursuit::wing(char side) {}
 
-void chassis::pursuit::pursuit() {
+void chassis::pursuit::pursuit(bool backwards) {
 	int current_point = 1;
 	units::dimensionless::scalar_t slope_par, slope_perp;
 	foot_t closest_point, next_objective_x, next_objective_y, const_par, const_perp;
@@ -103,22 +103,24 @@ void chassis::pursuit::pursuit() {
 		// BOOKMARK: Heading calculations
 		//  Find math heading objective
 		heading_objective = atan2(next_objective_y - current_posY, next_objective_x - current_posX);
-		if (heading_objective < 0_deg) {
+		if (backwards) heading_objective += 180_deg;
+		while (heading_objective < 0_deg) {
 			heading_objective += 360_deg;
 		}
 
 		heading_error = heading_objective - current_heading;
 
-		if (heading_error < -180_deg)
+		while (heading_error < -180_deg)
 			heading_error += 360_deg;
-		else if (heading_error > 180_deg)
+		while (heading_error > 180_deg)
 			heading_error -= 360_deg;
 
 		// BOOKMARK: Movement
-		left_speed =
-		    127 * (1 - points[current_point - 1].curvature * 3) + 127 * heading_error / 360_deg;
-		right_speed =
-		    127 * (1 - points[current_point - 1].curvature * 3) - 127 * heading_error / 360_deg;
+		int sign = backwards ? 1 : -1;
+		left_speed = sign * (127 * (1 - points[current_point - 1].curvature * 3) +
+		                     127 * heading_error / 360_deg);
+		right_speed = sign * (127 * (1 - points[current_point - 1].curvature * 3) -
+		                      127 * heading_error / 360_deg);
 
 		drive_left.move(left_speed);
 		drive_right.move(right_speed);
