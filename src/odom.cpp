@@ -38,11 +38,11 @@ void odom::initialize() {
 
 		if (heading_change != 0_deg) {
 			int sign = (rear_offset.second > rear_offset.first) ? 1 : -1;
-			x_radius = (rear_dist / heading_change) +
-			           sign * sqrt(pow<2>(rear_offset.second) + pow<2>(rear_offset.first));
+			x_radius = (rear_dist / heading_change) + rear_offset.second;
+			// sign * sqrt(pow<2>(rear_offset.second) + pow<2>(rear_offset.first));
 			sign = (left_offset.second > left_offset.first) ? 1 : -1;
-			y_radius = (left_dist / heading_change) +
-			           sign * sqrt(pow<2>(left_offset.second) + pow<2>(left_offset.first));
+			y_radius = (left_dist / heading_change) + left_offset.first;
+			// sign * sqrt(pow<2>(left_offset.second) + pow<2>(left_offset.first));
 			local_x = 2 * x_radius * sin(heading_change / 2);
 			local_y = 2 * y_radius * sin(heading_change / 2);
 		} else {
@@ -52,7 +52,7 @@ void odom::initialize() {
 
 		local_true_heading = atan2(local_y, local_x);
 		if (local_x == 0_in && local_y == 0_in) local_true_heading = 0_deg;
-		global_true_heading = local_true_heading + robot_heading;
+		global_true_heading = local_true_heading + (robot_heading + prev_heading) / 2;
 		while (global_true_heading > 180_deg)
 			global_true_heading -= 360_deg;
 		while (global_true_heading < 180_deg)
@@ -61,6 +61,8 @@ void odom::initialize() {
 		total_dist = sqrt(pow<2>(local_x) + pow<2>(local_y));
 		odom_x += total_dist * cos(global_true_heading);
 		odom_y += total_dist * sin(global_true_heading);
+
+		std::cout << "x: " << odom_x << "y: " << odom_y << std::endl;
 
 		odom_left.reset_position();
 		odom_rear.reset_position();

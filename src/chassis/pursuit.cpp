@@ -31,9 +31,9 @@ void chassis::pursuit::pursuit(bool backwards) {
 		degree_t current_heading = (degree_t)imu.get_heading(), heading_error;
 		foot_t current_posX = odom::get_x(), current_posY = odom::get_y();
 		auto lookahead_distance =
-		    (1_ft / (points[current_point - 1].curvature) > 6_ft
-		         ? 6_ft
-		         : 1_ft / (points[current_point - 1].curvature));
+		    (1_ft / (points[current_point - 1].curvature) < 6_ft
+		         ? 1_ft / (points[current_point - 1].curvature)
+		         : 6_ft);
 
 		// BOOKMARK: Begin finding next objective
 		//  Finds closest point when X coordinates of previous and current points are different
