@@ -1,11 +1,11 @@
 #include "main.h"
 
-const int release_angle = 7500;
+const int release_angle = -7500; // 7500
 
-bool cata::is_primed() { return cata_rot.get_position() >= release_angle; }
+bool cata::is_primed() { return cata_rot.get_position() <= release_angle; }
 
 void cata::prime() {
-	while (cata_rot.get_position() < release_angle) {
+	while (cata_rot.get_position() > release_angle) {
 		catapult.move(127);
 		pros::delay(10);
 	}
@@ -17,7 +17,7 @@ void cata::release() {
 	if (!cata::is_primed()) return; // Make sure cata is primed
 
 	catapult.move(127);
-	while (cata_rot.get_position() >= release_angle)
+	while (cata_rot.get_position() <= release_angle)
 		pros::delay(50);
 
 	catapult.set_brake_mode(pros::E_MOTOR_BRAKE_COAST);
