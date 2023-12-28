@@ -12,8 +12,8 @@ rd::Image logo("Logo", "/usd/logo.bin");
 
 void initialize() {
 	odom::initialize();
+	odom::calibrate(2_ft, 2_ft, 225_deg);
 	cata_rot.reset_position();
-
 	pros::Task odom_task(odom::track_position, "Odometry");
 }
 
@@ -28,6 +28,7 @@ void autonomous() {
 }
 
 void opcontrol() {
+
 	pros::Task drive_task(chassis::user, "User Chassis Control");
 	pros::Task cata_task(cata::user, "Catapult Control");
 	pros::Task misc_task(user, "Misc User Control");
