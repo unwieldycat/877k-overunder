@@ -59,7 +59,7 @@ void odom::initialize() {
 			global_true_heading += 360_deg;
 
 		total_dist = sqrt(pow<2>(local_x) + pow<2>(local_y));
-		odom_x += total_dist * cos(global_true_heading);
+		odom_x -= total_dist * cos(global_true_heading);
 		odom_y += total_dist * sin(global_true_heading);
 
 		std::cout << "x: " << odom_x << "y: " << odom_y << std::endl;
