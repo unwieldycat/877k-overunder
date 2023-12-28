@@ -15,14 +15,18 @@ void chassis::drive(foot_t distance) {
 	PIDController<inch_t> drive_pid(2, 0, 0);
 	PIDController<degree_t> turn_pid(1, 0, 0);
 
+	inch_t origin_x = odom::get_x();
+	inch_t origin_y = odom::get_y();
+	inch_t traveled;
 	double drive;
 	double turn;
 	degree_t target_hdg = (degree_t)imu.get_heading();
 	degree_t current_hdg;
 
 	do {
+		traveled = sqrt(pow<2>(odom::get_x() - origin_x) + pow<2>(odom::get_y() - origin_y));
 		current_hdg = (degree_t)imu.get_heading();
-		drive = drive_pid.calculate(distance, odom::get_y());
+		drive = drive_pid.calculate(distance, traveled);
 		turn = turn_pid.calculate(target_hdg, current_hdg);
 		drive_left.move(drive - turn);
 		drive_right.move(drive + turn);
