@@ -57,8 +57,5 @@ void chassis::turn_abs(degree_t heading) {
 
 void chassis::turn_rel(degree_t degrees) {
 	degree_t heading = degree_t(imu.get_heading()) + degrees;
-	if (heading > 180_deg) heading -= 360_deg;
-	if (heading < 0_deg) heading = units::math::fabs(heading);
-
 	turn_abs(heading);
 }
