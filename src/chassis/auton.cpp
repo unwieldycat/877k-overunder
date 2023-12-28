@@ -1,6 +1,5 @@
 #include "main.h"
-
-#define WHEEL_OFFSET 7.6
+#include <cmath>
 
 using namespace units::math;
 
@@ -43,6 +42,8 @@ void chassis::turn_abs(degree_t heading) {
 	double output;
 	degree_t current_hdg;
 
+	heading += (degree_t)360.0 * ((int)imu.get_rotation() / 360);
+
 	do {
 		current_hdg = degree_t(imu.get_rotation());
 		output = pid.calculate(heading, current_hdg);
@@ -56,6 +57,20 @@ void chassis::turn_abs(degree_t heading) {
 }
 
 void chassis::turn_rel(degree_t degrees) {
-	degree_t heading = degree_t(imu.get_heading()) + degrees;
-	turn_abs(heading);
+	PIDController<degree_t> pid(3, 0.1, 1);
+
+	double output;
+	degree_t current_rot;
+	degree_t end_rot = (degree_t)imu.get_rotation() + degrees;
+
+	do {
+		current_rot = degree_t(imu.get_rotation());
+		output = pid.calculate(end_rot, current_rot);
+		drive_left.move(output);
+		drive_right.move(-output);
+		pros::delay(20);
+	} while (!pid.settled());
+
+	drive_left.brake();
+	drive_right.brake();
 }
