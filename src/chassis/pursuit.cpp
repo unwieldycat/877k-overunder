@@ -116,11 +116,13 @@ void chassis::pursuit::pursuit(bool backwards) {
 			heading_error -= 360_deg;
 
 		// BOOKMARK: Movement
-		int sign = backwards ? 1 : -1;
-		left_speed = sign * (127 * (1 - points[current_point - 1].curvature * 3) +
-		                     127 * heading_error / 360_deg);
-		right_speed = sign * (127 * (1 - points[current_point - 1].curvature * 3) -
-		                      127 * heading_error / 360_deg);
+		int sign = backwards ? -1 : 1;
+		left_speed = sign * (127 * (1 - points[current_point - 1].curvature) *
+		                         (360_deg - heading_error) / 360_deg +
+		                     sign * 127 * heading_error / 180_deg);
+		right_speed = sign * (127 * (1 - points[current_point - 1].curvature) *
+		                          (360_deg - heading_error) / 360_deg -
+		                      sign * 127 * heading_error / 180_deg);
 
 		drive_left.move(left_speed);
 		drive_right.move(right_speed);
