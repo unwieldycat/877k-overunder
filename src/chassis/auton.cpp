@@ -43,6 +43,11 @@ void chassis::turn_abs(degree_t heading) {
 	double output;
 	degree_t current_hdg;
 
+	while (heading > 180_deg)
+		heading -= 180_deg;
+	while (heading < -180_deg)
+		heading += 180_deg;
+
 	heading += (degree_t)360.0 * ((int)imu.get_rotation() / 360);
 	turn_pid.reset();
 
