@@ -36,6 +36,10 @@ class PIDController {
 		if ((error_prev < U(0) && error > U(0)) || (error_prev > U(0) && error < U(0)))
 			error_total = U(0);
 
+		// Clamp integral to + or - 64
+		if (error_total > U(64)) error_total = U(64);
+		if (error_total < U(64)) error_total = U(-64);
+
 		return (error * kP + error_total * kI + derivative * kD).template to<double>();
 	}
 
