@@ -14,6 +14,11 @@ void drive(int power);
 void drive(foot_t distance);
 
 /**
+ * Drive a distance with a specified heading
+ */
+void drive(foot_t distance, degree_t heading);
+
+/**
  * Turn to a specific heading
  */
 void turn_abs(degree_t heading);

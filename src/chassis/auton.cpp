@@ -13,13 +13,14 @@ void chassis::drive(int power) {
 	drive_right.move(power);
 }
 
-void chassis::drive(foot_t distance) {
+void chassis::drive(foot_t distance) { chassis::drive(distance, (degree_t)imu.get_rotation()); }
+
+void chassis::drive(foot_t distance, degree_t heading) {
 	inch_t origin_x = odom::get_x();
 	inch_t origin_y = odom::get_y();
 	inch_t traveled;
 	double drive;
 	double turn;
-	degree_t target_rot = (degree_t)imu.get_rotation();
 	degree_t current_rot;
 
 	drive_pid.reset();
@@ -29,7 +30,7 @@ void chassis::drive(foot_t distance) {
 		traveled = sqrt(pow<2>(odom::get_x() - origin_x) + pow<2>(odom::get_y() - origin_y));
 		current_rot = (degree_t)imu.get_rotation();
 		drive = drive_pid.calculate(distance, traveled);
-		turn = turn_pid.calculate(target_rot, current_rot);
+		turn = turn_pid.calculate(heading, current_rot);
 		drive_left.move(drive + turn);
 		drive_right.move(drive - turn);
 		pros::delay(20);
