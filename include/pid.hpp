@@ -64,8 +64,8 @@ class PIDController {
 	 * Reset state
 	 */
 	inline void reset() {
-		error_change = 0;
-		error_prev = 0;
-		error_total = 0;
+		error_change = U(0);
+		error_prev = U(0);
+		error_total = U(0);
 	}
 };
