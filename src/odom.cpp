@@ -62,8 +62,6 @@ void odom::initialize() {
 		odom_x -= total_dist * cos(global_true_heading);
 		odom_y += total_dist * sin(global_true_heading);
 
-		std::cout << "x: " << odom_x << "y: " << odom_y << std::endl;
-
 		odom_left.reset_position();
 		odom_rear.reset_position();
 		left_odom = 0_deg;
