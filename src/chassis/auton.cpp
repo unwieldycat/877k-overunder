@@ -30,8 +30,8 @@ void chassis::drive(foot_t distance) {
 		current_rot = (degree_t)imu.get_rotation();
 		drive = drive_pid.calculate(distance, traveled);
 		turn = turn_pid.calculate(target_rot, current_rot);
-		drive_left.move(drive - turn);
-		drive_right.move(drive + turn);
+		drive_left.move(drive + turn);
+		drive_right.move(drive - turn);
 		pros::delay(20);
 	} while (!drive_pid.settled());
 
