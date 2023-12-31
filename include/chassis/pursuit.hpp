@@ -10,8 +10,11 @@ namespace chassis {
  * @param x_ft x coordinate in feet
  * @param y_ft y coordinate in feet
  * @param curvature curvature |<x'(t), y'(t)> cross <x"(t), y"(t)>|/|<x'(t), y'(t)>|^3
+ * @param wings Wings to be opened (n, l, r, b)
  */
-void add_point(foot_t x_ft, foot_t y_ft, units::dimensionless::scalar_t curvature);
+void add_point(
+    foot_t x_ft, foot_t y_ft, units::dimensionless::scalar_t curvature, char wings = 'p'
+);
 
 /**
  * @brief Begins moving the robot following all the points stored previous to the running of this

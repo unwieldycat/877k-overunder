@@ -7,11 +7,11 @@ class Point {
   public:
 	foot_t x, y;
 	units::dimensionless::scalar_t curvature;
-	bool left, right;
+	char wings;
 
 	Point(foot_t x, foot_t y) : x(x), y(y) {}
-	Point(foot_t x, foot_t y, units::dimensionless::scalar_t curvature)
-	    : x(x), y(y), curvature(curvature) {}
+	Point(foot_t x, foot_t y, units::dimensionless::scalar_t curvature, char wings)
+	    : x(x), y(y), curvature(curvature), wings(wings) {}
 
 	/**
 	 * @brief Finds slope from point a to point b
