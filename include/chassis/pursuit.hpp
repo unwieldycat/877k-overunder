@@ -3,7 +3,6 @@
 #include <vector>
 
 namespace chassis {
-namespace pursuit {
 
 /**
  * @brief adds a point to the end of the points for the path
@@ -22,5 +21,4 @@ void add_point(foot_t x_ft, foot_t y_ft, units::dimensionless::scalar_t curvatur
  */
 void pursuit(bool backwards = false);
 
-} // namespace pursuit
 } // namespace chassis

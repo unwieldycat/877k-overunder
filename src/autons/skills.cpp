@@ -26,9 +26,9 @@ void skills() {
 	    0.1896, 0.1559, 0.1329, 0.1185, 0.1121, 0.1175, 0.1541, 0.3026, 0.7044, 0.7998, 0.4072,
 	    0.1891, 0.0998, 0.0595, 0.0387, 0.0269, 0.0196, 0.2857, 0.3006, 0.2656, 0.2048, 0.1494};
 	for (int i = 0; i < x_coords.size(); i++) {
-		chassis::pursuit::add_point((foot_t)(x_coords[i]), (foot_t)(y_coords[i]), kappas[i]);
+		chassis::add_point((foot_t)(x_coords[i]), (foot_t)(y_coords[i]), kappas[i]);
 	}
-	chassis::pursuit::pursuit(true);
+	chassis::pursuit(true);
 	x_coords = {9,      9.352,  9.6248, 9.8236, 9.9538, 10.02,  10.029, 9.9841, 9.8917, 9.7566,
 	            9.5842, 9.3796, 9.1481, 8.895,  8.6254, 8.3445, 8.0576, 7.77,   7.4868, 7.2132,
 	            6.9546, 6.7167, 6.5029, 6.3202, 6.1734, 6.0676, 6.0081, 6};
@@ -39,7 +39,7 @@ void skills() {
 	          1.7021, 1.4092, 1.0105, 0.6714, 0.4327, 0.2772, 0.1789, 0.117,  0.0781, 0.0536,
 	          0.0382, 0.0286, 0.0225, 0.0187, 0.0162, 0.0145, 0.0131, 0.2249};
 	for (int i = 0; i < x_coords.size(); i++) {
-		chassis::pursuit::add_point((foot_t)(x_coords[i]), (foot_t)(y_coords[i]), kappas[i]);
+		chassis::add_point((foot_t)(x_coords[i]), (foot_t)(y_coords[i]), kappas[i]);
 	}
-	chassis::pursuit::pursuit();
+	chassis::pursuit();
 }

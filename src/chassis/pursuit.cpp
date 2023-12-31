@@ -6,15 +6,13 @@ using namespace units::math;
 
 std::vector<Point> points = {};
 
-void chassis::pursuit::add_point(
-    foot_t x_ft, foot_t y_ft, units::dimensionless::scalar_t curvature
-) {
+void chassis::add_point(foot_t x_ft, foot_t y_ft, units::dimensionless::scalar_t curvature) {
 	if (points[points.size() - 1].x != x_ft || points[points.size() - 1].y != y_ft) {
 		points.push_back(Point(x_ft, y_ft, curvature));
 	}
 }
 
-void chassis::pursuit::pursuit(bool backwards) {
+void chassis::pursuit(bool backwards) {
 	int current_point = 1;
 	units::dimensionless::scalar_t slope_par, slope_perp;
 	foot_t closest_point, next_objective_x, next_objective_y, const_par, const_perp;
