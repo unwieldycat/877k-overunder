@@ -7,14 +7,14 @@ pros::Controller controller(pros::E_CONTROLLER_MASTER);
 // Motors
 pros::MotorGroup drive_left({6, -7, 8});
 pros::MotorGroup drive_right({-16, 17, -18});
-pros::MotorGroup catapult({-4, 5});
+pros::MotorGroup punch_motors({-4, 5});
 
 // Odometry sensors
 pros::Rotation odom_left(9);
 pros::Rotation odom_rear(10);
 pros::Imu imu(20);
 
-// Catapult
+// Puncher
 pros::Rotation puncher_rot(3);
 
 // Pneumatics

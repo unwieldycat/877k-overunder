@@ -4,7 +4,7 @@ namespace puncher {
 
 /**
  * @brief Checks if the puncher is primed
- * @returns Catapult state
+ * @returns Puncher state
  */
 bool is_primed();
 

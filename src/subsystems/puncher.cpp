@@ -6,22 +6,22 @@ bool puncher::is_primed() { return puncher_rot.get_position() <= release_angle; 
 
 void puncher::prime() {
 	while (puncher_rot.get_position() > release_angle) {
-		catapult.move(127);
+		punch_motors.move(127);
 		pros::delay(10);
 	}
-	catapult.set_brake_mode(pros::E_MOTOR_BRAKE_HOLD);
-	catapult.brake();
+	punch_motors.set_brake_mode(pros::E_MOTOR_BRAKE_HOLD);
+	punch_motors.brake();
 }
 
 void puncher::release() {
 	if (!puncher::is_primed()) return; // Make sure cata is primed
 
-	catapult.move(127);
+	punch_motors.move(127);
 	while (puncher_rot.get_position() <= release_angle)
 		pros::delay(50);
 
-	catapult.set_brake_mode(pros::E_MOTOR_BRAKE_COAST);
-	catapult.brake();
+	punch_motors.set_brake_mode(pros::E_MOTOR_BRAKE_COAST);
+	punch_motors.brake();
 }
 
 void puncher::user() {
@@ -44,15 +44,15 @@ void puncher::user() {
 			pros::delay(20);
 			continue;
 		} else if (continuous) {
-			catapult.move(104);
+			punch_motors.move(104);
 
 		} else if (controller.get_digital_new_press(pros::E_CONTROLLER_DIGITAL_Y)) {
-			catapult.move(-127);
+			punch_motors.move(-127);
 			pros::delay(500);
-			catapult.set_brake_mode(pros::E_MOTOR_BRAKE_COAST);
-			catapult.brake();
+			punch_motors.set_brake_mode(pros::E_MOTOR_BRAKE_COAST);
+			punch_motors.brake();
 		} else {
-			catapult.brake();
+			punch_motors.brake();
 		}
 
 		pros::delay(20);
