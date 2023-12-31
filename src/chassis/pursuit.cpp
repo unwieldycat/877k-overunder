@@ -8,16 +8,11 @@ using namespace units::math;
 std::vector<Point> points = {};
 
 void chassis::add_point(
-    foot_t x_ft, foot_t y_ft, units::dimensionless::scalar_t curvature, char wings
+    foot_t x_ft, foot_t y_ft, units::dimensionless::scalar_t curvature, bool left_wing,
+    bool right_wing
 ) {
 	if (points[points.size() - 1].x != x_ft || points[points.size() - 1].y != y_ft) {
-		if (wings == 'p') {
-			if (points.size() == 0)
-				wings = 'n';
-			else
-				wings = points[points.size() - 1].wings;
-		}
-		points.push_back(Point(x_ft, y_ft, curvature, wings));
+		points.push_back(Point(x_ft, y_ft, curvature, left_wing, right_wing));
 	}
 }
 
@@ -31,24 +26,8 @@ void chassis::pursuit(bool backwards) {
 	drive_left.set_brake_mode(pros::E_MOTOR_BRAKE_HOLD);
 	drive_right.set_brake_mode(pros::E_MOTOR_BRAKE_HOLD);
 
-	switch (points[0].wings) {
-	case 'b':
-		left_wing.extend();
-		right_wing.extend();
-		break;
-	case 'l':
-		left_wing.extend();
-		right_wing.retract();
-		break;
-	case 'r':
-		left_wing.retract();
-		right_wing.extend();
-		break;
-	case 'n':
-		left_wing.retract();
-		right_wing.retract();
-		break;
-	}
+	left_wing.set_value(points[0].left_wing);
+	left_wing.set_value(points[0].right_wing);
 
 	// Loops until all points have been passed
 	while (current_point < points.size()) {
@@ -123,24 +102,8 @@ void chassis::pursuit(bool backwards) {
 		if (fabs(next_objective_x - points[current_point].x) < 0.1_ft &&
 		    fabs(next_objective_y - points[current_point].y) < 0.1_ft) {
 			current_point++;
-			switch (points[current_point].wings) {
-			case 'b':
-				left_wing.extend();
-				right_wing.extend();
-				break;
-			case 'l':
-				left_wing.extend();
-				right_wing.retract();
-				break;
-			case 'r':
-				left_wing.retract();
-				right_wing.extend();
-				break;
-			case 'n':
-				left_wing.retract();
-				right_wing.retract();
-				break;
-			}
+			left_wing.set_value(points[current_point].left_wing);
+			left_wing.set_value(points[current_point].right_wing);
 		}
 
 		// BOOKMARK: Heading calculations

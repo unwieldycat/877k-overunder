@@ -13,7 +13,8 @@ namespace chassis {
  * @param wings Wings to be opened (n, l, r, b)
  */
 void add_point(
-    foot_t x_ft, foot_t y_ft, units::dimensionless::scalar_t curvature, char wings = 'p'
+    foot_t x_ft, foot_t y_ft, units::dimensionless::scalar_t curvature, bool left_wing,
+    bool right_wing
 );
 
 /**
