@@ -12,7 +12,7 @@ rd::Image logo("Logo", "/usd/logo.bin");
 
 void initialize() {
 	odom::initialize();
-	cata_rot.reset_position();
+	puncher_rot.reset_position();
 	pros::Task odom_task(odom::track_position, "Odometry");
 }
 

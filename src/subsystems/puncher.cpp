@@ -2,10 +2,10 @@
 
 const int release_angle = -7500; // 7500
 
-bool puncher::is_primed() { return cata_rot.get_position() <= release_angle; }
+bool puncher::is_primed() { return puncher_rot.get_position() <= release_angle; }
 
 void puncher::prime() {
-	while (cata_rot.get_position() > release_angle) {
+	while (puncher_rot.get_position() > release_angle) {
 		catapult.move(127);
 		pros::delay(10);
 	}
@@ -17,7 +17,7 @@ void puncher::release() {
 	if (!puncher::is_primed()) return; // Make sure cata is primed
 
 	catapult.move(127);
-	while (cata_rot.get_position() <= release_angle)
+	while (puncher_rot.get_position() <= release_angle)
 		pros::delay(50);
 
 	catapult.set_brake_mode(pros::E_MOTOR_BRAKE_COAST);
@@ -27,7 +27,7 @@ void puncher::release() {
 void puncher::user() {
 	bool continuous = false;
 	bool brake = false;
-	cata_rot.reset_position();
+	puncher_rot.reset_position();
 	while (true) {
 		if (controller.get_digital_new_press(pros::E_CONTROLLER_DIGITAL_A))
 			continuous = !continuous;

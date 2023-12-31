@@ -15,8 +15,7 @@ pros::Rotation odom_rear(10);
 pros::Imu imu(20);
 
 // Catapult
-pros::Rotation cata_rot(3);
-pros::Optical cata_optical(2);
+pros::Rotation puncher_rot(3);
 
 // Pneumatics
 pros::adi::Pneumatics roller_piston('A', true);

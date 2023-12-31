@@ -13,8 +13,7 @@ extern pros::Rotation odom_left;
 extern pros::Rotation odom_rear;
 extern pros::Imu imu;
 
-extern pros::Rotation cata_rot;
-extern pros::Optical cata_optical;
+extern pros::Rotation puncher_rot;
 
 extern pros::adi::Pneumatics roller_piston;
 extern pros::adi::Pneumatics left_wing;
