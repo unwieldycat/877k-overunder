@@ -3,7 +3,8 @@
 
 using namespace units::math;
 
-PIDController<inch_t> drive_pid(2, 0, 0);
+// TODO: Tune for less settle time
+PIDController<inch_t> drive_pid(4, 0.7, 4);
 PIDController<degree_t> turn_pid(3, 0.8, 1.1);
 
 // ============================ Auton Functions ============================ //
