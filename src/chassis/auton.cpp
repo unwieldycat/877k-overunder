@@ -4,7 +4,7 @@
 using namespace units::math;
 
 PIDController<inch_t> drive_pid(2, 0, 0);
-PIDController<degree_t> turn_pid(3, 0.1, 1);
+PIDController<degree_t> turn_pid(3, 0.8, 1.1);
 
 // ============================ Auton Functions ============================ //
 
