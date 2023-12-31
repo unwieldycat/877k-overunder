@@ -75,8 +75,8 @@ void odom::initialize() {
 void odom::calibrate(inch_t robot_x = 0_in, inch_t robot_y = 0_in, degree_t heading = 0_deg) {
 	odom_x = robot_x;
 	odom_y = robot_y;
-	imu.reset(true);
 	imu.set_heading(heading.to<double>());
+	imu.set_rotation(heading.to<double>());
 }
 
 inch_t odom::get_x() { return odom_x; }
