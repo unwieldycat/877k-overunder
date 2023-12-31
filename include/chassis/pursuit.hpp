@@ -21,8 +21,9 @@ void add_point(
  * @brief Begins moving the robot following all the points stored previous to the running of this
  * function, clears the points after running
  *
+ * @param file_path File path to the file with the pursuit path
  * @param backwards determines if the bot should move backwards for this pursuit cycle
  */
-void pursuit(bool backwards = false);
+void pursuit(std::string file_path, bool backwards = false);
 
 } // namespace chassis

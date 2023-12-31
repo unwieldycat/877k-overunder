@@ -1,6 +1,7 @@
 #include "devices.hpp"
 #include "main.h"
 #include "units.h"
+#include <fstream>
 #include <ostream>
 #include <utility>
 using namespace units::math;
@@ -16,7 +17,49 @@ void chassis::add_point(
 	}
 }
 
-void chassis::pursuit(bool backwards) {
+// File format: x_coord, y_coord, kappa, left_wing, right_wing
+void parse_file(std::string file_path) {
+	if (!pros::usd::is_installed()) return;
+
+	std::ifstream file(file_path);
+	if (!file) return;
+
+	std::string line;
+	while (std::getline(file, line)) {
+		// Remove spaces
+		std::string::iterator new_end = std::remove(line.begin(), line.end(), ' ');
+		line.erase(new_end, line.end());
+
+		// Add comma to end of line if not present already
+		if (!line.ends_with(',')) line.append(",");
+
+		// Substring values by comma
+		std::vector<std::string> values;
+		int idx;
+
+		while ((idx = line.find(',')) != std::string::npos) {
+			values.push_back(line.substr(0, idx));
+			line.erase(0, idx + 1);
+		}
+
+		// Parse values
+		foot_t x = foot_t(std::stof(values.at(0)));
+		foot_t y = foot_t(std::stof(values.at(1)));
+		units::dimensionless::scalar_t curve = std::stof(values.at(2));
+		bool left_wing = values.at(3) == "1";
+		bool right_wing = values.at(4) == "1";
+
+		// Create point
+		points.push_back({x, y, curve, left_wing, right_wing});
+	}
+
+	file.close();
+}
+
+void chassis::pursuit(std::string file_path, bool backwards) {
+	parse_file(file_path);
+	if (points.empty()) return;
+
 	int current_point = 1;
 	units::dimensionless::scalar_t slope_par, slope_perp;
 	foot_t closest_point, next_objective_x, next_objective_y, const_par, const_perp;
