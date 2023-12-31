@@ -22,12 +22,5 @@ void add_point(foot_t x_ft, foot_t y_ft, units::dimensionless::scalar_t curvatur
  */
 void pursuit(bool backwards = false);
 
-/**
- * @brief Toggles the wings at a certain point or in a certain area
- *
- * @param side Side to change (L, R, or B)
- */
-void wing(char side);
-
 } // namespace pursuit
 } // namespace chassis

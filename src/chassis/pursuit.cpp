@@ -14,9 +14,6 @@ void chassis::pursuit::add_point(
 	}
 }
 
-// TODO: wing toggle function
-void chassis::pursuit::wing(char side) {}
-
 void chassis::pursuit::pursuit(bool backwards) {
 	int current_point = 1;
 	units::dimensionless::scalar_t slope_par, slope_perp;
