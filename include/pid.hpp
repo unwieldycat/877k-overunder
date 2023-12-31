@@ -27,9 +27,7 @@ class PIDController {
 		if (prev_time == -1) prev_time = time;
 
 		time_change = time - prev_time;
-		prev_time = time;
-
-		derivative = error_change / prev_time;
+		derivative = error_change / time_change;
 
 		// Reset integral on pass through 0
 		if ((error_prev < U(0) && error > U(0)) || (error_prev > U(0) && error < U(0)))
@@ -40,6 +38,7 @@ class PIDController {
 		if (error_total < U(-64)) error_total = U(-64);
 
 		error_prev = error;
+		prev_time = time;
 
 		return (error * kP + error_total * kI + derivative * kD).template to<double>();
 	}
