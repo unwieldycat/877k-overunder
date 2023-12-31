@@ -4,45 +4,14 @@
 const int launches = 50;
 
 void skills() {
-	chassis::drive(90);
-	pros::delay(750);
-	chassis::drive(0);
-	chassis::turn_rel(-135_deg);
-	chassis::drive(90);
-	pros::delay(750);
-	chassis::drive(32);
+	// Set odom to starting point
+	odom::calibrate(2_ft, 2_ft, 225_deg);
 
 	while (true) {
 		cata::prime();
 		pros::delay(1000);
 		cata::release();
 	}
-
-	/*
-	// Drive to match loader
-	chassis::drive(2_ft);
-	chassis::turn_rel(-135_deg);
-	chassis::drive(2_ft);
-	chassis::drive(64);
-
-	// Match load
-	// TODO: Display countdown on screen & change LED colors
-
-	cata_optical.set_led_pwm(100);
-	int end_time = pros::millis() + 30000;
-
-	for (int i = 0; i < launches; i++) {
-	    cata::prime();
-	    cata::release();
-	    pros::delay(20);
-	}
-
-	// Prepare for pursuit
-	chassis::drive(1_ft);
-	chassis::turn_rel(-45_deg);
-	chassis::drive(1.41_ft);
-	chassis::turn_rel(45_deg);
-	*/
 
 	std::vector<double> x_coords = {
 	    2,      2.5871, 3.1687, 3.7433, 4.3090, 4.8644, 5.4078, 5.9375, 6.4519, 6.9493, 7.4282,
