@@ -6,12 +6,6 @@ namespace chassis {
 namespace pursuit {
 
 /**
- * @brief Create vector of pairs to store points for the path with initial point 0, 0
- *
- */
-extern std::vector<Point> points;
-
-/**
  * @brief adds a point to the end of the points for the path
  *
  * @param x_ft x coordinate in feet

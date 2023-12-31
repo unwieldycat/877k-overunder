@@ -4,7 +4,7 @@
 #include <utility>
 using namespace units::math;
 
-std::vector<Point> chassis::pursuit::points = {};
+std::vector<Point> points = {};
 
 void chassis::pursuit::add_point(
     foot_t x_ft, foot_t y_ft, units::dimensionless::scalar_t curvature
