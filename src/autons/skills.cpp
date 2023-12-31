@@ -8,9 +8,9 @@ void skills() {
 	odom::calibrate(2_ft, 2_ft, 225_deg);
 
 	while (true) {
-		cata::prime();
+		puncher::prime();
 		pros::delay(1000);
-		cata::release();
+		puncher::release();
 	}
 
 	std::vector<double> x_coords = {
