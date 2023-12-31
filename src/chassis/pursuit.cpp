@@ -18,6 +18,7 @@ void chassis::add_point(
 }
 
 // File format: x_coord, y_coord, kappa, left_wing, right_wing
+// Warning: CSV keys are ignored, columns must be in the correct order
 void parse_file(std::string file_path) {
 	if (!pros::usd::is_installed()) return;
 
@@ -25,6 +26,7 @@ void parse_file(std::string file_path) {
 	if (!file) return;
 
 	std::string line;
+	std::getline(file, line); // Skip first line
 	while (std::getline(file, line)) {
 		// Remove spaces
 		std::string::iterator new_end = std::remove(line.begin(), line.end(), ' ');
