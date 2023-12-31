@@ -21,7 +21,6 @@ class PIDController {
 		error = set_point - current_pos;
 		error_change = error - error_prev;
 		error_total += error;
-		error_prev = error;
 
 		double time = pros::millis() / 1000.0;
 
@@ -38,7 +37,9 @@ class PIDController {
 
 		// Clamp integral to + or - 64
 		if (error_total > U(64)) error_total = U(64);
-		if (error_total < U(64)) error_total = U(-64);
+		if (error_total < U(-64)) error_total = U(-64);
+
+		error_prev = error;
 
 		return (error * kP + error_total * kI + derivative * kD).template to<double>();
 	}
