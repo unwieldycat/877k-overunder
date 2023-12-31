@@ -26,6 +26,7 @@ void chassis::pursuit(bool backwards) {
 	while (current_point < points.size()) {
 		degree_t current_heading = (degree_t)imu.get_heading(), heading_error;
 		foot_t current_posX = odom::get_x(), current_posY = odom::get_y();
+		// FIXME: 6 feet lookahead distance??
 		auto lookahead_distance =
 		    (1_ft / (points[current_point - 1].curvature) < 6_ft
 		         ? 1_ft / (points[current_point - 1].curvature)
@@ -131,5 +132,4 @@ void chassis::pursuit(bool backwards) {
 	drive_left.brake();
 	drive_right.brake();
 	points.clear();
-	points.push_back(Point(0_ft, 0_ft));
 }
