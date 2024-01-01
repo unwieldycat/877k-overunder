@@ -62,9 +62,10 @@ void chassis::pursuit(std::string file_path, bool backwards) {
 	parse_file(file_path);
 	if (points.empty()) return;
 
-	int current_point = 1;
+	int current_point = 1, same_obj = 0;
 	units::dimensionless::scalar_t slope_par, slope_perp;
 	foot_t closest_point, next_objective_x, next_objective_y, const_par, const_perp;
+	foot_t prev_objective_x = points[0].x, prev_objective_y = points[0].y;
 	degree_t heading_objective;
 	double left_speed, right_speed;
 
@@ -143,6 +144,26 @@ void chassis::pursuit(std::string file_path, bool backwards) {
 			}
 		}
 
+		// BOOKMARK: If the robot is stuck, it will try to find a point that is in a different
+		// direction
+		if (abs(next_objective_x - prev_objective_x) < 0.05_ft &&
+		    abs(next_objective_y - prev_objective_y) < 0.05_ft) {
+			same_obj++;
+		}
+		if (same_obj >= 3) {
+			while (abs(atan2(prev_objective_y - current_posY, prev_objective_x - current_posX) -
+			           atan2(next_objective_y - current_posY, next_objective_x - current_posX)) <
+			       20_deg) {
+				current_point++;
+			}
+			if (current_point >= points.size()) {
+				drive_left.brake();
+				drive_right.brake();
+				break;
+			}
+			same_obj = 0;
+		}
+
 		// BOOKMARK: Goal increment
 		if (fabs(next_objective_x - points[current_point].x) < 0.1_ft &&
 		    fabs(next_objective_y - points[current_point].y) < 0.1_ft) {
@@ -178,6 +199,9 @@ void chassis::pursuit(std::string file_path, bool backwards) {
 
 		drive_left.move(left_speed);
 		drive_right.move(right_speed);
+
+		prev_objective_x = next_objective_x;
+		prev_objective_y = next_objective_y;
 
 		// delay to prevent brain crashing
 		pros::delay(20);
