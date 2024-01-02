@@ -7,6 +7,7 @@
 using namespace units::math;
 
 std::vector<Point> points = {};
+std::stringstream path_logs;
 
 void chassis::add_point(
     foot_t x_ft, foot_t y_ft, units::dimensionless::scalar_t curvature, bool left_wing,
@@ -56,6 +57,21 @@ void parse_file(std::string file_path) {
 	}
 
 	file.close();
+}
+
+void record_error(Point goal, Point robot, degree_t heading) {
+	path_logs << "Robot left path at ( " << robot.x << ", " << robot.y << ") trying to reach ( "
+	          << goal.x << ", " << goal.y << ") with heading " << heading << std::endl;
+}
+
+void write_logs() {
+	if (pros::usd::is_installed()) {
+		std::ofstream file("/usd/paths/path_deviations.txt");
+		file << path_logs.rdbuf();
+		file.close();
+	}
+
+	path_logs.clear();
 }
 
 void chassis::pursuit(std::string file_path, bool backwards) {
@@ -130,7 +146,7 @@ void chassis::pursuit(std::string file_path, bool backwards) {
 				// NOTE: add action to bring robot back to path
 				drive_left.brake();
 				drive_right.brake();
-				chassis::record_error(
+				record_error(
 				    Point(points[current_point].x, points[current_point].y),
 				    Point(current_posX, current_posY), (degree_t)(imu.get_heading())
 				);
@@ -142,7 +158,7 @@ void chassis::pursuit(std::string file_path, bool backwards) {
 			if (fabs(points[current_point].x - current_posX) > lookahead_distance) {
 				drive_left.brake();
 				drive_right.brake();
-				chassis::record_error(
+				record_error(
 				    Point(points[current_point].x, points[current_point].y),
 				    Point(current_posX, current_posY), (degree_t)(imu.get_heading())
 				);
@@ -216,14 +232,5 @@ void chassis::pursuit(std::string file_path, bool backwards) {
 	drive_left.brake();
 	drive_right.brake();
 	points.clear();
-}
-
-void chassis::record_error(Point goal, Point robot, degree_t heading) {
-	if (!pros::usd::is_installed()) return;
-	std::ofstream out;
-	out.open("/usd/paths/path_deviations.txt");
-	out << "Robot left path at ( " << robot.x << ", " << robot.y << ") trying to reach ( " << goal.x
-	    << ", " << goal.y << ") with heading " << heading << std::endl;
-
-	out.close();
+	write_logs();
 }

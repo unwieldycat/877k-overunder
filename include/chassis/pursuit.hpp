@@ -26,13 +26,4 @@ void add_point(
  */
 void pursuit(std::string file_path, bool backwards = false);
 
-/**
- * @brief To record when the robot leaves the path
- *
- * @param goal the point that the robot was trying to reach
- * @param robot current robot position
- * @param heading current robot heading
- */
-void record_error(Point goal, Point robot, units::angle::degree_t heading);
-
 } // namespace chassis
