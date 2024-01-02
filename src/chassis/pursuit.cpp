@@ -130,7 +130,10 @@ void chassis::pursuit(std::string file_path, bool backwards) {
 				// NOTE: add action to bring robot back to path
 				drive_left.brake();
 				drive_right.brake();
-				std::cout << "Robot too far from path!" << std::endl;
+				chassis::record_error(
+				    Point(points[current_point].x, points[current_point].y),
+				    Point(current_posX, current_posY), (degree_t)(imu.get_heading())
+				);
 				break;
 			}
 		} else {
@@ -139,7 +142,10 @@ void chassis::pursuit(std::string file_path, bool backwards) {
 			if (fabs(points[current_point].x - current_posX) > lookahead_distance) {
 				drive_left.brake();
 				drive_right.brake();
-				std::cout << "Robot too far from path!" << std::endl;
+				chassis::record_error(
+				    Point(points[current_point].x, points[current_point].y),
+				    Point(current_posX, current_posY), (degree_t)(imu.get_heading())
+				);
 				break;
 			}
 		}
@@ -210,4 +216,14 @@ void chassis::pursuit(std::string file_path, bool backwards) {
 	drive_left.brake();
 	drive_right.brake();
 	points.clear();
+}
+
+void chassis::record_error(Point goal, Point robot, degree_t heading) {
+	if (!pros::usd::is_installed()) return;
+	std::ofstream out;
+	out.open("/usd/paths/path_deviations.txt");
+	out << "Robot left path at ( " << robot.x << ", " << robot.y << ") trying to reach ( " << goal.x
+	    << ", " << goal.y << ") with heading " << heading << std::endl;
+
+	out.close();
 }
