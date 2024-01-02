@@ -1,3 +1,4 @@
+#include "devices.hpp"
 #include "main.h"
 #include <fstream>
 
@@ -175,6 +176,11 @@ void chassis::pursuit(std::string file_path, bool backwards) {
 			same_obj++;
 		}
 		if (same_obj >= 3) {
+			if (left_wing.is_extended() || right_wing.is_extended()) {
+				left_wing.retract();
+				right_wing.retract();
+				continue;
+			}
 			while (abs(atan2(prev_objective_y - current_posY, prev_objective_x - current_posX) -
 			           atan2(next_objective_y - current_posY, next_objective_x - current_posX)) <
 			       20_deg) {
