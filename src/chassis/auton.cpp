@@ -4,7 +4,7 @@
 using namespace units::math;
 
 // TODO: Tune for less settle time
-PIDController<inch_t> drive_pid(4, 0.7, 4);
+PIDController<inch_t> drive_pid(5, 2, 5);
 PIDController<degree_t> turn_pid(3, 0.8, 1.1);
 
 // ============================ Auton Functions ============================ //
@@ -34,6 +34,7 @@ void chassis::drive(foot_t distance, degree_t heading) {
 		turn = turn_pid.calculate(heading, current_rot);
 		drive_left.move(drive + turn);
 		drive_right.move(drive - turn);
+		std::cout << traveled << " " << drive << "\n";
 		pros::delay(20);
 	} while (!drive_pid.settled());
 
