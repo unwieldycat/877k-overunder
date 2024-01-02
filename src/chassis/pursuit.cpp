@@ -6,6 +6,7 @@ using namespace units::math;
 
 std::vector<Point> points = {};
 std::stringstream path_logs;
+const double turn_const = 1.5;
 
 // ============================ Helper Functions ============================ //
 
@@ -100,9 +101,9 @@ void chassis::pursuit(std::string file_path, bool backwards) {
 		foot_t current_posX = odom::get_x(), current_posY = odom::get_y();
 		// FIXME: 6 feet lookahead distance??
 		auto lookahead_distance =
-		    (1_ft / (points[current_point - 1].curvature) < 6_ft
+		    (1_ft / (points[current_point - 1].curvature) < 6_in
 		         ? 1_ft / (points[current_point - 1].curvature)
-		         : 6_ft);
+		         : 0.05_ft);
 
 		// BOOKMARK: Begin finding next objective
 		//  Finds closest point when X coordinates of previous and current points are different
@@ -200,6 +201,7 @@ void chassis::pursuit(std::string file_path, bool backwards) {
 			current_point++;
 			left_wing.set_value(points[current_point].left_wing);
 			left_wing.set_value(points[current_point].right_wing);
+			std::cout << "next!" << std::endl;
 		}
 
 		// BOOKMARK: Heading calculations
@@ -223,7 +225,7 @@ void chassis::pursuit(std::string file_path, bool backwards) {
 		                       ? 0.05
 		                       : (1 - points[current_point - 1].curvature).to<double>();
 		double drive = 127 * max_speed * (360_deg - heading_error) / 360_deg;
-		double turn = sign * 127 * heading_error / 180_deg;
+		double turn = sign * 127 * heading_error / 180_deg * turn_const;
 		left_speed = sign * (drive + turn);
 		right_speed = sign * (drive - turn);
 
