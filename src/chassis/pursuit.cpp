@@ -61,6 +61,7 @@ void write_logs() {
 		file.close();
 	}
 
+	path_logs.str("");
 	path_logs.clear();
 }
 
