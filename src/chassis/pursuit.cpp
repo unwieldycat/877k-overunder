@@ -1,22 +1,12 @@
-#include "devices.hpp"
 #include "main.h"
-#include "units.h"
 #include <fstream>
-#include <ostream>
-#include <utility>
+
 using namespace units::math;
 
 std::vector<Point> points = {};
 std::stringstream path_logs;
 
-void chassis::add_point(
-    foot_t x_ft, foot_t y_ft, units::dimensionless::scalar_t curvature, bool left_wing,
-    bool right_wing
-) {
-	if (points[points.size() - 1].x != x_ft || points[points.size() - 1].y != y_ft) {
-		points.push_back(Point(x_ft, y_ft, curvature, left_wing, right_wing));
-	}
-}
+// ============================ Helper Functions ============================ //
 
 // File format: x_coord, y_coord, kappa, left_wing, right_wing
 // Warning: CSV keys are ignored, columns must be in the correct order
@@ -72,6 +62,17 @@ void write_logs() {
 	}
 
 	path_logs.clear();
+}
+
+// ============================ Public functions ============================ //
+
+void chassis::add_point(
+    foot_t x_ft, foot_t y_ft, units::dimensionless::scalar_t curvature, bool left_wing,
+    bool right_wing
+) {
+	if (points[points.size() - 1].x != x_ft || points[points.size() - 1].y != y_ft) {
+		points.push_back(Point(x_ft, y_ft, curvature, left_wing, right_wing));
+	}
 }
 
 void chassis::pursuit(std::string file_path, bool backwards) {
