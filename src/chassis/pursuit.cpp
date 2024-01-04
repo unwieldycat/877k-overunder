@@ -120,12 +120,12 @@ void chassis::pursuit(std::string file_path, bool backwards) {
 			// FIXME: Imaginary numbers
 			next_objective_x =
 			    (-(2 * (slope_par * (const_par - current_posY) - current_posX)) +
-			     sign * sqrt(
+			     sign * sqrt(abs(
 			                pow<2>(2 * (slope_par * (const_par - current_posY) - current_posX)) -
 			                4 * (pow<2>(slope_par) + 1) *
 			                    (pow<2>(current_posX) + pow<2>(const_par - current_posY) -
 			                     pow<2>(lookahead_distance))
-			            )) /
+			            ))) /
 			    (2 * (pow<2>(slope_par) + 1));
 			if ((pow<2>(2 * (slope_par * (const_par - current_posY) - current_posX)) -
 			     4 * (pow<2>(slope_par) + 1) *
