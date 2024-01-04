@@ -100,6 +100,7 @@ void chassis::pursuit(std::string file_path, bool backwards) {
 	while (current_point < points.size()) {
 		degree_t current_heading = (degree_t)imu.get_heading(), heading_error;
 		foot_t current_posX = odom::get_x(), current_posY = odom::get_y();
+
 		// FIXME: 6 feet lookahead distance??
 		auto lookahead_distance =
 		    (1_ft / (points[current_point - 1].curvature) < 0.8_ft
@@ -125,12 +126,7 @@ void chassis::pursuit(std::string file_path, bool backwards) {
 			                     pow<2>(lookahead_distance))
 			            ))) /
 			    (2 * (pow<2>(slope_par) + 1));
-			if ((pow<2>(2 * (slope_par * (const_par - current_posY) - current_posX)) -
-			     4 * (pow<2>(slope_par) + 1) *
-			         (pow<2>(current_posX) + pow<2>(const_par - current_posY) -
-			          pow<2>(lookahead_distance)))
-			        .to<double>() < 0)
-				next_objective_y = slope_par * next_objective_x + const_par;
+			next_objective_y = slope_par * next_objective_x + const_par;
 
 		} else {
 			// X coordinates of previous and current point are the same
