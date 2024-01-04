@@ -1,12 +1,13 @@
 #include "devices.hpp"
 #include "main.h"
+#include "odom.hpp"
 #include <fstream>
 
 using namespace units::math;
 
 std::vector<Point> points = {};
 std::stringstream path_logs;
-const double turn_const = 1.5;
+const double turn_const = 1.2;
 
 // ============================ Helper Functions ============================ //
 
@@ -95,15 +96,17 @@ void chassis::pursuit(std::string file_path, bool backwards) {
 	left_wing.set_value(points[0].left_wing);
 	left_wing.set_value(points[0].right_wing);
 
+	int f = 0;
+
 	// Loops until all points have been passed
 	while (current_point < points.size()) {
 		degree_t current_heading = (degree_t)imu.get_heading(), heading_error;
 		foot_t current_posX = odom::get_x(), current_posY = odom::get_y();
 		// FIXME: 6 feet lookahead distance??
 		auto lookahead_distance =
-		    (1_ft / (points[current_point - 1].curvature) < 6_in
+		    (1_ft / (points[current_point - 1].curvature) < 0.8_ft
 		         ? 1_ft / (points[current_point - 1].curvature)
-		         : 0.05_ft);
+		         : 0.8_ft);
 
 		// BOOKMARK: Begin finding next objective
 		//  Finds closest point when X coordinates of previous and current points are different
@@ -113,6 +116,8 @@ void chassis::pursuit(std::string file_path, bool backwards) {
 			closest_point = current_posX;
 
 			int sign = (points[current_point].x - points[current_point - 1].x) > 0_ft ? 1 : -1;
+
+			// FIXME: Imaginary numbers
 			next_objective_x =
 			    (-(2 * (slope_par * (const_par - current_posY) - current_posX)) +
 			     sign * sqrt(
@@ -122,7 +127,12 @@ void chassis::pursuit(std::string file_path, bool backwards) {
 			                     pow<2>(lookahead_distance))
 			            )) /
 			    (2 * (pow<2>(slope_par) + 1));
-
+			if ((pow<2>(2 * (slope_par * (const_par - current_posY) - current_posX)) -
+			     4 * (pow<2>(slope_par) + 1) *
+			         (pow<2>(current_posX) + pow<2>(const_par - current_posY) -
+			          pow<2>(lookahead_distance)))
+			        .to<double>() < 0)
+				std::cout << "negative \n";
 			next_objective_y = slope_par * next_objective_x + const_par;
 
 		} else {
@@ -146,7 +156,7 @@ void chassis::pursuit(std::string file_path, bool backwards) {
 			if (sqrt(
 			        pow<2>(closest_point - current_posX) +
 			        pow<2>(slope_par * closest_point + const_par - current_posY)
-			    ) > lookahead_distance) {
+			    ) > 1.5 * lookahead_distance) {
 				// NOTE: add action to bring robot back to path
 				drive_left.brake();
 				drive_right.brake();
@@ -154,32 +164,36 @@ void chassis::pursuit(std::string file_path, bool backwards) {
 				    Point(points[current_point].x, points[current_point].y),
 				    Point(current_posX, current_posY), (degree_t)(imu.get_heading())
 				);
+
+				std::cout << "Exiting pursuit: robot is too far from path\n";
 				break;
 			}
 		} else {
 			// if both points have the same y coordinates, the x coordinates of the robot cannot be
 			// more than lookahead distance to the found point
-			if (fabs(points[current_point].x - current_posX) > lookahead_distance) {
+			if (fabs(points[current_point].x - current_posX) > 1.5 * lookahead_distance) {
 				drive_left.brake();
 				drive_right.brake();
 				record_error(
 				    Point(points[current_point].x, points[current_point].y),
 				    Point(current_posX, current_posY), (degree_t)(imu.get_heading())
 				);
+				std::cout << "Exiting pursuit: too far from next point\n";
 				break;
 			}
 		}
 
 		// BOOKMARK: If the robot is stuck, it will try to find a point that is in a different
 		// direction
-		if (abs(next_objective_x - prev_objective_x) < 0.05_ft &&
-		    abs(next_objective_y - prev_objective_y) < 0.05_ft) {
-			same_obj++;
+		if (abs(next_objective_x - prev_objective_x) < 0.01_ft &&
+		    abs(next_objective_y - prev_objective_y) < 0.01_ft) {
+			// same_obj++;
 		}
 		if (same_obj >= 3) {
 			if (left_wing.is_extended() || right_wing.is_extended()) {
 				left_wing.retract();
 				right_wing.retract();
+				std::cout << "continue\n";
 				continue;
 			}
 			while (abs(atan2(prev_objective_y - current_posY, prev_objective_x - current_posX) -
@@ -196,8 +210,8 @@ void chassis::pursuit(std::string file_path, bool backwards) {
 		}
 
 		// BOOKMARK: Goal increment
-		if (fabs(next_objective_x - points[current_point].x) < 0.1_ft &&
-		    fabs(next_objective_y - points[current_point].y) < 0.1_ft) {
+		if (fabs(next_objective_x - points[current_point].x) < 0.05_ft &&
+		    fabs(next_objective_y - points[current_point].y) < 0.05_ft) {
 			current_point++;
 			left_wing.set_value(points[current_point].left_wing);
 			left_wing.set_value(points[current_point].right_wing);
@@ -209,6 +223,7 @@ void chassis::pursuit(std::string file_path, bool backwards) {
 		heading_objective = atan2(next_objective_y - current_posY, next_objective_x - current_posX);
 		if (backwards) heading_objective += 180_deg;
 		while (heading_objective < 0_deg) {
+			std::cout << "hello from line 198\n";
 			heading_objective += 360_deg;
 		}
 
@@ -225,7 +240,7 @@ void chassis::pursuit(std::string file_path, bool backwards) {
 		                       ? 0.05
 		                       : (1 - points[current_point - 1].curvature).to<double>();
 		double drive = 127 * max_speed * (360_deg - heading_error) / 360_deg;
-		double turn = sign * 127 * heading_error / 180_deg * turn_const;
+		double turn = sign * 127 * (heading_error / 180_deg) * turn_const;
 		left_speed = sign * (drive + turn);
 		right_speed = sign * (drive - turn);
 
@@ -234,6 +249,9 @@ void chassis::pursuit(std::string file_path, bool backwards) {
 
 		prev_objective_x = next_objective_x;
 		prev_objective_y = next_objective_y;
+
+		std::cout << "heading objective: " << heading_objective << "\n";
+		std::cout << "next objective: " << next_objective_x << " " << next_objective_y << "\n";
 
 		// delay to prevent brain crashing
 		pros::delay(20);
