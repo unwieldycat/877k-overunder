@@ -96,8 +96,6 @@ void chassis::pursuit(std::string file_path, bool backwards) {
 	left_wing.set_value(points[0].left_wing);
 	left_wing.set_value(points[0].right_wing);
 
-	int f = 0;
-
 	// Loops until all points have been passed
 	while (current_point < points.size()) {
 		degree_t current_heading = (degree_t)imu.get_heading(), heading_error;
@@ -132,8 +130,7 @@ void chassis::pursuit(std::string file_path, bool backwards) {
 			         (pow<2>(current_posX) + pow<2>(const_par - current_posY) -
 			          pow<2>(lookahead_distance)))
 			        .to<double>() < 0)
-				std::cout << "negative \n";
-			next_objective_y = slope_par * next_objective_x + const_par;
+				next_objective_y = slope_par * next_objective_x + const_par;
 
 		} else {
 			// X coordinates of previous and current point are the same
@@ -193,7 +190,6 @@ void chassis::pursuit(std::string file_path, bool backwards) {
 			if (left_wing.is_extended() || right_wing.is_extended()) {
 				left_wing.retract();
 				right_wing.retract();
-				std::cout << "continue\n";
 				continue;
 			}
 			while (abs(atan2(prev_objective_y - current_posY, prev_objective_x - current_posX) -
@@ -215,7 +211,6 @@ void chassis::pursuit(std::string file_path, bool backwards) {
 			current_point++;
 			left_wing.set_value(points[current_point].left_wing);
 			left_wing.set_value(points[current_point].right_wing);
-			std::cout << "next!" << std::endl;
 		}
 
 		// BOOKMARK: Heading calculations
@@ -223,7 +218,6 @@ void chassis::pursuit(std::string file_path, bool backwards) {
 		heading_objective = atan2(next_objective_y - current_posY, next_objective_x - current_posX);
 		if (backwards) heading_objective += 180_deg;
 		while (heading_objective < 0_deg) {
-			std::cout << "hello from line 198\n";
 			heading_objective += 360_deg;
 		}
 
@@ -249,9 +243,6 @@ void chassis::pursuit(std::string file_path, bool backwards) {
 
 		prev_objective_x = next_objective_x;
 		prev_objective_y = next_objective_y;
-
-		std::cout << "heading objective: " << heading_objective << "\n";
-		std::cout << "next objective: " << next_objective_x << " " << next_objective_y << "\n";
 
 		// delay to prevent brain crashing
 		pros::delay(20);
