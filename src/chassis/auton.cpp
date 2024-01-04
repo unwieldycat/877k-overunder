@@ -3,9 +3,9 @@
 
 using namespace units::math;
 
-// TODO: Tune for less settle time
+// TODO: Tune better
 PIDController<inch_t> drive_pid(5, 2, 5);
-PIDController<degree_t> turn_pid(3, 0.8, 1.1);
+PIDController<degree_t> turn_pid(5, 1, 0.8);
 
 // ============================ Auton Functions ============================ //
 
@@ -59,6 +59,7 @@ void chassis::turn_abs(degree_t heading) {
 		output = turn_pid.calculate(heading, current_hdg);
 		drive_left.move(output);
 		drive_right.move(-output);
+		std::cout << output << " " << turn_pid.get_error() << "\n";
 		pros::delay(20);
 	} while (!turn_pid.settled());
 
