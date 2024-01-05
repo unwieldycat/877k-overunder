@@ -24,4 +24,5 @@ void awp_right() {
 	chassis::turn_abs(180_deg);
 	chassis::drive(2.5_ft, 180_deg);
 	right_wing.extend();
+	chassis::turn_rel(-15_deg);
 }
