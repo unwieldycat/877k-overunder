@@ -1,4 +1,6 @@
 #include "main.h"
+#include "pros/motors.h"
+#include "units.h"
 #include <cmath>
 
 using namespace units::math;
@@ -9,9 +11,28 @@ PIDController<degree_t> turn_pid(5, 1, 0.8);
 
 // ============================ Auton Functions ============================ //
 
-void chassis::drive(int power) {
-	drive_left.move(power);
-	drive_right.move(power);
+void chassis::drive(int power, millisecond_t time) {
+	chassis::drive(power, (degree_t)imu.get_rotation(), time);
+}
+
+void chassis::drive(int power, degree_t heading, millisecond_t time) {
+	millisecond_t start_time = (millisecond_t)pros::millis();
+	millisecond_t current_time;
+	double turn;
+
+	turn_pid.reset();
+	drive_left.set_brake_mode_all(pros::E_MOTOR_BRAKE_HOLD);
+	drive_right.set_brake_mode_all(pros::E_MOTOR_BRAKE_HOLD);
+
+	do {
+		current_time = (millisecond_t)pros::millis();
+		turn = turn_pid.calculate(heading, degree_t(imu.get_rotation()));
+		drive_left.move(power + turn);
+		drive_right.move(power - turn);
+	} while (current_time < time + start_time);
+
+	drive_left.brake();
+	drive_right.brake();
 }
 
 void chassis::drive(foot_t distance) { chassis::drive(distance, (degree_t)imu.get_rotation()); }

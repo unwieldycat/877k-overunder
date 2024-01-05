@@ -6,7 +6,12 @@ namespace chassis {
 /**
  * Drive with motor power
  */
-void drive(int power);
+void drive(int power, millisecond_t time);
+
+/**
+ * Drive with motor power at a heading
+ */
+void drive(int power, degree_t heading, millisecond_t time);
 
 /**
  * Drive a distance
