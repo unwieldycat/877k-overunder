@@ -12,10 +12,7 @@ void push_preload() {
 	chassis::drive(4_ft);
 	left_wing.extend();
 	chassis::turn_abs(90_deg);
-	chassis::drive(127);
-	pros::delay(750);
-	chassis::drive(-127);
-	pros::delay(750);
-	chassis::drive(0);
+	chassis::drive(127, 750_ms);
+	chassis::drive(-127, 750_ms);
 	left_wing.retract();
 }
