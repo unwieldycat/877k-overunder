@@ -1,6 +1,7 @@
 #include "main.h"
 
 rd::Selector selector({
+    {"AWP Right", awp_right},
     {"Field Triball Push", push_field},
     {"Preload Triball Push", push_preload},
     {"Skills", skills},

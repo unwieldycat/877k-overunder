@@ -17,7 +17,12 @@ void push_preload();
 void skills();
 
 /**
- * Does half of the autonomous win point. Scores triball and touches climb bar
- * Starts on first tile from blue low bar facing midline.
+ * Does left half of the autonomous win point. Scores triball, removes triball, and touches climbing
+ * bar.
  */
-void awp();
+void awp_left();
+
+/**
+ * Does right portion of autonomous win point. Scores triballs and touches cimbing bar.
+ */
+void awp_right();
