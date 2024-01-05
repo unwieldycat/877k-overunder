@@ -29,6 +29,7 @@ void chassis::drive(int power, degree_t heading, millisecond_t time) {
 		turn = turn_pid.calculate(heading, degree_t(imu.get_rotation()));
 		drive_left.move(power + turn);
 		drive_right.move(power - turn);
+		pros::delay(20);
 	} while (current_time < time + start_time);
 
 	drive_left.brake();
@@ -58,7 +59,6 @@ void chassis::drive(foot_t distance, degree_t heading) {
 		turn = turn_pid.calculate(heading, current_rot);
 		drive_left.move(drive + turn);
 		drive_right.move(drive - turn);
-		std::cout << traveled << " " << drive << "\n";
 		pros::delay(20);
 	} while (!drive_pid.settled());
 
@@ -86,7 +86,6 @@ void chassis::turn_abs(degree_t heading) {
 		output = turn_pid.calculate(heading, current_hdg);
 		drive_left.move(output);
 		drive_right.move(-output);
-		std::cout << output << " " << turn_pid.get_error() << "\n";
 		pros::delay(20);
 	} while (!turn_pid.settled());
 
