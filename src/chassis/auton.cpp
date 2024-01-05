@@ -27,6 +27,9 @@ void chassis::drive(foot_t distance, degree_t heading) {
 	drive_pid.reset();
 	turn_pid.reset();
 
+	drive_left.set_brake_mode_all(pros::E_MOTOR_BRAKE_HOLD);
+	drive_right.set_brake_mode_all(pros::E_MOTOR_BRAKE_HOLD);
+
 	do {
 		traveled = sqrt(pow<2>(odom::get_x() - origin_x) + pow<2>(odom::get_y() - origin_y));
 		current_rot = (degree_t)imu.get_rotation();
@@ -54,6 +57,9 @@ void chassis::turn_abs(degree_t heading) {
 	heading += (degree_t)360.0 * ((int)imu.get_rotation() / 360);
 	turn_pid.reset();
 
+	drive_left.set_brake_mode_all(pros::E_MOTOR_BRAKE_HOLD);
+	drive_right.set_brake_mode_all(pros::E_MOTOR_BRAKE_HOLD);
+
 	do {
 		current_hdg = degree_t(imu.get_rotation());
 		output = turn_pid.calculate(heading, current_hdg);
@@ -72,6 +78,9 @@ void chassis::turn_rel(degree_t degrees) {
 	degree_t current_rot;
 	degree_t end_rot = (degree_t)imu.get_rotation() + degrees;
 	turn_pid.reset();
+
+	drive_left.set_brake_mode_all(pros::E_MOTOR_BRAKE_HOLD);
+	drive_right.set_brake_mode_all(pros::E_MOTOR_BRAKE_HOLD);
 
 	do {
 		current_rot = degree_t(imu.get_rotation());
