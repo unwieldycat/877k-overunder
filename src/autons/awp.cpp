@@ -16,12 +16,8 @@ void awp_right() {
 	chassis::drive(2_ft);
 	left_wing.extend();
 	chassis::drive(12_in, 90_deg);
-	chassis::drive(127);
-	pros::delay(1000);
-	chassis::drive(-127);
-	pros::delay(1000);
-	chassis::drive(0);
-	pros::delay(2000);
+	chassis::drive(127, 90_deg, 1_s);
+	chassis::drive(-127, 90_deg, 1_s);
 	chassis::drive(3_in, 90_deg);
 	right_wing.retract();
 	left_wing.retract();
