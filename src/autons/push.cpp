@@ -6,6 +6,7 @@ void push_left() {
 	chassis::drive(127, 0_deg, 2_s);
 	chassis::drive(-127, 0_deg, 1_s);
 	chassis::drive(127, 0_deg, 1_s);
+	chassis::drive(-127, 0_deg, 3_s);
 }
 
 void push_right() {
@@ -14,4 +15,5 @@ void push_right() {
 	chassis::drive(127, 0_deg, 2_s);
 	chassis::drive(-127, 0_deg, 1_s);
 	chassis::drive(127, 0_deg, 1_s);
+	chassis::drive(-127, 0_deg, 3_s);
 }
