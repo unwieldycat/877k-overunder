@@ -3,12 +3,12 @@
 /**
  * Push the field triball into goal
  */
-void push_field();
+void push_right();
 
 /**
  * Push a preload triball into goal
  */
-void push_preload();
+void push_left();
 
 /**
  * Skills run. Parks robot at matchloader, then pushes triballs in goal.

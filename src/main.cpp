@@ -2,8 +2,8 @@
 
 rd::Selector selector({
     {"AWP Right", awp_right},
-    {"Field Triball Push", push_field},
-    {"Preload Triball Push", push_preload},
+    {"Right push", push_right},
+    {"Left push", push_left},
     {"Skills", skills},
 });
 
