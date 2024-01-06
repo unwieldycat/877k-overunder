@@ -7,12 +7,8 @@ void skills() {
 	// Set odom to starting point
 	odom::calibrate(2_ft, 2_ft, 225_deg);
 
-	while (true) {
-		puncher::prime();
-		pros::delay(1000);
-		puncher::release();
-	}
+	punch_motors.move(127);
 
-	chassis::pursuit("/usd/paths/skills0.csv", true);
-	chassis::pursuit("/usd/paths/skills1.csv");
+	// chassis::pursuit("/usd/paths/skills0.csv", true);
+	// chassis::pursuit("/usd/paths/skills1.csv");
 }
