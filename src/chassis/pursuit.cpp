@@ -80,6 +80,7 @@ void chassis::add_point(
 }
 
 void chassis::pursuit(std::string file_path, bool backwards) {
+	int frame = 0;
 	parse_file(file_path);
 	if (points.empty()) return;
 
@@ -116,16 +117,42 @@ void chassis::pursuit(std::string file_path, bool backwards) {
 
 			int sign = (points[current_point].x - points[current_point - 1].x) > 0_ft ? 1 : -1;
 
-			// FIXME: Imaginary numbers
-			next_objective_x =
-			    (-(2 * (slope_par * (const_par - current_posY) - current_posX)) +
-			     sign * sqrt(abs(
-			                pow<2>(2 * (slope_par * (const_par - current_posY) - current_posX)) -
+			auto a = pow<2>(slope_par) + 1;
+			auto b = 2 * (slope_par * (const_par - current_posY) - current_posX);
+			auto c = pow<2>(current_posX) + pow<2>(const_par - current_posY) -
+			         pow<2>(lookahead_distance);
+			auto intpart = -2 * (slope_par * (const_par - current_posY) - current_posX);
+			auto sqrtpart = pow<2>(2 * (slope_par * (const_par - current_posY) - current_posX)) -
 			                4 * (pow<2>(slope_par) + 1) *
 			                    (pow<2>(current_posX) + pow<2>(const_par - current_posY) -
-			                     pow<2>(lookahead_distance))
-			            ))) /
-			    (2 * (pow<2>(slope_par) + 1));
+			                     pow<2>(lookahead_distance));
+			auto divpart = 2 * (pow<2>(slope_par) + 1);
+
+			std::cout << "Data I: " << intpart << " sqrt: " << sqrtpart << "div: " << divpart
+			          << "\n";
+			std::cout << "Math a: " << a << " b: " << b << " c: " << c << "\n";
+
+			// FIXME: Imaginary numbers
+			if ((pow<2>(2 * (slope_par * (const_par - current_posY) - current_posX)) -
+			     4 * (pow<2>(slope_par) + 1) *
+			         (pow<2>(current_posX) + pow<2>(const_par - current_posY) -
+			          pow<2>(lookahead_distance)))
+			        .to<double>() < 0) {
+				next_objective_x += 0.01_ft;
+				std::cout << "BROKEN!\n";
+			} else {
+				next_objective_x =
+				    (-(2 * (slope_par * (const_par - current_posY) - current_posX)) +
+				     sign *
+				         sqrt(abs(
+				             pow<2>(2 * (slope_par * (const_par - current_posY) - current_posX)) -
+				             4 * (pow<2>(slope_par) + 1) *
+				                 (pow<2>(current_posX) + pow<2>(const_par - current_posY) -
+				                  pow<2>(lookahead_distance))
+				         ))) /
+				    (2 * (pow<2>(slope_par) + 1));
+			}
+
 			next_objective_y = slope_par * next_objective_x + const_par;
 
 		} else {
@@ -224,6 +251,16 @@ void chassis::pursuit(std::string file_path, bool backwards) {
 		while (heading_error > 180_deg)
 			heading_error -= 360_deg;
 
+		std::cout << "=========frame " << frame << " =========\n";
+		std::cout << " Stats heading error: " << heading_error << " slope: " << slope_par
+		          << " const: " << const_par << " lookahead: " << lookahead_distance << "\n";
+		std::cout << "Chasing x: " << next_objective_x << " y: " << next_objective_y
+		          << " heading: " << heading_objective << "\n";
+		std::cout << "Robot x: " << odom::get_x() << " y: " << odom::get_y()
+		          << " heading: " << imu.get_heading() << "\n";
+
+		frame++;
+
 		// BOOKMARK: Movement
 		int sign = backwards ? -1 : 1;
 		double max_speed = (1 - points[current_point - 1].curvature) < 0.0
@@ -241,7 +278,7 @@ void chassis::pursuit(std::string file_path, bool backwards) {
 		prev_objective_y = next_objective_y;
 
 		// delay to prevent brain crashing
-		pros::delay(20);
+		pros::delay(200);
 	}
 
 	drive_left.brake();
