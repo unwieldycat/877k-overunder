@@ -117,17 +117,27 @@ void chassis::pursuit(std::string file_path, bool backwards) {
 
 			int sign = (points[current_point].x - points[current_point - 1].x) > 0_ft ? 1 : -1;
 
-			double temp_slope = slope_par.to<double>(),
-			       temp_posx = current_posX.to<double>() / 12.0,
-			       temp_posy = current_posY.to<double>() / 12.0,
-			       temp_const = const_par.to<double>(),
+			double temp_slope = slope_par.to<double>(), temp_posx = current_posX.to<double>(),
+			       temp_posy = current_posY.to<double>(), temp_const = const_par.to<double>(),
 			       temp_lookahead = lookahead_distance.to<double>();
 			double a = pow(temp_slope, 2) + 1;
 			double b = 2.0 * (temp_slope * (temp_const - temp_posy) - temp_posx);
 			double c = pow(temp_posx, 2) + pow(temp_const - temp_posy, 2) - pow(temp_lookahead, 2);
 
+			if (pow(b, 2) - 4 * a * c < 0)
+				std::cout << "BROKEN! \n a: " << a << " b: " << b << " c: " << c << "\n";
+
+			std::cout << "Data slope: " << slope_par << " , " << temp_slope << " pos: " << temp_posx
+			          << " , " << temp_posy << " , " << current_posX << " , " << current_posY
+			          << " const: " << temp_const << " , " << const_par
+			          << " lookahead: " << temp_lookahead << " , " << lookahead_distance << "\n";
+
 			// FIXME: Imaginary numbers
-			next_objective_x = foot_t((-b + sign * sqrt(pow(b, 2) - 4 * a * c)) / (2 * a));
+			double x = ((-b + sign * sqrt(pow(b, 2) - 4 * a * c)) / (2 * a));
+			next_objective_x = (foot_t)(x);
+
+			std::cout << "truex: " << x << " , " << next_objective_x << " , " << next_objective_y
+			          << "\n";
 
 			next_objective_y = slope_par * next_objective_x + const_par;
 
@@ -181,8 +191,8 @@ void chassis::pursuit(std::string file_path, bool backwards) {
 
 		// BOOKMARK: If the robot is stuck, it will try to find a point that is in a different
 		// direction
-		if (abs(next_objective_x - prev_objective_x) < 0.01_ft &&
-		    abs(next_objective_y - prev_objective_y) < 0.01_ft) {
+		if (abs(next_objective_x - prev_objective_x) < 0.001_ft &&
+		    abs(next_objective_y - prev_objective_y) < 0.001_ft) {
 			// same_obj++;
 		}
 		if (same_obj >= 3) {
@@ -191,16 +201,22 @@ void chassis::pursuit(std::string file_path, bool backwards) {
 				right_wing.retract();
 				continue;
 			}
-			while (abs(atan2(prev_objective_y - current_posY, prev_objective_x - current_posX) -
-			           atan2(next_objective_y - current_posY, next_objective_x - current_posX)) <
-			       20_deg) {
+			while (abs(atan2(
+			               points[current_point].y - current_posY,
+			               points[current_point].x - current_posX
+			           ) -
+			           atan2(
+			               points[current_point + 1].y - current_posY,
+			               points[current_point + 1].x - current_posX
+			           )) < 20_deg) {
 				current_point++;
+				if (current_point > points.size() - 1) {
+					drive_left.brake();
+					drive_right.brake();
+					break;
+				}
 			}
-			if (current_point >= points.size()) {
-				drive_left.brake();
-				drive_right.brake();
-				break;
-			}
+
 			same_obj = 0;
 		}
 
