@@ -87,7 +87,7 @@ void chassis::pursuit(std::string file_path, bool backwards) {
 	int current_point = 1, same_obj = 0;
 	units::dimensionless::scalar_t slope_par, slope_perp;
 	foot_t closest_point, next_objective_x, next_objective_y, const_par, const_perp;
-	foot_t prev_objective_x = points[0].x, prev_objective_y = points[0].y;
+	foot_t prev_objective_x = points[0].x, prev_objective_y = points[0].y, prev_x_change;
 	degree_t heading_objective;
 	double left_speed, right_speed;
 
@@ -134,7 +134,8 @@ void chassis::pursuit(std::string file_path, bool backwards) {
 
 			// FIXME: Imaginary numbers
 			double x = ((-b + sign * sqrt(pow(b, 2) - 4 * a * c)) / (2 * a));
-			next_objective_x = (foot_t)(x);
+			next_objective_x =
+			    (pow(b, 2) - 4 * a * c) > 0 ? (foot_t)(x) : prev_objective_x + prev_x_change;
 
 			std::cout << "truex: " << x << " , " << next_objective_x << " , " << next_objective_y
 			          << "\n";
@@ -255,6 +256,8 @@ void chassis::pursuit(std::string file_path, bool backwards) {
 
 		drive_left.move(left_speed);
 		drive_right.move(right_speed);
+
+		prev_x_change = next_objective_x - prev_objective_x;
 
 		prev_objective_x = next_objective_x;
 		prev_objective_y = next_objective_y;
