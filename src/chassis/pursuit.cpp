@@ -105,7 +105,7 @@ void chassis::pursuit(std::string file_path, bool backwards) {
 	int pursuing = 1, same_obj = 0;
 
 	// Movement variables:
-	double kk = 1, kh = 1, kf = 1, left_speed, right_speed;
+	double kc = 0.5, kh = 0.5, kf = 1.1, left_speed, right_speed;
 
 	// Initialize
 	drive_left.set_brake_mode(pros::E_MOTOR_BRAKE_HOLD);
@@ -193,7 +193,9 @@ void chassis::pursuit(std::string file_path, bool backwards) {
 			left_wing.set_value(points[pursuing].left_wing);
 			left_wing.set_value(points[pursuing].right_wing);
 			lookahead_distance =
-			    (1_ft / (points[0].curvature) < 0.8_ft ? 1_ft / (points[0].curvature) : 0.8_ft);
+			    (1_ft / (points[pursuing - 1].curvature) < 0.8_ft
+			         ? 1_ft / (points[pursuing - 1].curvature)
+			         : 0.8_ft);
 		}
 
 		// BOOKMARK: Heading calculations
@@ -214,10 +216,11 @@ void chassis::pursuit(std::string file_path, bool backwards) {
 		// BOOKMARK: Movement
 		int dir = backwards ? -1 : 1;
 
-		// FIXME: curvature doesn't have direction
-		double drive = (kf - (heading_error / 180_deg)) * 127;
+		double drive =
+		    (kf - (heading_error / 180_deg) * kh - points[pursuing - 1].curvature * kc) * 127;
 		double turn =
-		    127 * (heading_error / 180_deg) * kh + 127 * points[pursuing - 1].curvature * kk;
+		    127 * (heading_error / 180_deg) * kh + 127 * points[pursuing - 1].curvature * kc;
+
 		left_speed = dir * (drive + dir * turn);
 		right_speed = dir * (drive - dir * turn);
 
@@ -227,12 +230,27 @@ void chassis::pursuit(std::string file_path, bool backwards) {
 		// BOOKMARK: Make adjustments to movement constants as needed
 		if (fabs(left_speed) > 127 || fabs(right_speed) > 127) {
 			kf *= 0.9;
+			kc *= 0.9;
 			kh *= 0.9;
-			kk *= 0.9;
 		}
 		if (fabs(heading_error) > fabs(prev_errorh)) {
-			// FIXME: Constants change if error is increasing
+			if (points[pursuing].curvature > 0.0 == heading_error < 0_deg) {
+				kc -= 0.05;
+				kh += 0.05;
+			} else {
+				kc += 0.05;
+				kh += 0.05;
+			}
 		}
+
+		if (fabs(heading_error) < 5_deg) {
+			kf += 0.1;
+			kh -= 0.05;
+			kc += 0.05;
+		}
+		if (kc < 0) kc = fabs(kc);
+		if (kf < 0) kf = fabs(kf);
+		if (kh < 0) kh = fabs(kh);
 
 		// BOOKMARK: Change variables
 		prev_errorh = heading_error;
