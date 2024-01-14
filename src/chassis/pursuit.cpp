@@ -105,7 +105,7 @@ void chassis::pursuit(std::string file_path, bool backwards) {
 	int pursuing = 1, same_obj = 0;
 
 	// Movement variables:
-	double kc = 0.5, kh = 0.5, kf = 1.1, left_speed, right_speed;
+	double kc = 0.3, kh = 0.6, kf = 1.1, left_speed, right_speed;
 
 	// Initialize
 	drive_left.set_brake_mode(pros::E_MOTOR_BRAKE_HOLD);
@@ -217,7 +217,7 @@ void chassis::pursuit(std::string file_path, bool backwards) {
 		int dir = backwards ? -1 : 1;
 
 		double drive =
-		    (kf - (heading_error / 180_deg) * kh - points[pursuing - 1].curvature * kc) * 127;
+		    (kf - dir * (heading_error / 180_deg) * kh - points[pursuing - 1].curvature * kc) * 127;
 		double turn =
 		    127 * (heading_error / 180_deg) * kh + 127 * points[pursuing - 1].curvature * kc;
 
@@ -233,24 +233,28 @@ void chassis::pursuit(std::string file_path, bool backwards) {
 			kc *= 0.9;
 			kh *= 0.9;
 		}
-		if (fabs(heading_error) > fabs(prev_errorh)) {
+		if (fabs(heading_error) - fabs(prev_errorh) > 5_deg) {
 			if (points[pursuing].curvature > 0.0 == heading_error < 0_deg) {
 				kc -= 0.05;
 				kh += 0.05;
 			} else {
-				kc += 0.05;
-				kh += 0.05;
+				kc += 0.01;
+				kh += 0.01;
 			}
 		}
 
 		if (fabs(heading_error) < 5_deg) {
 			kf += 0.1;
-			kh -= 0.05;
-			kc += 0.05;
 		}
 		if (kc < 0) kc = fabs(kc);
 		if (kf < 0) kf = fabs(kf);
 		if (kh < 0) kh = fabs(kh);
+
+		std::cout << " x: " << robot.x << " y: " << robot.y << " h: " << robot.heading
+		          << " nextX: " << next_obj.x << " nextY: " << next_obj.y
+		          << " nextH: " << next_obj.heading << "\n";
+		std::cout << " forward: " << kf << " heading: " << kh << " curve: " << kc << "\n";
+		std::cout << " left: " << left_speed << " right: " << right_speed << "\n";
 
 		// BOOKMARK: Change variables
 		prev_errorh = heading_error;
