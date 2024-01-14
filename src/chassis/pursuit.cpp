@@ -1,6 +1,7 @@
 #include "devices.hpp"
 #include "main.h"
 #include "odom.hpp"
+#include "units.h"
 #include <cmath>
 #include <fstream>
 
@@ -8,7 +9,6 @@ using namespace units::math;
 
 std::vector<Point> points = {};
 std::stringstream path_logs;
-const double turn_const = 1.2;
 
 // ============================ Helper Functions ============================ //
 
@@ -84,13 +84,29 @@ void chassis::pursuit(std::string file_path, bool backwards) {
 	parse_file(file_path);
 	if (points.empty()) return;
 
-	int current_point = 1, same_obj = 0;
+	// Calculation assisting variables:
 	units::dimensionless::scalar_t slope_par, slope_perp;
-	foot_t closest_point, next_objective_x, next_objective_y, const_par, const_perp;
-	foot_t prev_objective_x = points[0].x, prev_objective_y = points[0].y, prev_x_change;
-	degree_t heading_objective;
-	double left_speed, right_speed;
+	foot_t const_par, const_perp;
+	double slope_parD, const_parD, lookaheadD;
+	double a, b, c, x;
+	auto lookahead_distance =
+	    (1_ft / (points[0].curvature) < 0.8_ft ? 1_ft / (points[0].curvature) : 0.8_ft);
 
+	// Location tracking variables:
+	foot_t closest_point, next_objective_x, next_objective_y;
+	foot_t prev_posX, prev_posY, x_change;
+	foot_t current_posX = odom::get_x(), current_posY = odom::get_y();
+	double current_posXD, current_posYD;
+	degree_t heading_objective, current_heading = (degree_t)imu.get_heading();
+	degree_t heading_error, prev_errorh;
+
+	// Counting variables:
+	int current_point = 1, same_obj = 0;
+
+	// Movement variables:
+	double kk = 1, kh = 1, kf = 1, left_speed, right_speed;
+
+	// BOOKMARK: Initialize
 	drive_left.set_brake_mode(pros::E_MOTOR_BRAKE_HOLD);
 	drive_right.set_brake_mode(pros::E_MOTOR_BRAKE_HOLD);
 
@@ -99,14 +115,10 @@ void chassis::pursuit(std::string file_path, bool backwards) {
 
 	// Loops until all points have been passed
 	while (current_point < points.size()) {
-		degree_t current_heading = (degree_t)imu.get_heading(), heading_error;
-		foot_t current_posX = odom::get_x(), current_posY = odom::get_y();
-
-		// FIXME: 6 feet lookahead distance??
-		auto lookahead_distance =
-		    (1_ft / (points[current_point - 1].curvature) < 0.8_ft
-		         ? 1_ft / (points[current_point - 1].curvature)
-		         : 0.8_ft);
+		// BOOKMARK: Update variables
+		current_posX = odom::get_x();
+		current_posY = odom::get_y();
+		current_heading = (degree_t)imu.get_heading();
 
 		// BOOKMARK: Begin finding next objective
 		//  Finds closest point when X coordinates of previous and current points are different
@@ -117,28 +129,13 @@ void chassis::pursuit(std::string file_path, bool backwards) {
 
 			int sign = (points[current_point].x - points[current_point - 1].x) > 0_ft ? 1 : -1;
 
-			double temp_slope = slope_par.to<double>(), temp_posx = current_posX.to<double>(),
-			       temp_posy = current_posY.to<double>(), temp_const = const_par.to<double>(),
-			       temp_lookahead = lookahead_distance.to<double>();
-			double a = pow(temp_slope, 2) + 1;
-			double b = 2.0 * (temp_slope * (temp_const - temp_posy) - temp_posx);
-			double c = pow(temp_posx, 2) + pow(temp_const - temp_posy, 2) - pow(temp_lookahead, 2);
+			a = pow(slope_parD, 2) + 1;
+			b = 2.0 * (slope_parD * (const_parD - current_posYD) - current_posXD);
+			c = pow(current_posXD, 2) + pow(const_parD - current_posYD, 2) - pow(lookaheadD, 2);
 
-			if (pow(b, 2) - 4 * a * c < 0)
-				std::cout << "BROKEN! \n a: " << a << " b: " << b << " c: " << c << "\n";
-
-			std::cout << "Data slope: " << slope_par << " , " << temp_slope << " pos: " << temp_posx
-			          << " , " << temp_posy << " , " << current_posX << " , " << current_posY
-			          << " const: " << temp_const << " , " << const_par
-			          << " lookahead: " << temp_lookahead << " , " << lookahead_distance << "\n";
-
-			// FIXME: Imaginary numbers
-			double x = ((-b + sign * sqrt(pow(b, 2) - 4 * a * c)) / (2 * a));
+			x = ((-b + sign * sqrt(pow(b, 2) - 4 * a * c)) / (2 * a));
 			next_objective_x =
-			    (pow(b, 2) - 4 * a * c) > 0 ? (foot_t)(x) : prev_objective_x + prev_x_change;
-
-			std::cout << "truex: " << x << " , " << next_objective_x << " , " << next_objective_y
-			          << "\n";
+			    (pow(b, 2) - 4 * a * c) > 0 ? (foot_t)(x) : next_objective_x + x_change;
 
 			next_objective_y = slope_par * next_objective_x + const_par;
 
@@ -185,15 +182,14 @@ void chassis::pursuit(std::string file_path, bool backwards) {
 				    Point(points[current_point].x, points[current_point].y),
 				    Point(current_posX, current_posY), (degree_t)(imu.get_heading())
 				);
-				std::cout << "Exiting pursuit: too far from next point\n";
+				std::cout << "Exiting pursuit: robot is too far from path\n";
 				break;
 			}
 		}
 
 		// BOOKMARK: If the robot is stuck, it will try to find a point that is in a different
 		// direction
-		if (abs(next_objective_x - prev_objective_x) < 0.001_ft &&
-		    abs(next_objective_y - prev_objective_y) < 0.001_ft) {
+		if (abs(current_posX - prev_posX) < 0.001_ft && abs(current_posY - prev_posY) < 0.001_ft) {
 			// same_obj++;
 		}
 		if (same_obj >= 3) {
@@ -202,14 +198,16 @@ void chassis::pursuit(std::string file_path, bool backwards) {
 				right_wing.retract();
 				continue;
 			}
-			while (abs(atan2(
+			while (fabs(
+			           atan2(
 			               points[current_point].y - current_posY,
 			               points[current_point].x - current_posX
 			           ) -
 			           atan2(
 			               points[current_point + 1].y - current_posY,
 			               points[current_point + 1].x - current_posX
-			           )) < 20_deg) {
+			           )
+			       ) < 20_deg) {
 				current_point++;
 				if (current_point > points.size() - 1) {
 					drive_left.brake();
@@ -227,10 +225,12 @@ void chassis::pursuit(std::string file_path, bool backwards) {
 			current_point++;
 			left_wing.set_value(points[current_point].left_wing);
 			left_wing.set_value(points[current_point].right_wing);
+			lookahead_distance =
+			    (1_ft / (points[0].curvature) < 0.8_ft ? 1_ft / (points[0].curvature) : 0.8_ft);
 		}
 
 		// BOOKMARK: Heading calculations
-		//  Find math heading objective
+		//  Find heading objective
 		heading_objective = atan2(next_objective_y - current_posY, next_objective_x - current_posX);
 		if (backwards) heading_objective += 180_deg;
 		while (heading_objective < 0_deg) {
@@ -246,21 +246,32 @@ void chassis::pursuit(std::string file_path, bool backwards) {
 
 		// BOOKMARK: Movement
 		int sign = backwards ? -1 : 1;
-		double max_speed = (1 - points[current_point - 1].curvature) < 0.0
-		                       ? 0.05
-		                       : (1 - points[current_point - 1].curvature).to<double>();
-		double drive = 127 * max_speed * (360_deg - heading_error) / 360_deg;
-		double turn = sign * 127 * (heading_error / 180_deg) * turn_const;
-		left_speed = sign * (drive + turn);
-		right_speed = sign * (drive - turn);
+
+		// FIXME: curvature doesn't have direction
+		double drive = (kf - (heading_error / 180_deg)) * 127;
+		double turn =
+		    127 * (heading_error / 180_deg) * kh + 127 * points[current_point - 1].curvature * kk;
+		left_speed = sign * (drive + sign * turn);
+		right_speed = sign * (drive - sign * turn);
 
 		drive_left.move(left_speed);
 		drive_right.move(right_speed);
 
-		prev_x_change = next_objective_x - prev_objective_x;
+		// BOOKMARK: Make adjustments to movement constants as needed
+		if (fabs(left_speed) > 127 || fabs(right_speed) > 127) {
+			kf *= 0.9;
+			kh *= 0.9;
+			kk *= 0.9;
+		}
+		if (fabs(heading_error) > fabs(prev_errorh)) {
+			// FIXME: Constants change if error is increasing
+		}
 
-		prev_objective_x = next_objective_x;
-		prev_objective_y = next_objective_y;
+		// BOOKMARK: Change variables
+		prev_errorh = heading_error;
+		x_change = current_posX - prev_posX;
+		prev_posX = current_posX;
+		prev_posY = current_posY;
 
 		// delay to prevent brain crashing
 		pros::delay(200);
