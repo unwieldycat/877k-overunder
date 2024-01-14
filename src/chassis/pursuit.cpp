@@ -127,6 +127,11 @@ void chassis::pursuit(std::string file_path, bool backwards) {
 			const_par = Point::calc_const(points[pursuing], slope_par);
 			closest_point = robot.x;
 
+			// Temporary double variables because of math rounding errors from Units
+			slope_parD = slope_par.to<double>(), const_parD = const_par.to<double>();
+			lookaheadD = lookahead_distance.to<double>();
+			current_posXD = robot.x.to<double>(), current_posYD = robot.y.to<double>();
+
 			a = pow(slope_parD, 2) + 1;
 			b = 2.0 * (slope_parD * (const_parD - current_posYD) - current_posXD);
 			c = pow(current_posXD, 2) + pow(const_parD - current_posYD, 2) - pow(lookaheadD, 2);
@@ -150,9 +155,8 @@ void chassis::pursuit(std::string file_path, bool backwards) {
 			closest_point = (const_perp - const_par) / (slope_par - slope_perp);
 
 			// Robot is more than the lookahead distance away from the path
-			if (sqrt(
-			        pow<2>(closest_point - robot.x) +
-			        pow<2>(slope_par * closest_point + const_par - robot.y)
+			if (Point::calc_dist(
+			        robot, Point(closest_point, slope_par * closest_point + const_par)
 			    ) > 1.5 * lookahead_distance) {
 				// NOTE: add action to bring robot back to path
 				drive_left.brake();
@@ -184,8 +188,7 @@ void chassis::pursuit(std::string file_path, bool backwards) {
 		}
 
 		// BOOKMARK: Goal increment
-		if (fabs(next_obj.x - points[pursuing].x) < 0.05_ft &&
-		    fabs(next_obj.y - points[pursuing].y) < 0.05_ft) {
+		if (Point::calc_dist(next_obj, points[pursuing]) < 0.3_ft) {
 			pursuing++;
 			left_wing.set_value(points[pursuing].left_wing);
 			left_wing.set_value(points[pursuing].right_wing);
@@ -234,8 +237,7 @@ void chassis::pursuit(std::string file_path, bool backwards) {
 		// BOOKMARK: Change variables
 		prev_errorh = heading_error;
 		x_change = robot.x - robot_prev.x;
-		robot_prev.x = robot.x;
-		robot_prev.y = robot.y;
+		robot_prev.update(robot.x, robot.y, robot.heading);
 
 		// delay to prevent brain crashing
 		pros::delay(200);
