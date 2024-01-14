@@ -1,5 +1,6 @@
 #pragma once
 #include "point.hpp"
+#include "units.h"
 #include <vector>
 
 namespace chassis {
@@ -25,5 +26,15 @@ void add_point(
  * @param backwards determines if the bot should move backwards for this pursuit cycle
  */
 void pursuit(std::string file_path, bool backwards = false);
+
+/**
+ * @brief Finds the lookahead distance
+ *
+ * @param curvature curvature of the function around the point
+ * @param max maximum lookahead distance
+ * @param min minimum lookahead distance
+ * @return foot_t
+ */
+foot_t calculate_lookahead(double curvature, foot_t max, foot_t min);
 
 } // namespace chassis

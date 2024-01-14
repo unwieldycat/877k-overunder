@@ -1,3 +1,4 @@
+#include "pursuit.hpp"
 #include "devices.hpp"
 #include "main.h"
 #include "odom.hpp"
@@ -89,8 +90,7 @@ void chassis::pursuit(std::string file_path, bool backwards) {
 	foot_t const_par, const_perp;
 	double slope_parD, const_parD, lookaheadD;
 	double a, b, c, x;
-	auto lookahead_distance =
-	    (1_ft / (points[0].curvature) < 0.8_ft ? 1_ft / (points[0].curvature) : 0.8_ft);
+	auto lookahead_distance = chassis::calculate_lookahead(points[0].curvature, 0.8_ft, 0.3_ft);
 
 	// Location tracking variables:
 	Point robot(odom::get_x(), odom::get_y(), (degree_t)(imu.get_heading()));
@@ -188,14 +188,12 @@ void chassis::pursuit(std::string file_path, bool backwards) {
 		}
 
 		// BOOKMARK: Goal increment
-		if (Point::calc_dist(next_obj, points[pursuing]) < 0.3_ft) {
+		if (Point::calc_dist(next_obj, points[pursuing]) < 0.1_ft) {
 			pursuing++;
 			left_wing.set_value(points[pursuing].left_wing);
 			left_wing.set_value(points[pursuing].right_wing);
 			lookahead_distance =
-			    (1_ft / (points[pursuing - 1].curvature) < 0.8_ft
-			         ? 1_ft / (points[pursuing - 1].curvature)
-			         : 0.8_ft);
+			    chassis::calculate_lookahead(points[pursuing - 1].curvature, 0.8_ft, 0.3_ft);
 		}
 
 		// BOOKMARK: Heading calculations
@@ -269,4 +267,13 @@ void chassis::pursuit(std::string file_path, bool backwards) {
 	drive_right.brake();
 	points.clear();
 	write_logs();
+}
+
+foot_t chassis::calculate_lookahead(double curvature, foot_t max, foot_t min) {
+	foot_t lookahead = 1_ft / curvature;
+	if (lookahead > max)
+		return max;
+	else if (lookahead < min)
+		return min;
+	return lookahead;
 }
