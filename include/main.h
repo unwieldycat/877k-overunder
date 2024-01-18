@@ -57,9 +57,9 @@ using namespace units::angle;
 #include "subsystems/odom.hpp"
 #include "subsystems/puncher.hpp"
 
-#include "classes/limiters.hpp"
-#include "classes/pid.hpp"
-#include "classes/point.hpp"
+#include "support/limiters.hpp"
+#include "support/pid.hpp"
+#include "support/point.hpp"
 
 #endif
 
