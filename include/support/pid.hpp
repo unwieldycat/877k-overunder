@@ -1,6 +1,11 @@
 #pragma once
 #include "main.h"
 
+/**
+ * @brief PID Controller class
+ *
+ * @tparam U Unit
+ */
 template <typename U>
 class PIDController {
 	static_assert(units::traits::is_unit_t<U>::value, "Template parameter \"U\" must be a unit");
@@ -17,7 +22,11 @@ class PIDController {
 	    : kP(kP), kI(kI), kD(kD), settle_time(settle_time), settle_accuracy(settle_accuracy) {}
 
 	/**
-	 * Run PID calculation
+	 * @brief Run PID calculation
+	 *
+	 * @param set_point Desired point
+	 * @param current_pos Current position
+	 * @return Motor output value
 	 */
 	inline double calculate(U set_point, U current_pos) {
 		error = set_point - current_pos;
@@ -45,7 +54,8 @@ class PIDController {
 	}
 
 	/**
-	 * Check if at or very close to desired point
+	 * @brief Check if at or very close to desired point
+	 * @return Settled state
 	 */
 	inline bool settled() {
 		if (abs(error_prev) > settle_accuracy && abs(error) < settle_accuracy)
@@ -55,7 +65,11 @@ class PIDController {
 	}
 
 	/**
-	 * Configure constants
+	 * @brief Configure constants
+	 *
+	 * @param kP P constant
+	 * @param kI I constant
+	 * @param kD D constant
 	 */
 	inline void set_gains(double kP, double kI, double kD) {
 		this->kP = kP;
@@ -64,12 +78,13 @@ class PIDController {
 	}
 
 	/**
-	 * Get the error value
+	 * @brief Get the current error
+	 * @return Error
 	 */
 	inline U get_error() { return error; }
 
 	/**
-	 * Reset state
+	 * @brief Reset PID state
 	 */
 	inline void reset() {
 		error_change = U(0);
