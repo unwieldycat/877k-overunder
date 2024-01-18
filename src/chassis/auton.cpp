@@ -6,8 +6,8 @@
 using namespace units::math;
 
 // TODO: Tune better
-PIDController<inch_t> drive_pid(5, 2, 5);
-PIDController<degree_t> turn_pid(5, 1, 0.8);
+PIDController<inch_t> drive_pid(5, 2, 5, 2000, 0.2);
+PIDController<degree_t> turn_pid(5, 1, 0.8, 2000, 0.2);
 
 // TODO: Implement slew controller
 

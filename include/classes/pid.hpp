@@ -6,13 +6,15 @@ class PIDController {
 	static_assert(units::traits::is_unit_t<U>::value, "Template parameter \"U\" must be a unit");
 
   private:
-	double kP, kI, kD;
+	double kP, kI, kD, settle_accuracy;
 	double time_change;
 	double prev_time = -1;
+	int settle_start, settle_time;
 	U error, error_prev, error_total, error_change, derivative;
 
   public:
-	PIDController(double kP, double kI, double kD) : kP(kP), kI(kI), kD(kD) {}
+	PIDController(double kP, double kI, double kD, int settle_time, double settle_accuracy)
+	    : kP(kP), kI(kI), kD(kD), settle_time(settle_time), settle_accuracy(settle_accuracy) {}
 
 	/**
 	 * Run PID calculation
@@ -47,7 +49,10 @@ class PIDController {
 	 * Check if at or very close to desired point
 	 */
 	inline bool settled() {
-		return units::math::abs(error_change) < U(0.09) && units::math::abs(error) < U(0.1) * kP;
+		if (abs(error_prev) > settle_accuracy && abs(error) < settle_accuracy)
+			settle_start = pros::millis();
+		if (settle_start - pros::millis() > settle_time) return true;
+		return false;
 	}
 
 	/**
