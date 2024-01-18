@@ -48,8 +48,6 @@ using namespace units::angle;
 
 #include "autons.hpp"
 #include "devices.hpp"
-#include "pid.hpp"
-#include "point.hpp"
 
 #include "chassis/auton.hpp"
 #include "chassis/pursuit.hpp"
@@ -59,6 +57,8 @@ using namespace units::angle;
 #include "subsystems/odom.hpp"
 #include "subsystems/puncher.hpp"
 
+#include "classes/pid.hpp"
+#include "classes/point.hpp"
 #include "classes/slew.hpp"
 
 #endif
