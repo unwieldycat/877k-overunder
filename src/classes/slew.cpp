@@ -1,5 +1,4 @@
-#include "slew.hpp"
-#include "units.h"
+#include "main.h"
 
 SlewController::SlewController(int max) : volt_max(max), volt_prev(0) {}
 

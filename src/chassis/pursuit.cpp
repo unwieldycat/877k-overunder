@@ -1,4 +1,3 @@
-#include "devices.hpp"
 #include "main.h"
 #include <fstream>
 
