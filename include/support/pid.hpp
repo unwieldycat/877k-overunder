@@ -45,7 +45,8 @@ class PIDController {
 			error_total = U(0);
 
 		// Clamp integral to + or - 64
-		error_total = clamp(error_total, 64);
+		if (error_total > U(64)) error_total = U(64);
+		if (error_total < U(-64)) error_total = U(-64);
 
 		error_prev = error;
 		prev_time = time;
@@ -58,7 +59,9 @@ class PIDController {
 	 * @return Settled state
 	 */
 	inline bool settled() {
-		if (abs(error_prev) > settle_accuracy && abs(error) < settle_accuracy)
+		using namespace units::math;
+
+		if (abs(error_prev) > U(settle_accuracy) && abs(error) < U(settle_accuracy))
 			settle_start = pros::millis();
 		if (settle_start - pros::millis() > settle_time) return true;
 		return false;
