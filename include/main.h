@@ -53,6 +53,7 @@ using namespace units::angle;
 #include "chassis/pursuit.hpp"
 #include "chassis/user.hpp"
 
+#include "subsystems/gearbox.hpp"
 #include "subsystems/misc.hpp"
 #include "subsystems/odom.hpp"
 #include "subsystems/puncher.hpp"
