@@ -1,30 +1,42 @@
 #include "main.h"
 
 void awp_left() {
-	// TODO: Make it do stuff
-	// Run push auton
-	// Go to climbing bar and tap somehow
-	odom::calibrate(11_ft, 3_ft, 180_deg);
-	chassis::pursuit("/usd/paths/awp_auton0.csv");
-	chassis::pursuit("/usd/paths/awp_auton1p.csv", true);
+	odom::calibrate(11.25_ft, 1.5_ft, -45_deg);
+
+	// Remove triball from matchload zone
+	chassis::drive(1_ft);
+	left_wing.extend();
+	chassis::drive(-1_ft);
+	chassis::turn_rel(-90_deg);
+
+	// Drive to touch climbing bar
+	left_wing.retract();
+	chassis::drive(-2.28_ft);
+	chassis::turn_abs(90_deg);
+	chassis::drive(96, 3_s);
+	right_wing.extend();
+	chassis::turn_rel(-15_deg);
 }
 
 void awp_right() {
-	chassis::drive(2.5_ft);
-	right_wing.extend();
-	chassis::turn_abs(-45_deg);
-	chassis::drive(1.414_ft);
-	left_wing.extend();
+	odom::calibrate(9_ft, 11_ft, 45_deg);
+
+	// Drive to side of goal
+	chassis::drive(2.82_ft, 45_deg);
 	chassis::turn_abs(0_deg);
-	chassis::drive(1.5_ft, 0_deg);
-	chassis::drive(1_ft, 90_deg);
-	chassis::drive(127, 90_deg, 1_s);
-	chassis::drive(-127, 90_deg, 2_s);
-	chassis::drive(6_in, 90_deg);
-	right_wing.retract();
-	left_wing.retract();
-	chassis::turn_abs(180_deg);
-	chassis::drive(2.5_ft, 180_deg);
-	right_wing.extend();
-	chassis::turn_rel(-45_deg);
+
+	// Ram triball into goal
+	chassis::drive(127, 0_deg, 1_s);
+	chassis::drive(-104, 0_deg, 1_s);
+	chassis::drive(127, 0_deg, 1_s);
+
+	// Drive to center
+	chassis::drive(-6_in);
+	chassis::turn_abs(-90_deg);
+	chassis::drive(6_ft, -90_deg);
+
+	// Touch bar
+	left_wing.extend();
+	chassis::drive(96, 1_s);
+	chassis::turn_rel(-15_deg);
 }
