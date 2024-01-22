@@ -15,6 +15,7 @@ class PIDController {
 	double time_change;
 	double prev_time = -1;
 	int settle_start, settle_time;
+	bool settling;
 	U error, error_prev, error_total, error_change, derivative;
 
   public:
@@ -59,11 +60,21 @@ class PIDController {
 	 * @return Settled state
 	 */
 	inline bool settled() {
-		using namespace units::math;
+		if (units::math::abs(error) > U(settle_accuracy)) {
+			settling = false;
+			return false;
+		}
 
-		if (abs(error_prev) > U(settle_accuracy) && abs(error) < U(settle_accuracy))
+		if (!settling) {
+			settling = true;
 			settle_start = pros::millis();
-		if (settle_start - pros::millis() > settle_time) return true;
+		}
+
+		if (settle_start - pros::millis() > settle_time) {
+			settling = false;
+			return true;
+		}
+
 		return false;
 	}
 
