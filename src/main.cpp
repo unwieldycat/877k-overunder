@@ -2,8 +2,9 @@
 
 rd::Selector selector({
     {"AWP Right", awp_right},
-    {"Right push", push_right},
-    {"Left push", push_left},
+    {"AWP Left", awp_left},
+    {"Push Right", push_right},
+    {"Push Left", push_left},
     {"Skills", skills},
 });
 
