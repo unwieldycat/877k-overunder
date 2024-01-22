@@ -2,17 +2,18 @@
 
 // ========================= User Control Functions ========================= //
 
-// TODO: test slew before full implementation
 void tank_drive(int left_x, int left_y, int right_x, int right_y) {
-	int left = slew(left_y, drive_left.get_voltage(), 24);
-	int right = slew(right_y, drive_left.get_voltage(), 24);
+	int left = slew(left_y, drive_left.get_voltage(), 16);
+	int right = slew(right_y, drive_left.get_voltage(), 16);
 	drive_left.move(left);
 	drive_right.move(right);
 }
 
 void arcade_drive(int left_x, int left_y, int right_x, int right_y) {
-	drive_left.move(left_y + right_x);
-	drive_right.move(left_y - right_x);
+	int left = slew(left_y + right_x, drive_left.get_voltage(), 16);
+	int right = slew(left_y - right_x, drive_left.get_voltage(), 16);
+	drive_left.move(left);
+	drive_right.move(right);
 }
 
 void curvature_drive(int left_x, int left_y, int right_x, int right_y) {
