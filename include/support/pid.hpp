@@ -46,8 +46,8 @@ class PIDController {
 			error_total = U(0);
 
 		// Clamp integral to + or - 64
-		if (error_total > U(64)) error_total = U(64);
-		if (error_total < U(-64)) error_total = U(-64);
+		if (error_total > U(127)) error_total = U(127);
+		if (error_total < U(-127)) error_total = U(-127);
 
 		error_prev = error;
 		prev_time = time;
