@@ -215,9 +215,8 @@ void chassis::pursuit(std::string file_path, bool backwards) {
 		int dir = backwards ? -1 : 1;
 
 		double drive =
-		    (kf - dir * (heading_error / 180_deg) * kh - points[pursuing - 1].curvature * kc) * 127;
-		double turn =
-		    127 * (heading_error / 180_deg) * kh + 127 * points[pursuing - 1].curvature * kc;
+		    (kf - dir * sin(heading_error) * kh - points[pursuing - 1].curvature * kc) * 127;
+		double turn = 127 * sin(heading_error) * kh + 127 * points[pursuing - 1].curvature * kc;
 
 		left_speed = dir * (drive + dir * turn);
 		right_speed = dir * (drive - dir * turn);
