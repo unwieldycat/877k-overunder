@@ -7,7 +7,7 @@ void awp_left() {
 	chassis::drive(1_ft);
 	left_wing.extend();
 	chassis::drive(-1_ft);
-	chassis::turn_rel(-90_deg);
+	chassis::turn_rel(-270_deg);
 
 	// Drive to touch climbing bar
 	left_wing.retract();
