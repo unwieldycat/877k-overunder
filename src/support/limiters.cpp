@@ -3,7 +3,7 @@
 int slew(int new_volts, int current_volts, int max) {
 	if (new_volts > 127) new_volts = 127;
 	if (new_volts < -127) new_volts = -127;
-	if (abs(current_volts - new_volts) > max) new_volts = current_volts + max;
+	if (new_volts - current_volts > max) new_volts = current_volts + max;
 	return new_volts;
 }
 
