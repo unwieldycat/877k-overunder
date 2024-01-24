@@ -6,7 +6,7 @@
 using namespace units::math;
 
 PIDController<inch_t> drive_pid(5, 2, 5, 1000, 0.2);
-PIDController<degree_t> turn_pid(5, 1, 0.8, 1000, 0.2);
+PIDController<degree_t> turn_pid(2.5, 0.2, 0.5, 500, 0.5);
 
 // ============================ Auton Functions ============================ //
 
