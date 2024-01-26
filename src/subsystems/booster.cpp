@@ -1,22 +1,27 @@
 #include "main.h"
 
-const double boost_pitch = 10;
+const double boost_pitch = -15;
+const int boost_time = 2000;
 
 void booster::automatic() {
 	bool extended = false;
-	while (true) {
-		double pitch = imu.get_pitch();
+	int start_pitch = 0;
 
-		if (fabs(pitch) < boost_pitch && extended) {
+	while (true) {
+		double pitch = imu.get_roll();
+		int pitch_time = pros::millis() - start_pitch;
+
+		if (pitch > boost_pitch && extended && pitch_time > boost_time) {
 			left_lift.retract();
 			right_lift.retract();
 			extended = false;
 		}
 
-		if (fabs(pitch) > boost_pitch && !extended) {
+		if (pitch < boost_pitch && !extended) {
 			left_lift.extend();
 			right_lift.extend();
 			extended = true;
+			start_pitch = pros::millis();
 		}
 
 		pros::delay(100);
