@@ -83,6 +83,9 @@ void odom::calibrate(inch_t robot_x = 0_in, inch_t robot_y = 0_in, degree_t head
 		heading -= 360_deg;
 
 	imu.set_heading(heading.to<double>());
+
+	while (imu.is_calibrating())
+		pros::delay(100);
 }
 
 inch_t odom::get_x() { return odom_x; }
