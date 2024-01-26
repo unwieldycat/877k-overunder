@@ -22,6 +22,6 @@ pros::adi::Pneumatics roller_piston('A', true);
 pros::adi::Pneumatics left_wing('B', false);
 pros::adi::Pneumatics right_wing('C', false);
 pros::adi::Pneumatics transmission('D', false);
-pros::adi::Pneumatics odom_pistons('E', false);
+pros::adi::Pneumatics odom_pistons('E', true);
 pros::adi::Pneumatics left_lift('F', false);
 pros::adi::Pneumatics right_lift('G', false);
