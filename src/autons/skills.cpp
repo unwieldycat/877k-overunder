@@ -14,12 +14,9 @@ void skills() {
 
 	punch_motors.brake();
 
-	// Realign robot
-	chassis::drive(64, 1_s);
-	chassis::turn_abs(0_deg);
-	chassis::drive(127, 2_s);
-	odom::calibrate(3_ft, 11_ft + 3_in, 0_deg);
-	chassis::drive(3_in, 0_deg);
+	// Align robot to cross field
+	chassis::drive(-32, 45_deg, 2_s);
+	chassis::drive(3_in);
 	chassis::turn_abs(90_deg);
 
 	// Drive to other side of field
@@ -37,8 +34,7 @@ void skills() {
 	chassis::turn_abs(90_deg);
 
 	// Push into goal
-	chassis::drive(-96, 90_deg, 1_s);
-	chassis::drive(127, 90_deg, 1.5_s);
+	chassis::drive(96, 90_deg, 1_s);
 	chassis::drive(-96, 90_deg, 1_s);
 
 	// chassis::pursuit("/usd/paths/skills0.csv", true);
