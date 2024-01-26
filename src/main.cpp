@@ -1,4 +1,5 @@
 #include "main.h"
+#include "subsystems/booster.hpp"
 
 rd::Selector selector({
     {"AWP Right", awp_right},
@@ -32,6 +33,7 @@ void opcontrol() {
 	pros::Task drive_task(chassis::user, "User Chassis Control");
 	pros::Task cata_task(puncher::user, "Puncher Control");
 	pros::Task misc_task(user, "Misc User Control");
+	pros::Task piston_task(booster::automatic, "Auto boosters");
 }
 
 void disabled() {}
