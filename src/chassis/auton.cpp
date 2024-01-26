@@ -1,11 +1,8 @@
 #include "main.h"
-#include "pros/motors.h"
-#include "units.h"
-#include <cmath>
 
 using namespace units::math;
 
-PIDController<inch_t> drive_pid(5, 2, 5, 1000, 0.2);
+PIDController<inch_t> drive_pid(4, 0.2, 0.6, 500, 0.5);
 PIDController<degree_t> turn_pid(2.5, 0.2, 0.5, 500, 0.5);
 
 // ============================ Auton Functions ============================ //
@@ -45,6 +42,13 @@ void chassis::drive(foot_t distance, degree_t heading) {
 	double turn;
 	degree_t current_rot;
 
+	double sign = 1;
+
+	if (distance < 0_ft) {
+		distance = abs(distance);
+		sign = -1;
+	}
+
 	drive_pid.reset();
 	turn_pid.reset();
 
@@ -56,8 +60,8 @@ void chassis::drive(foot_t distance, degree_t heading) {
 		current_rot = (degree_t)imu.get_rotation();
 		drive = drive_pid.calculate(distance, traveled);
 		turn = turn_pid.calculate(heading, current_rot);
-		drive_left.move(drive + turn);
-		drive_right.move(drive - turn);
+		drive_left.move(sign * drive + turn);
+		drive_right.move(sign * drive - turn);
 		pros::delay(20);
 	} while (!drive_pid.settled());
 
