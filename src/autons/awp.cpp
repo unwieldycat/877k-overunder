@@ -1,5 +1,6 @@
 #include "main.h"
 
+// TODO: Experiment with going forwards to clear triball
 void awp_left() {
 	odom::calibrate(11.25_ft, 1.5_ft, -45_deg);
 
@@ -12,7 +13,7 @@ void awp_left() {
 	// Drive to touch climbing bar
 	left_wing.retract();
 	chassis::drive(2.28_ft);
-	chassis::turn_abs(90_deg);
+	chassis::turn_abs(90_deg); // FIXME: This turns 90 degrees, not to 90 degrees??
 	chassis::drive(2_ft);
 	right_wing.extend();
 	chassis::turn_rel(-15_deg);

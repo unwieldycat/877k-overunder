@@ -1,5 +1,6 @@
 #include "main.h"
 
+// FIXME: Doesnt let the value decrease
 int slew(int new_volts, int current_volts, int max) {
 	if (new_volts > 127) new_volts = 127;
 	if (new_volts < -127) new_volts = -127;
