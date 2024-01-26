@@ -23,21 +23,20 @@ void awp_right() {
 	odom::calibrate(9_ft, 11_ft, 45_deg);
 
 	// Drive to side of goal
-	chassis::drive(2.82_ft, 45_deg);
+	chassis::drive(2.4_ft, 45_deg);
 	chassis::turn_abs(0_deg);
 
 	// Ram triball into goal
 	chassis::drive(127, 0_deg, 1_s);
-	chassis::drive(-104, 0_deg, 1_s);
-	chassis::drive(127, 0_deg, 1_s);
+	chassis::drive(-104, 0_deg, 750_ms);
 
 	// Drive to center
-	chassis::drive(-6_in);
+	chassis::drive(8_in, 0_deg);
 	chassis::turn_abs(-90_deg);
 	chassis::drive(6_ft, -90_deg);
 
 	// Touch bar
 	left_wing.extend();
-	chassis::drive(96, 1_s);
-	chassis::turn_rel(-15_deg);
+	chassis::drive(3_in, 0_deg);
+	chassis::turn_rel(15_deg);
 }
