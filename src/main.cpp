@@ -1,9 +1,8 @@
 #include "main.h"
-#include "subsystems/booster.hpp"
 
 rd::Selector selector({
     {"AWP Right", awp_right},
-    {"AWP Left", awp_left},
+    //{"AWP Left", awp_left},
     {"Push Right", push_right},
     {"Push Left", push_left},
     {"Skills", skills},
