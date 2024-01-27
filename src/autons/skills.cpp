@@ -3,7 +3,7 @@
 const int launch_time = 45000;
 
 void skills() {
-	odom::calibrate(2_ft, 2_ft, 225_deg); // TODO: Find correct angle?
+	odom::calibrate(2_ft, 2_ft, -120_deg);
 
 	// Run kicker for specified time
 	punch_motors.move(104);
@@ -16,6 +16,8 @@ void skills() {
 
 	// Align robot to cross field
 	chassis::drive(-32, 45_deg, 2_s);
+	odom::calibrate(2_ft, 11.5_ft, -135_deg);
+
 	chassis::drive(3_in);
 	chassis::turn_abs(90_deg);
 
@@ -35,6 +37,8 @@ void skills() {
 
 	// Push into goal
 	chassis::drive(96, 90_deg, 1_s);
+	chassis::drive(-96, 90_deg, 1_s);
+	chassis::drive(127, 90_deg, 1_s);
 	chassis::drive(-96, 90_deg, 1_s);
 
 	// chassis::pursuit("/usd/paths/skills0.csv", true);
