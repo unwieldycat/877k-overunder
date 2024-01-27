@@ -78,9 +78,10 @@ void chassis::turn_abs(degree_t heading) {
 	while (heading < -180_deg)
 		heading += 180_deg;
 
-	heading += (degree_t)imu.get_rotation();
-	turn_pid.reset();
+	// Adds the number of full 360s to the desired heading
+	heading += (degree_t)360.0 * ((int)imu.get_rotation() / 360);
 
+	turn_pid.reset();
 	drive_left.set_brake_mode_all(pros::E_MOTOR_BRAKE_HOLD);
 	drive_right.set_brake_mode_all(pros::E_MOTOR_BRAKE_HOLD);
 
