@@ -32,8 +32,8 @@ void awp_right() {
 
 	// Drive to center
 	chassis::drive(8_in, 0_deg);
-	chassis::turn_abs(-90_deg);
-	chassis::drive(6_ft, -90_deg);
+	chassis::turn_rel(-90_deg);
+	chassis::drive(3.8_ft, -90_deg);
 
 	// Touch bar
 	left_wing.extend();
