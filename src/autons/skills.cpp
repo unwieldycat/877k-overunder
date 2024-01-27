@@ -18,8 +18,9 @@ void skills() {
 	chassis::drive(-32, 45_deg, 2_s);
 	odom::calibrate(2_ft, 11.5_ft, -135_deg);
 
-	chassis::drive(3_in);
+	chassis::drive(-3_in);
 	chassis::turn_abs(90_deg);
+	pros::delay(100);
 
 	// Drive to other side of field
 	chassis::drive(6_ft, 90_deg);
@@ -31,6 +32,8 @@ void skills() {
 	// Push triballs
 	left_wing.extend();
 	right_wing.extend();
+	pros::delay(250);
+
 	chassis::turn_abs(0_deg);
 	chassis::drive(96, 0_deg, 1_s);
 	chassis::turn_abs(90_deg);
