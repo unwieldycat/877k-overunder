@@ -2,8 +2,9 @@
 
 using namespace units::math;
 
-PIDController<inch_t> drive_pid(4, 0.2, 0.6, 500, 0.5);
-PIDController<degree_t> turn_pid(3, 0.3, 0.3, 500, 0.5);
+PIDController<inch_t> drive_pid(4, 0.2, 0.6, 1000, 0.5);
+PIDController<degree_t> turn_pid(3, 0.3, 0.3, 2500, 0.5);
+PIDController<degree_t> align_pid(5, 0, 0, 1000, 0.5);
 
 // ============================ Auton Functions ============================ //
 
@@ -16,13 +17,13 @@ void chassis::drive(int power, degree_t heading, millisecond_t time) {
 	millisecond_t current_time;
 	double turn;
 
-	turn_pid.reset();
+	align_pid.reset();
 	drive_left.set_brake_mode_all(pros::E_MOTOR_BRAKE_HOLD);
 	drive_right.set_brake_mode_all(pros::E_MOTOR_BRAKE_HOLD);
 
 	do {
 		current_time = (millisecond_t)pros::millis();
-		turn = turn_pid.calculate(heading, degree_t(imu.get_rotation()));
+		turn = align_pid.calculate(heading, degree_t(imu.get_rotation()));
 		drive_left.move(power + turn);
 		drive_right.move(power - turn);
 		pros::delay(20);
@@ -50,7 +51,7 @@ void chassis::drive(foot_t distance, degree_t heading) {
 	}
 
 	drive_pid.reset();
-	turn_pid.reset();
+	align_pid.reset();
 
 	drive_left.set_brake_mode_all(pros::E_MOTOR_BRAKE_HOLD);
 	drive_right.set_brake_mode_all(pros::E_MOTOR_BRAKE_HOLD);
@@ -59,7 +60,7 @@ void chassis::drive(foot_t distance, degree_t heading) {
 		traveled = sqrt(pow<2>(odom::get_x() - origin_x) + pow<2>(odom::get_y() - origin_y));
 		current_rot = (degree_t)imu.get_rotation();
 		drive = drive_pid.calculate(distance, traveled);
-		turn = turn_pid.calculate(heading, current_rot);
+		turn = align_pid.calculate(heading, current_rot);
 		drive_left.move(sign * drive + turn);
 		drive_right.move(sign * drive - turn);
 		pros::delay(20);
