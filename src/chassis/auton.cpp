@@ -75,9 +75,9 @@ void chassis::turn_abs(degree_t heading) {
 	degree_t current_hdg;
 
 	while (heading > 180_deg)
-		heading -= 180_deg;
+		heading -= 360_deg;
 	while (heading < -180_deg)
-		heading += 180_deg;
+		heading += 360_deg;
 
 	// Adds the number of full 360s to the desired heading
 	heading += (degree_t)360.0 * ((int)imu.get_rotation() / 360);
