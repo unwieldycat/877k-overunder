@@ -14,12 +14,18 @@ void skills() {
 
 	punch_motors.brake();
 
-	// Align robot to cross field
-	chassis::drive(-32, -135_deg, 1_s);
+	// Recalibrate
+	drive_right.move(96);
+	pros::delay(1000);
+	drive_right.brake();
 	odom::calibrate(2_ft, 11.5_ft, -135_deg);
 
-	chassis::drive(-3_in);
+	// Align robot to cross field
+	chassis::turn_rel(-135_deg);
+	chassis::turn_rel(30_deg);
+	chassis::drive(7_in);
 	chassis::turn_abs(90_deg);
+	chassis::drive(3_in);
 
 	// Drive to other side of field
 	chassis::drive(6_ft, 90_deg);
