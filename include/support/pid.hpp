@@ -65,12 +65,12 @@ class PIDController {
 			return false;
 		}
 
-		if (!settling) {
+		if (!settling && units::math::abs(error) < U(settle_accuracy)) {
 			settling = true;
 			settle_start = pros::millis();
 		}
 
-		if (settle_start - pros::millis() > settle_time) {
+		if (settle_start - pros::millis() > settle_time && settling) {
 			settling = false;
 			return true;
 		}
