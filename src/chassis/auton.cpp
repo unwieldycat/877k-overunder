@@ -17,6 +17,14 @@ void chassis::drive(int power, degree_t heading, millisecond_t time) {
 	millisecond_t current_time;
 	double turn;
 
+	while (heading > 180_deg)
+		heading -= 360_deg;
+	while (heading < -180_deg)
+		heading += 360_deg;
+
+	// Adds the number of full 360s to the desired heading
+	heading += (degree_t)360.0 * ((int)imu.get_rotation() / 360);
+
 	align_pid.reset();
 	drive_left.set_brake_mode_all(pros::E_MOTOR_BRAKE_HOLD);
 	drive_right.set_brake_mode_all(pros::E_MOTOR_BRAKE_HOLD);
@@ -49,6 +57,14 @@ void chassis::drive(foot_t distance, degree_t heading) {
 		distance = abs(distance);
 		sign = -1;
 	}
+
+	while (heading > 180_deg)
+		heading -= 360_deg;
+	while (heading < -180_deg)
+		heading += 360_deg;
+
+	// Adds the number of full 360s to the desired heading
+	heading += (degree_t)360.0 * ((int)imu.get_rotation() / 360);
 
 	drive_pid.reset();
 	align_pid.reset();
