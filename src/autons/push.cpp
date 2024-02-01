@@ -4,7 +4,7 @@ void push_left() {
 	odom::calibrate(2_ft, 11_ft, -45_deg);
 
 	// Drive to side of goal
-	chassis::drive(2.4_ft, -45_deg);
+	chassis::drive(2.6_ft, -45_deg);
 	chassis::turn_abs(0_deg);
 
 	// Ram triball into goal
@@ -16,7 +16,7 @@ void push_right() {
 	odom::calibrate(9_ft, 11_ft, 45_deg);
 
 	// Drive to side of goal
-	chassis::drive(2.4_ft, 45_deg);
+	chassis::drive(2.6_ft, 45_deg);
 	chassis::turn_abs(0_deg);
 
 	// Ram triball into goal
