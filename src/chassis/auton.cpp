@@ -58,13 +58,13 @@ void chassis::drive(foot_t distance, degree_t heading) {
 		sign = -1;
 	}
 
-	while (heading > 180_deg)
-		heading -= 360_deg;
+	/*while (heading > 180_deg)
+	    heading -= 360_deg;
 	while (heading < -180_deg)
-		heading += 360_deg;
+	    heading += 360_deg;
 
 	// Adds the number of full 360s to the desired heading
-	heading += (degree_t)360.0 * ((int)imu.get_rotation() / 360);
+	heading += (degree_t)360.0 * ((int)imu.get_rotation() / 360);*/
 
 	drive_pid.reset();
 	align_pid.reset();
