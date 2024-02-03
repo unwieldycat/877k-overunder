@@ -134,3 +134,47 @@ void chassis::turn_rel(degree_t degrees) {
 	drive_left.brake();
 	drive_right.brake();
 }
+
+void chassis::d_drive(double dist, int power) {
+	std::cout << drive_left.get_position() << "\n";
+	double target_pos = dist / (4 * M_PI) * 360 + drive_left.get_position();
+	std::cout << target_pos << "\n";
+
+	if (target_pos > drive_left.get_position()) {
+		do {
+			drive_left.move(power);
+			drive_right.move(power);
+			pros::delay(20);
+		} while (drive_left.get_position() < target_pos);
+	} else {
+		do {
+			drive_left.move(-power);
+			drive_right.move(-power);
+			pros::delay(20);
+		} while (drive_left.get_position() > target_pos);
+	}
+
+	drive_left.brake();
+	drive_right.brake();
+}
+
+void chassis::d_turn(double angle, int power) {
+	double dist = angle / 360 * (15 * M_PI) / (4 * M_PI) * 360 + drive_left.get_position();
+
+	if (dist > drive_left.get_position()) {
+		do {
+			drive_left.move(power);
+			drive_right.move(-power);
+			pros::delay(20);
+		} while (drive_left.get_position() < dist);
+	} else {
+		do {
+			drive_left.move(-power);
+			drive_right.move(power);
+			pros::delay(20);
+		} while (drive_left.get_position() > dist);
+	}
+
+	drive_left.brake();
+	drive_right.brake();
+}

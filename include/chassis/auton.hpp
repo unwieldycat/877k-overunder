@@ -33,4 +33,8 @@ void turn_abs(degree_t heading);
  */
 void turn_rel(degree_t degrees);
 
+void d_drive(double dist, int power = 70);
+
+void d_turn(double angle, int power = 70);
+
 } // namespace chassis
