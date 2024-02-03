@@ -1,17 +1,17 @@
 #include "main.h"
 
-const int launch_time = 25000;
+const int launch_time = 45000;
 
 void skills() {
-	//Align for shot
-	
-	chassis::d_drive(20, 50); 
+	// Align for shot
+
+	chassis::d_drive(20, 50);
 	pros::delay(300);
-	chassis::d_turn(-75.0, 50);
+	chassis::d_turn(-70.0, 50);
 	pros::delay(300);
 	chassis::d_drive(2, 50);
 
-	//odom::calibrate(2_ft, 2_ft, -120_deg);
+	// odom::calibrate(2_ft, 2_ft, -120_deg);
 
 	// Run kicker for specified time
 	left_wing.extend();
@@ -25,31 +25,36 @@ void skills() {
 	pros::delay(300);
 	left_wing.retract();
 
-	//Push
+	// Push
 	chassis::d_drive(-4, 50);
 	pros::delay(300);
-	chassis::d_turn(110);
+	chassis::d_turn(90);
 	pros::delay(300);
-	chassis::d_drive(10);
+	chassis::d_drive(10, 127);
 	pros::delay(300);
-
-	//Cross
 	chassis::d_drive(-10);
 	pros::delay(300);
+	chassis::d_drive(10, 127);
+	pros::delay(300);
+
+	// Cross
+	chassis::d_drive(-10);
+	pros::delay(300);
+
+	return;
+
 	chassis::d_turn(120);
 	pros::delay(300);
-	chassis::d_drive(10);
+	chassis::d_drive(16);
 	pros::delay(300);
 	chassis::d_turn(-20);
 	pros::delay(300);
-	chassis::d_drive(9);
+	/*chassis::d_turn(-15);
+	pros::delay(300);*/
+	chassis::d_drive(64, 80);
 	pros::delay(300);
-	chassis::d_turn(-15);
-	pros::delay(300);
-	chassis::d_drive(63, 80);
-	pros::delay(300); 
 
-	//Push 
+	// Push
 	chassis::d_turn(-90, 55);
 	pros::delay(300);
 	chassis::d_drive(24);
@@ -70,7 +75,6 @@ void skills() {
 	pros::delay(300);
 	chassis::d_drive(-24);
 	pros::delay(300);
-
 
 	/*
 	// Recalibrate
