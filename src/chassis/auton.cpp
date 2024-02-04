@@ -6,7 +6,7 @@ PIDController<inch_t> drive_pid(4, 0.2, 0.6, 1000, 0.5);
 PIDController<degree_t> turn_pid(3, 0.3, 0.3, 2500, 0.5);
 PIDController<degree_t> align_pid(5, 0, 0, 1000, 0.5);
 
-// ============================ Auton Functions ============================ //
+// ============================ Drive Functions ============================ //
 
 void chassis::drive(int power, millisecond_t time) {
 	chassis::drive(power, (degree_t)imu.get_rotation(), time);
@@ -86,6 +86,8 @@ void chassis::drive(foot_t distance, degree_t heading) {
 	drive_right.brake();
 }
 
+// ============================= Turn Functions ============================= //
+
 void chassis::turn_abs(degree_t heading) {
 	double output;
 	degree_t current_hdg;
@@ -134,6 +136,8 @@ void chassis::turn_rel(degree_t degrees) {
 	drive_left.brake();
 	drive_right.brake();
 }
+
+// ========================== Temporary Functions ========================== //
 
 void chassis::d_drive(double dist, int power) {
 	std::cout << drive_left.get_position() << "\n";
