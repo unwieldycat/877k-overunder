@@ -1,8 +1,7 @@
 #include "main.h"
 
 rd::Selector selector({
-    {"AWP Right", awp_right},
-    //{"AWP Left", awp_left},
+    {"AWP", awp},
     {"Push Right", push_right},
     {"Push Left", push_left},
     {"Skills", skills},

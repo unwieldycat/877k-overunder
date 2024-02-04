@@ -17,12 +17,7 @@ void push_left();
 void skills();
 
 /**
- * Does left half of the autonomous win point. Scores triball, removes triball, and touches climbing
+ * Achieves the autonomous win point. Scores triball, removes triball, and touches climbing
  * bar.
  */
-void awp_left();
-
-/**
- * Does right portion of autonomous win point. Scores triballs and touches cimbing bar.
- */
-void awp_right();
+void awp();
