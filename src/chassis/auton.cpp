@@ -6,6 +6,24 @@ PIDController<inch_t> drive_pid(4, 0.2, 0.6, 1000, 0.5);
 PIDController<degree_t> turn_pid(3, 0.3, 0.3, 2500, 0.5);
 PIDController<degree_t> align_pid(5, 0, 0, 1000, 0.5);
 
+// ============================ Helper Functions ============================ //
+
+degree_t optimize_turn(degree_t heading) {
+	// + or - 360 to heading to bring it within [-180, 180]
+	while (heading > 180_deg)
+		heading -= 360_deg;
+	while (heading < -180_deg)
+		heading += 360_deg;
+
+	// + or - 360 to heading to make turn as short as possible
+	while (heading - degree_t(imu.get_rotation()) >= 180_deg)
+		heading -= 360_deg;
+	while (heading - degree_t(imu.get_rotation()) <= -180_deg)
+		heading += 360_deg;
+
+	return heading;
+}
+
 // ============================ Drive Functions ============================ //
 
 void chassis::drive(int power, millisecond_t time) {
@@ -17,13 +35,7 @@ void chassis::drive(int power, degree_t heading, millisecond_t time) {
 	millisecond_t current_time;
 	double turn;
 
-	while (heading > 180_deg)
-		heading -= 360_deg;
-	while (heading < -180_deg)
-		heading += 360_deg;
-
-	// Adds the number of full 360s to the desired heading
-	heading += (degree_t)360.0 * ((int)imu.get_rotation() / 360);
+	heading = optimize_turn(heading);
 
 	align_pid.reset();
 	drive_left.set_brake_mode_all(pros::E_MOTOR_BRAKE_HOLD);
@@ -58,13 +70,7 @@ void chassis::drive(foot_t distance, degree_t heading) {
 		sign = -1;
 	}
 
-	/*while (heading > 180_deg)
-	    heading -= 360_deg;
-	while (heading < -180_deg)
-	    heading += 360_deg;
-
-	// Adds the number of full 360s to the desired heading
-	heading += (degree_t)360.0 * ((int)imu.get_rotation() / 360);*/
+	heading = optimize_turn(heading);
 
 	drive_pid.reset();
 	align_pid.reset();
@@ -92,13 +98,7 @@ void chassis::turn_abs(degree_t heading) {
 	double output;
 	degree_t current_hdg;
 
-	while (heading > 180_deg)
-		heading -= 360_deg;
-	while (heading < -180_deg)
-		heading += 360_deg;
-
-	// Adds the number of full 360s to the desired heading
-	heading += (degree_t)360.0 * ((int)imu.get_rotation() / 360);
+	heading = optimize_turn(heading);
 
 	turn_pid.reset();
 	drive_left.set_brake_mode_all(pros::E_MOTOR_BRAKE_HOLD);
