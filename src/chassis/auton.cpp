@@ -9,12 +9,6 @@ PIDController<degree_t> align_pid(5, 0, 0, 1000, 0.5);
 // ============================ Helper Functions ============================ //
 
 degree_t optimize_turn(degree_t heading) {
-	// + or - 360 to heading to bring it within [-180, 180]
-	while (heading > 180_deg)
-		heading -= 360_deg;
-	while (heading < -180_deg)
-		heading += 360_deg;
-
 	// + or - 360 to heading to make turn as short as possible
 	while (heading - degree_t(imu.get_rotation()) >= 180_deg)
 		heading -= 360_deg;
