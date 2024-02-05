@@ -27,7 +27,21 @@ degree_t optimize_turn(degree_t heading) {
 // ============================ Drive Functions ============================ //
 
 void chassis::drive(int power, millisecond_t time) {
-	chassis::drive(power, (degree_t)imu.get_rotation(), time);
+	millisecond_t start_time = (millisecond_t)pros::millis();
+	millisecond_t current_time;
+
+	drive_left.set_brake_mode_all(pros::E_MOTOR_BRAKE_HOLD);
+	drive_right.set_brake_mode_all(pros::E_MOTOR_BRAKE_HOLD);
+
+	do {
+		current_time = (millisecond_t)pros::millis();
+		drive_left.move(power);
+		drive_right.move(power);
+		pros::delay(20);
+	} while (current_time < time + start_time);
+
+	drive_left.brake();
+	drive_right.brake();
 }
 
 void chassis::drive(int power, degree_t heading, millisecond_t time) {
