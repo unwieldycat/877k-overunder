@@ -21,3 +21,8 @@ void skills();
  * bar.
  */
 void awp();
+
+/**
+ * Higher-scoring auton for right side, pushes ~3 triballs into goal.
+ */
+void right();
