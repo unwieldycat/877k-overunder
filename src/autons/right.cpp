@@ -1,3 +1,4 @@
+#include "devices.hpp"
 #include "main.h"
 
 void right() {
@@ -6,17 +7,16 @@ void right() {
 	// Align to gather triballs
 	chassis::drive(2_ft, 0_deg);
 	chassis::turn_abs(-45_deg);
+
 	left_wing.extend();
-	chassis::drive(2.82_ft);
+	chassis::drive(1.5_ft);
 	chassis::turn_abs(0_deg);
 
 	// Turn to face goal
 	chassis::drive(1_ft, 0_deg);
-	chassis::turn_abs(90_deg);
+	chassis::d_turn(90, 30);
 
-	// Push triballs into goal
+	right_wing.extend();
 	chassis::drive(127, 90_deg, 2_s);
 	chassis::drive(-2_ft, 90_deg);
-	chassis::drive(127, 90_deg, 2_s);
-	chassis::drive(-1_ft, 90_deg);
 }
