@@ -102,7 +102,23 @@ void chassis::drive(foot_t distance, degree_t heading) {
 
 // ============================= Turn Functions ============================= //
 
-void chassis::turn_abs(degree_t heading) {
+void do_turn(double output, chassis::TurnSide side) {
+	switch (side) {
+	case chassis::TurnSide::Left:
+		drive_left.move(output);
+		drive_right.move(0);
+		break;
+	case chassis::TurnSide::Right:
+		drive_left.move(0);
+		drive_right.move(-output);
+		break;
+	default:
+		drive_left.move(output);
+		drive_right.move(-output);
+	}
+}
+
+void chassis::turn_abs(degree_t heading, TurnSide side) {
 	double output;
 	degree_t current_hdg;
 
@@ -115,8 +131,7 @@ void chassis::turn_abs(degree_t heading) {
 	do {
 		current_hdg = degree_t(imu.get_rotation());
 		output = turn_pid.calculate(heading, current_hdg);
-		drive_left.move(output);
-		drive_right.move(-output);
+		do_turn(output, side);
 		pros::delay(20);
 	} while (!turn_pid.settled());
 
@@ -124,7 +139,7 @@ void chassis::turn_abs(degree_t heading) {
 	drive_right.brake();
 }
 
-void chassis::turn_rel(degree_t degrees) {
+void chassis::turn_rel(degree_t degrees, TurnSide side) {
 	double output;
 	degree_t current_rot;
 	degree_t end_rot = (degree_t)imu.get_rotation() + degrees;
@@ -136,8 +151,7 @@ void chassis::turn_rel(degree_t degrees) {
 	do {
 		current_rot = degree_t(imu.get_rotation());
 		output = turn_pid.calculate(end_rot, current_rot);
-		drive_left.move(output);
-		drive_right.move(-output);
+		do_turn(output, side);
 		pros::delay(20);
 	} while (!turn_pid.settled());
 

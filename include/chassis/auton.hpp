@@ -24,14 +24,19 @@ void drive(foot_t distance);
 void drive(foot_t distance, degree_t heading);
 
 /**
+ * Which wheels to turn when turning
+ */
+enum class TurnSide { Left, Right, Both };
+
+/**
  * Turn to a specific heading
  */
-void turn_abs(degree_t heading);
+void turn_abs(degree_t heading, TurnSide side = TurnSide::Both);
 
 /**
  * Turn relative to the robot's current position
  */
-void turn_rel(degree_t degrees);
+void turn_rel(degree_t degrees, TurnSide side = TurnSide::Both);
 
 void d_drive(double dist, int power = 70);
 
