@@ -14,7 +14,7 @@ void right() {
 
 	// Turn to face goal
 	chassis::drive(1_ft, 0_deg);
-	chassis::d_turn(90, 30);
+	chassis::turn_abs(90_deg, chassis::TurnSide::Left);
 
 	right_wing.extend();
 	chassis::drive(127, 90_deg, 2_s);
