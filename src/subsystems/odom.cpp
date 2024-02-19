@@ -1,3 +1,4 @@
+#include "odom.hpp"
 #include "main.h"
 
 const std::pair<inch_t, inch_t> left_offset = {-4.829_in, 1.4675_in};
@@ -14,8 +15,8 @@ degree_t imu_heading = 0_deg;
 void odom::initialize() {
 	odom_left.reset_position();
 	odom_rear.reset_position();
-	odom_left.set_reversed(false);
-	odom_rear.set_reversed(false);
+	odom_left.set_reversed(true);
+	odom_rear.set_reversed(true);
 	imu.reset(true);
 
 	while (std::isinf(imu.get_heading())) {

@@ -91,6 +91,7 @@ void chassis::pursuit(std::string file_path, bool backwards) {
 	// Location tracking variables:
 	Point robot(odom::get_x(), odom::get_y(), (degree_t)(imu.get_heading()));
 	Point robot_prev(odom::get_x(), odom::get_y(), (degree_t)(imu.get_heading()));
+	Point prev_obj(0_ft, 0_ft, 0_deg);
 	Point next_obj(0_ft, 0_ft, 0_deg);
 	foot_t closest_point;
 	foot_t x_change;
@@ -101,7 +102,7 @@ void chassis::pursuit(std::string file_path, bool backwards) {
 	int pursuing = 1, same_obj = 0;
 
 	// Movement variables:
-	double kc = 0.3, kh = 0.6, kf = 1.1, left_speed, right_speed;
+	double kc = 15, kh = 0.6, kf = 0.8, left_speed, right_speed;
 
 	// Initialize
 	drive_left.set_brake_mode(pros::E_MOTOR_BRAKE_HOLD);
@@ -184,7 +185,8 @@ void chassis::pursuit(std::string file_path, bool backwards) {
 		}
 
 		// BOOKMARK: Goal increment
-		if (Point::calc_dist(next_obj, points[pursuing]) < 0.1_ft) {
+
+		if (Point::calc_dist(next_obj, points[pursuing]) < 5_in) {
 			pursuing++;
 			left_wing.set_value(points[pursuing].left_wing);
 			left_wing.set_value(points[pursuing].right_wing);
@@ -209,42 +211,46 @@ void chassis::pursuit(std::string file_path, bool backwards) {
 
 		// BOOKMARK: Movement
 		int dir = backwards ? -1 : 1;
+		int csign = points[pursuing - 1].curvature > 0.0 ? 1 : -1;
 
-		double drive =
-		    (kf - dir * sin(heading_error) * kh - points[pursuing - 1].curvature * kc) * 127;
-		double turn = 127 * sin(heading_error) * kh + 127 * points[pursuing - 1].curvature * kc;
+		double drive = kf * (127 - heading_error.to<double>());
+		double turn =
+		    heading_error.to<double>() * kh + csign * pow<2>(points[pursuing - 1].curvature) * kc;
 
-		left_speed = dir * (drive + dir * turn);
-		right_speed = dir * (drive - dir * turn);
+		left_speed = dir * (drive - (points[pursuing - 1].curvature > 0.8 ? 1.5 : 1) * turn);
+		right_speed = dir * (drive + (points[pursuing - 1].curvature > 0.8 ? 1.5 : 1) * turn);
 
 		drive_left.move(left_speed);
 		drive_right.move(right_speed);
+
+		prev_obj.update(next_obj.x, next_obj.y, next_obj.heading);
 
 		// BOOKMARK: Make adjustments to movement constants as needed
 		if (fabs(left_speed) > 127 || fabs(right_speed) > 127) {
 			kf *= 0.9;
 			kc *= 0.9;
 			kh *= 0.9;
-		}
-		if (fabs(heading_error) - fabs(prev_errorh) > 5_deg) {
+		} else if (fabs(heading_error) - fabs(prev_errorh) > 5_deg) {
 			if (points[pursuing].curvature > 0.0 == heading_error < 0_deg) {
-				kc -= 0.05;
-				kh += 0.05;
+				kc -= 1;
+				kh += 0.01;
 			} else {
-				kc += 0.01;
+				kc += 1;
 				kh += 0.01;
 			}
 		}
 
-		if (fabs(heading_error) < 5_deg) {
-			kf += 0.1;
+		else if (fabs(heading_error) < 5_deg && kf < 0.8) {
+			kf += 0.01;
+			kc += 1;
+			kh -= 0.01;
 		}
 		if (kc < 0) kc = fabs(kc);
 		if (kf < 0) kf = fabs(kf);
 		if (kh < 0) kh = fabs(kh);
 
-		std::cout << " x: " << robot.x << " y: " << robot.y << " h: " << robot.heading
-		          << " nextX: " << next_obj.x << " nextY: " << next_obj.y
+		std::cout << "Current Point: " << pursuing << "\nx: " << robot.x << " y: " << robot.y
+		          << " h: " << robot.heading << " nextX: " << next_obj.x << " nextY: " << next_obj.y
 		          << " nextH: " << next_obj.heading << "\n";
 		std::cout << " forward: " << kf << " heading: " << kh << " curve: " << kc << "\n";
 		std::cout << " left: " << left_speed << " right: " << right_speed << "\n";
