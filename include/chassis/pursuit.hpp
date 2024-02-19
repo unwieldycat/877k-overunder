@@ -26,4 +26,14 @@ void add_point(
  */
 void pursuit(std::string file_path, bool backwards = false);
 
+/**
+ * @brief Finds the lookahead distance
+ *
+ * @param curvature curvature of the function around the point
+ * @param max maximum lookahead distance
+ * @param min minimum lookahead distance
+ * @return foot_t
+ */
+foot_t calculate_lookahead(double curvature, foot_t max, foot_t min);
+
 } // namespace chassis

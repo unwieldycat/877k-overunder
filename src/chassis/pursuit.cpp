@@ -1,11 +1,11 @@
 #include "main.h"
+#include <cmath>
 #include <fstream>
 
 using namespace units::math;
 
 std::vector<Point> points = {};
 std::stringstream path_logs;
-const double turn_const = 1.5;
 
 // ============================ Helper Functions ============================ //
 
@@ -81,13 +81,29 @@ void chassis::pursuit(std::string file_path, bool backwards) {
 	parse_file(file_path);
 	if (points.empty()) return;
 
-	int current_point = 1, same_obj = 0;
+	// Calculation assisting variables:
 	units::dimensionless::scalar_t slope_par, slope_perp;
-	foot_t closest_point, next_objective_x, next_objective_y, const_par, const_perp;
-	foot_t prev_objective_x = points[0].x, prev_objective_y = points[0].y;
-	degree_t heading_objective;
-	double left_speed, right_speed;
+	foot_t const_par, const_perp;
+	double slope_parD, const_parD, lookaheadD;
+	double a, b, c, x;
+	auto lookahead_distance = chassis::calculate_lookahead(points[0].curvature, 0.8_ft, 0.3_ft);
 
+	// Location tracking variables:
+	Point robot(odom::get_x(), odom::get_y(), (degree_t)(imu.get_heading()));
+	Point robot_prev(odom::get_x(), odom::get_y(), (degree_t)(imu.get_heading()));
+	Point next_obj(0_ft, 0_ft, 0_deg);
+	foot_t closest_point;
+	foot_t x_change;
+	double current_posXD, current_posYD;
+	degree_t heading_error, prev_errorh;
+
+	// Counting variables:
+	int pursuing = 1, same_obj = 0;
+
+	// Movement variables:
+	double kc = 0.3, kh = 0.6, kf = 1.1, left_speed, right_speed;
+
+	// Initialize
 	drive_left.set_brake_mode(pros::E_MOTOR_BRAKE_HOLD);
 	drive_right.set_brake_mode(pros::E_MOTOR_BRAKE_HOLD);
 
@@ -95,84 +111,65 @@ void chassis::pursuit(std::string file_path, bool backwards) {
 	left_wing.set_value(points[0].right_wing);
 
 	// Loops until all points have been passed
-	while (current_point < points.size()) {
-		degree_t current_heading = (degree_t)imu.get_heading(), heading_error;
-		foot_t current_posX = odom::get_x(), current_posY = odom::get_y();
-		// FIXME: 6 feet lookahead distance??
-		auto lookahead_distance =
-		    (1_ft / (points[current_point - 1].curvature) < 6_in
-		         ? 1_ft / (points[current_point - 1].curvature)
-		         : 0.05_ft);
+	while (pursuing < points.size()) {
+		// Update variables
+		robot.update(odom::get_x(), odom::get_y(), (degree_t)(imu.get_heading()));
 
 		// BOOKMARK: Begin finding next objective
 		//  Finds closest point when X coordinates of previous and current points are different
-		if (points[current_point - 1].x != points[current_point].x) {
-			slope_par = Point::calc_par_slope(points[current_point - 1], points[current_point]);
-			const_par = Point::calc_const(points[current_point], slope_par);
-			closest_point = current_posX;
+		int sign = (points[pursuing].x - points[pursuing - 1].x) > 0_ft ? 1 : -1;
+		if (points[pursuing - 1].x != points[pursuing].x) {
+			slope_par = Point::calc_par_slope(points[pursuing - 1], points[pursuing]);
+			const_par = Point::calc_const(points[pursuing], slope_par);
+			closest_point = robot.x;
 
-			int sign = (points[current_point].x - points[current_point - 1].x) > 0_ft ? 1 : -1;
-			next_objective_x =
-			    (-(2 * (slope_par * (const_par - current_posY) - current_posX)) +
-			     sign * sqrt(
-			                pow<2>(2 * (slope_par * (const_par - current_posY) - current_posX)) -
-			                4 * (pow<2>(slope_par) + 1) *
-			                    (pow<2>(current_posX) + pow<2>(const_par - current_posY) -
-			                     pow<2>(lookahead_distance))
-			            )) /
-			    (2 * (pow<2>(slope_par) + 1));
+			// Temporary double variables because of math rounding errors from Units
+			slope_parD = slope_par.to<double>(), const_parD = const_par.to<double>();
+			lookaheadD = lookahead_distance.to<double>();
+			current_posXD = robot.x.to<double>(), current_posYD = robot.y.to<double>();
 
-			next_objective_y = slope_par * next_objective_x + const_par;
+			a = pow(slope_parD, 2) + 1;
+			b = 2.0 * (slope_parD * (const_parD - current_posYD) - current_posXD);
+			c = pow(current_posXD, 2) + pow(const_parD - current_posYD, 2) - pow(lookaheadD, 2);
+
+			x = ((-b + sign * sqrt(pow(b, 2) - 4 * a * c)) / (2 * a));
+			next_obj.x = (pow(b, 2) - 4 * a * c) > 0 ? (foot_t)(x) : next_obj.x + x_change;
+
+			next_obj.y = slope_par * next_obj.x + const_par;
 
 		} else {
 			// X coordinates of previous and current point are the same
-			int sign = (points[current_point].y - points[current_point - 1].y) > 0_ft ? 1 : -1;
-			next_objective_x = points[current_point].x;
-			next_objective_y =
-			    sign * sqrt(pow<2>(lookahead_distance) - pow<2>(next_objective_x - current_posX)) +
-			    current_posY;
+			next_obj.x = points[pursuing].x;
+			next_obj.y =
+			    sign * sqrt(pow<2>(lookahead_distance) - pow<2>(next_obj.x - robot.x)) + robot.y;
 		}
 
-		// BOOKMARK: Begin distance calculations for closest point
-		//  Finds distance between goal and robot when Y coordinates of previous and current
-		//  points are different
-		if (fabs(points[current_point].y - points[current_point - 1].y) > 0.1_ft) {
-			slope_perp = Point::calc_per_slope(points[current_point - 1], points[current_point]);
-			const_perp = Point::calc_const(Point(current_posX, current_posY), slope_perp);
+		// BOOKMARK: Check if the point found is too far from the robot
+		if (fabs(points[pursuing].y - points[pursuing - 1].y) > 0.1_ft) {
+			slope_perp = Point::calc_per_slope(points[pursuing - 1], points[pursuing]);
+			const_perp = Point::calc_const(Point(robot.x, robot.y), slope_perp);
 			closest_point = (const_perp - const_par) / (slope_par - slope_perp);
 
 			// Robot is more than the lookahead distance away from the path
-			if (sqrt(
-			        pow<2>(closest_point - current_posX) +
-			        pow<2>(slope_par * closest_point + const_par - current_posY)
-			    ) > lookahead_distance) {
+			if (Point::calc_dist(
+			        robot, Point(closest_point, slope_par * closest_point + const_par)
+			    ) > 1.5 * lookahead_distance) {
 				// NOTE: add action to bring robot back to path
 				drive_left.brake();
 				drive_right.brake();
 				record_error(
-				    Point(points[current_point].x, points[current_point].y),
-				    Point(current_posX, current_posY), (degree_t)(imu.get_heading())
+				    Point(points[pursuing].x, points[pursuing].y), Point(robot.x, robot.y),
+				    (degree_t)(imu.get_heading())
 				);
-				break;
-			}
-		} else {
-			// if both points have the same y coordinates, the x coordinates of the robot cannot be
-			// more than lookahead distance to the found point
-			if (fabs(points[current_point].x - current_posX) > lookahead_distance) {
-				drive_left.brake();
-				drive_right.brake();
-				record_error(
-				    Point(points[current_point].x, points[current_point].y),
-				    Point(current_posX, current_posY), (degree_t)(imu.get_heading())
-				);
+
+				std::cout << "Exiting pursuit: robot is too far from path\n";
 				break;
 			}
 		}
 
 		// BOOKMARK: If the robot is stuck, it will try to find a point that is in a different
 		// direction
-		if (abs(next_objective_x - prev_objective_x) < 0.05_ft &&
-		    abs(next_objective_y - prev_objective_y) < 0.05_ft) {
+		if (abs(robot.x - robot_prev.x) < 0.001_ft && abs(robot.y - robot_prev.y) < 0.001_ft) {
 			same_obj++;
 		}
 		if (same_obj >= 3) {
@@ -181,37 +178,29 @@ void chassis::pursuit(std::string file_path, bool backwards) {
 				right_wing.retract();
 				continue;
 			}
-			while (abs(atan2(prev_objective_y - current_posY, prev_objective_x - current_posX) -
-			           atan2(next_objective_y - current_posY, next_objective_x - current_posX)) <
-			       20_deg) {
-				current_point++;
-			}
-			if (current_point >= points.size()) {
-				drive_left.brake();
-				drive_right.brake();
-				break;
-			}
+			// TODO: Do something when robot is stuck
+
 			same_obj = 0;
 		}
 
 		// BOOKMARK: Goal increment
-		if (fabs(next_objective_x - points[current_point].x) < 0.1_ft &&
-		    fabs(next_objective_y - points[current_point].y) < 0.1_ft) {
-			current_point++;
-			left_wing.set_value(points[current_point].left_wing);
-			left_wing.set_value(points[current_point].right_wing);
-			std::cout << "next!" << std::endl;
+		if (Point::calc_dist(next_obj, points[pursuing]) < 0.1_ft) {
+			pursuing++;
+			left_wing.set_value(points[pursuing].left_wing);
+			left_wing.set_value(points[pursuing].right_wing);
+			lookahead_distance =
+			    chassis::calculate_lookahead(points[pursuing - 1].curvature, 0.8_ft, 0.3_ft);
 		}
 
 		// BOOKMARK: Heading calculations
-		//  Find math heading objective
-		heading_objective = atan2(next_objective_y - current_posY, next_objective_x - current_posX);
-		if (backwards) heading_objective += 180_deg;
-		while (heading_objective < 0_deg) {
-			heading_objective += 360_deg;
+		//  Find heading objective
+		next_obj.heading = atan2(next_obj.y - robot.y, next_obj.x - robot.x);
+		if (backwards) next_obj.heading += 180_deg;
+		while (next_obj.heading < 0_deg) {
+			next_obj.heading += 360_deg;
 		}
 
-		heading_error = heading_objective - current_heading;
+		heading_error = next_obj.heading - robot.heading;
 
 		while (heading_error < -180_deg)
 			heading_error += 360_deg;
@@ -219,27 +208,67 @@ void chassis::pursuit(std::string file_path, bool backwards) {
 			heading_error -= 360_deg;
 
 		// BOOKMARK: Movement
-		int sign = backwards ? -1 : 1;
-		double max_speed = (1 - points[current_point - 1].curvature) < 0.0
-		                       ? 0.05
-		                       : (1 - points[current_point - 1].curvature).to<double>();
-		double drive = 127 * max_speed * (360_deg - heading_error) / 360_deg;
-		double turn = sign * 127 * heading_error / 180_deg * turn_const;
-		left_speed = sign * (drive + turn);
-		right_speed = sign * (drive - turn);
+		int dir = backwards ? -1 : 1;
+
+		double drive =
+		    (kf - dir * sin(heading_error) * kh - points[pursuing - 1].curvature * kc) * 127;
+		double turn = 127 * sin(heading_error) * kh + 127 * points[pursuing - 1].curvature * kc;
+
+		left_speed = dir * (drive + dir * turn);
+		right_speed = dir * (drive - dir * turn);
 
 		drive_left.move(left_speed);
 		drive_right.move(right_speed);
 
-		prev_objective_x = next_objective_x;
-		prev_objective_y = next_objective_y;
+		// BOOKMARK: Make adjustments to movement constants as needed
+		if (fabs(left_speed) > 127 || fabs(right_speed) > 127) {
+			kf *= 0.9;
+			kc *= 0.9;
+			kh *= 0.9;
+		}
+		if (fabs(heading_error) - fabs(prev_errorh) > 5_deg) {
+			if (points[pursuing].curvature > 0.0 == heading_error < 0_deg) {
+				kc -= 0.05;
+				kh += 0.05;
+			} else {
+				kc += 0.01;
+				kh += 0.01;
+			}
+		}
+
+		if (fabs(heading_error) < 5_deg) {
+			kf += 0.1;
+		}
+		if (kc < 0) kc = fabs(kc);
+		if (kf < 0) kf = fabs(kf);
+		if (kh < 0) kh = fabs(kh);
+
+		std::cout << " x: " << robot.x << " y: " << robot.y << " h: " << robot.heading
+		          << " nextX: " << next_obj.x << " nextY: " << next_obj.y
+		          << " nextH: " << next_obj.heading << "\n";
+		std::cout << " forward: " << kf << " heading: " << kh << " curve: " << kc << "\n";
+		std::cout << " left: " << left_speed << " right: " << right_speed << "\n";
+
+		// BOOKMARK: Change variables
+		prev_errorh = heading_error;
+		x_change = robot.x - robot_prev.x;
+		robot_prev.update(robot.x, robot.y, robot.heading);
 
 		// delay to prevent brain crashing
-		pros::delay(20);
+		pros::delay(200);
 	}
 
 	drive_left.brake();
 	drive_right.brake();
 	points.clear();
 	write_logs();
+}
+
+foot_t chassis::calculate_lookahead(double curvature, foot_t max, foot_t min) {
+	foot_t lookahead = 1_ft / curvature;
+	if (lookahead > max)
+		return max;
+	else if (lookahead < min)
+		return min;
+	return lookahead;
 }

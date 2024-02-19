@@ -6,17 +6,17 @@ using namespace units::length;
 class Point {
   public:
 	foot_t x, y;
+	units::angle::degree_t heading;
 	units::dimensionless::scalar_t curvature;
 	bool left_wing, right_wing;
 
-	Point(foot_t x, foot_t y) : Point(x, y, 0, false, false) {}
-	Point(foot_t x, foot_t y, units::dimensionless::scalar_t curvature)
-	    : Point(x, y, curvature, false, false) {}
+	Point(foot_t x, foot_t y);
+	Point(foot_t x, foot_t y, units::angle::degree_t heading);
+	Point(foot_t x, foot_t y, units::dimensionless::scalar_t curvature);
 	Point(
 	    foot_t x, foot_t y, units::dimensionless::scalar_t curvature, bool left_wing,
 	    bool right_wing
-	)
-	    : x(x), y(y), curvature(curvature), left_wing(left_wing), right_wing(right_wing) {}
+	);
 
 	/**
 	 * @brief Finds slope from point a to point b
@@ -47,4 +47,6 @@ class Point {
 	static foot_t calc_dist(Point a, Point b);
 
 	static std::pair<foot_t, foot_t> xy_dist(Point a, Point b);
+
+	void update(foot_t tx, foot_t ty, units::angle::degree_t theading);
 };
