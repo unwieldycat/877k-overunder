@@ -48,16 +48,20 @@ using namespace units::angle;
 
 #include "autons.hpp"
 #include "devices.hpp"
-#include "odom.hpp"
-#include "pid.hpp"
-#include "point.hpp"
 
 #include "chassis/auton.hpp"
 #include "chassis/pursuit.hpp"
 #include "chassis/user.hpp"
 
+#include "subsystems/booster.hpp"
+#include "subsystems/gearbox.hpp"
 #include "subsystems/misc.hpp"
+#include "subsystems/odom.hpp"
 #include "subsystems/puncher.hpp"
+
+#include "support/limiters.hpp"
+#include "support/pid.hpp"
+#include "support/point.hpp"
 
 #endif
 

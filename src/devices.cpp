@@ -21,10 +21,7 @@ pros::Rotation puncher_rot(3);
 pros::adi::Pneumatics roller_piston('A', true);
 pros::adi::Pneumatics left_wing('B', false);
 pros::adi::Pneumatics right_wing('C', false);
-pros::adi::Pneumatics transmission('D', true);
-pros::adi::Pneumatics odom_pistons('E', false);
-
-// Addressable LEDs
-// (Requires ADI expander on port 10)
-pros::adi::Led strip_left({10, 'A'}, 24);
-pros::adi::Led strip_right({10, 'B'}, 24);
+pros::adi::Pneumatics transmission('D', false);
+pros::adi::Pneumatics odom_pistons('E', true);
+pros::adi::Pneumatics left_lift('F', false);
+pros::adi::Pneumatics right_lift('G', false);

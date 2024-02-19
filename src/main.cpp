@@ -1,8 +1,10 @@
 #include "main.h"
 
 rd::Selector selector({
-    {"Field Triball Push", push_field},
-    {"Preload Triball Push", push_preload},
+    {"AWP", awp},
+    {"3 Right", right},
+    {"Push Right", push_right},
+    {"Push Left", push_left},
     {"Skills", skills},
 });
 
@@ -30,6 +32,7 @@ void opcontrol() {
 	pros::Task drive_task(chassis::user, "User Chassis Control");
 	pros::Task cata_task(puncher::user, "Puncher Control");
 	pros::Task misc_task(user, "Misc User Control");
+	pros::Task piston_task(booster::automatic, "Auto boosters");
 }
 
 void disabled() {}

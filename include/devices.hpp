@@ -15,6 +15,8 @@ extern pros::Imu imu;
 
 extern pros::Rotation puncher_rot;
 
+extern pros::adi::Pneumatics left_lift;
+extern pros::adi::Pneumatics right_lift;
 extern pros::adi::Pneumatics roller_piston;
 extern pros::adi::Pneumatics left_wing;
 extern pros::adi::Pneumatics right_wing;

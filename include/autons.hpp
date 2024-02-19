@@ -3,12 +3,12 @@
 /**
  * Push the field triball into goal
  */
-void push_field();
+void push_right();
 
 /**
  * Push a preload triball into goal
  */
-void push_preload();
+void push_left();
 
 /**
  * Skills run. Parks robot at matchloader, then pushes triballs in goal.
@@ -17,7 +17,12 @@ void push_preload();
 void skills();
 
 /**
- * Does half of the autonomous win point. Scores triball and touches climb bar
- * Starts on first tile from blue low bar facing midline.
+ * Achieves the autonomous win point. Scores triball, removes triball, and touches climbing
+ * bar.
  */
 void awp();
+
+/**
+ * Higher-scoring auton for right side, pushes ~3 triballs into goal.
+ */
+void right();

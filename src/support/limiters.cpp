@@ -1,0 +1,17 @@
+#include "main.h"
+
+// FIXME: Doesnt let the value decrease
+int slew(int new_volts, int current_volts, int max) {
+	if (new_volts > 127) new_volts = 127;
+	if (new_volts < -127) new_volts = -127;
+	if (new_volts - current_volts > max) new_volts = current_volts + max;
+	return new_volts;
+}
+
+int clamp(int value, int max) { return clamp(value, max, -max); }
+
+int clamp(int value, int max, int min) {
+	if (value > max) value = max;
+	if (value < min) value = min;
+	return value;
+}
