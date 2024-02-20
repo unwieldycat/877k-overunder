@@ -17,6 +17,8 @@ void add_point(
     bool right_wing
 );
 
+void add_max_velocities();
+
 /**
  * @brief Begins moving the robot following all the points stored previous to the running of this
  * function, clears the points after running

@@ -1,4 +1,6 @@
+#include "auton.hpp"
 #include "main.h"
+#include "units.h"
 #include <cmath>
 #include <fstream>
 
@@ -6,6 +8,8 @@ using namespace units::math;
 
 std::vector<Point> points = {};
 std::stringstream path_logs;
+const double track_width = 1, kh = 0.05;
+const int turn_const = 3;
 
 // ============================ Helper Functions ============================ //
 
@@ -37,9 +41,9 @@ void parse_file(std::string file_path) {
 		}
 
 		// Parse values
-		foot_t x = foot_t(std::stof(values.at(0)));
-		foot_t y = foot_t(std::stof(values.at(1)));
-		units::dimensionless::scalar_t curve = std::stof(values.at(2));
+		foot_t x = foot_t(std::stof(values.at(0)) * 0.85);
+		foot_t y = foot_t(std::stof(values.at(1)) * 0.9);
+		units::dimensionless::scalar_t curve = std::stof(values.at(2)) * 1.15;
 		bool left_wing = values.at(3) == "1";
 		bool right_wing = values.at(4) == "1";
 
@@ -102,7 +106,8 @@ void chassis::pursuit(std::string file_path, bool backwards) {
 	int pursuing = 1, same_obj = 0;
 
 	// Movement variables:
-	double kc = 0, kh = 0.3, kf = 1.2, left_speed, right_speed;
+	double left_speed, right_speed;
+	double distance, velocity, prev_velocity, max_velocity;
 
 	// Initialize
 	drive_left.set_brake_mode(pros::E_MOTOR_BRAKE_HOLD);
@@ -212,27 +217,25 @@ void chassis::pursuit(std::string file_path, bool backwards) {
 			heading_error -= 360_deg;
 
 		// BOOKMARK: Movement
-		int dir = backwards ? -1 : 1;
-		int csign = points[pursuing - 1].curvature > 0.0 ? 1 : -1;
 
-		double drive = kf * (10 / pow<2>(points[pursuing - 1].curvature));
-		if (drive > 100) drive = 100;
-		double turn =
-		    (double)heading_error * kh + csign * pow<2>(points[pursuing - 1].curvature) * kc;
-
-		left_speed = dir * (drive + turn);
-		right_speed = dir * (drive - turn);
+		left_speed = 80 *
+		                 (2 + (points[pursuing - 1].curvature + points[pursuing].curvature) / 2 *
+		                          track_width) /
+		                 2 -
+		             heading_error.to<double>() * kh;
+		right_speed = 80 *
+		                  (2 - (points[pursuing - 1].curvature + points[pursuing].curvature) / 2 *
+		                           track_width) /
+		                  2 +
+		              heading_error.to<double>() * kh;
 
 		drive_left.move(left_speed);
 		drive_right.move(right_speed);
 
-		prev_obj.update(next_obj.x, next_obj.y, next_obj.heading);
-
 		std::cout << "Current Point: " << pursuing << "\nx: " << robot.x << " y: " << robot.y
 		          << " h: " << robot.heading << " nextX: " << next_obj.x << " nextY: " << next_obj.y
 		          << " nextH: " << next_obj.heading << "\n";
-		std::cout << " forward: " << kf << " heading: " << kh << " curve: " << kc << "\n";
-		std::cout << " drive: " << drive << " turn: " << turn << "\n";
+		std::cout << " left: " << left_speed << " right: " << right_speed << "\n";
 
 		// BOOKMARK: Change variables
 		prev_errorh = heading_error;

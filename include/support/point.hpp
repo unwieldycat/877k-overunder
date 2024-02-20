@@ -7,7 +7,7 @@ class Point {
   public:
 	foot_t x, y;
 	units::angle::degree_t heading;
-	units::dimensionless::scalar_t curvature;
+	double curvature;
 	bool left_wing, right_wing;
 
 	Point(foot_t x, foot_t y);
@@ -49,4 +49,6 @@ class Point {
 	static std::pair<foot_t, foot_t> xy_dist(Point a, Point b);
 
 	void update(foot_t tx, foot_t ty, units::angle::degree_t theading);
+
+	void set_max_velocity(double max_v);
 };
