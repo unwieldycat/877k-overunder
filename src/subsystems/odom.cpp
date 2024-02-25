@@ -1,8 +1,8 @@
 #include "odom.hpp"
 #include "main.h"
 
-const std::pair<inch_t, inch_t> left_offset = {-4.829_in, 1.4675_in};
-const std::pair<inch_t, inch_t> rear_offset = {1.1655_in, 0.825_in};
+const std::pair<inch_t, inch_t> left_offset = {-2.882_in, 0.718_in};	//Old: {-4.829_in, 1.4675_in}
+const std::pair<inch_t, inch_t> rear_offset = {1.741_in, 1.539_in};		//Old: {1.1655_in, 0.825_in}
 
 using namespace units::math;
 
