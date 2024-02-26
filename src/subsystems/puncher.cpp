@@ -67,7 +67,7 @@ void puncher::user() {
 			pros::delay(20);
 			continue;
 		} else if (continuous) {
-			punch_motors.move(104);
+			punch_motors.move(115);
 
 		} else if (controller.get_digital_new_press(pros::E_CONTROLLER_DIGITAL_Y)) {
 			if (!puncher::is_hold())
