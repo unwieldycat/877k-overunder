@@ -3,24 +3,27 @@
 #include "subsystems/puncher.hpp"
 
 void push_left() {
-	chassis::d_drive(20, 50);
+	odom::calibrate(0_ft, 0_ft, -45_deg);
+	puncher::hold();
+	chassis::d_drive(24, 50);
 	pros::delay(300);
-	chassis::d_turn(-70.0, 50);
-	pros::delay(300);
-	chassis::d_drive(2, 50);
-
+	chassis::turn_abs(0_deg);
+	puncher::unhold();
+	chassis::drive(127, 1_s);
+	chassis::drive(-64, 750_ms);
 	pros::delay(1000);
 
-	chassis::d_drive(-4, 50);
-	pros::delay(300);
-	chassis::d_turn(90);
-	pros::delay(300);
-	chassis::drive(127, 1.1_s);
-	pros::delay(300);
+	while (puncher_rot.get_position() > -4500) {
+		punch_motors.move(127);
+		pros::delay(10);
+	}
 
-	// Cross
-	chassis::drive(-127, 750_ms);
-	pros::delay(300);
+	punch_motors.set_brake_mode(pros::E_MOTOR_BRAKE_HOLD);
+	punch_motors.brake();
+
+	chassis::drive(127, 0_deg, 1_s);
+	chassis::drive(-64, 0_deg, 750_ms);
+	puncher::unhold();
 
 	/*
 
@@ -35,13 +38,19 @@ void push_left() {
 void push_right() {
 	odom::calibrate(0_ft, 0_ft, 45_deg);
 	puncher::hold();
-	chassis::drive(2_ft, 45_deg);
+	chassis::d_drive(24, 50);
+	pros::delay(300);
 	chassis::turn_abs(0_deg);
 	puncher::unhold();
 	chassis::drive(127, 1_s);
 	chassis::drive(-64, 750_ms);
 	pros::delay(1000);
-	puncher::hold();
+
+	while (puncher_rot.get_position() > -4500) {
+		punch_motors.move(127);
+		pros::delay(10);
+	}
+
 	chassis::drive(127, 0_deg, 1_s);
 	chassis::drive(-64, 0_deg, 750_ms);
 	puncher::unhold();
