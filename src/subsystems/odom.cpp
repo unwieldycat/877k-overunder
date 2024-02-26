@@ -1,8 +1,8 @@
 #include "odom.hpp"
 #include "main.h"
 
-const std::pair<inch_t, inch_t> left_offset = {-2.882_in, 0.718_in};	//Old: {-4.829_in, 1.4675_in}
-const std::pair<inch_t, inch_t> rear_offset = {1.741_in, 1.539_in};		//Old: {1.1655_in, 0.825_in}
+const std::pair<inch_t, inch_t> left_offset = {-2.882_in, 0.718_in}; // Old: {-4.829_in, 1.4675_in}
+const std::pair<inch_t, inch_t> rear_offset = {1.741_in, 1.539_in};  // Old: {1.1655_in, 0.825_in}
 
 using namespace units::math;
 
@@ -71,6 +71,12 @@ void odom::initialize() {
 
 		pros::delay(20);
 	}
+}
+
+void odom::calibrate(degree_t heading) {
+	inch_t x = meter_t(gps.get_position().x);
+	inch_t y = meter_t(gps.get_position().y);
+	odom::calibrate(x, y, heading);
 }
 
 void odom::calibrate(inch_t robot_x = 0_in, inch_t robot_y = 0_in, degree_t heading = 0_deg) {

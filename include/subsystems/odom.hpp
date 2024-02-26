@@ -23,6 +23,13 @@ void initialize();
 void calibrate(inch_t robot_x, inch_t robot_y, degree_t heading);
 
 /**
+ * @brief Calibrate with GPS
+ *
+ * @param heading Starting heading
+ */
+void calibrate(degree_t heading);
+
+/**
  * @brief Get the current x value
  *
  * @return double
