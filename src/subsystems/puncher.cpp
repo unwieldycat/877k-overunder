@@ -1,3 +1,4 @@
+#include "devices.hpp"
 #include "main.h"
 
 const int release_angle = -7500; // 75 degrees
@@ -73,12 +74,12 @@ void puncher::user() {
 				puncher::hold();
 			else {
 				puncher::unhold();
-				pros::delay(250);
-				puncher::hold();
 			}
 
 			pros::delay(20);
 			continue;
+		} else if (!continuous) {
+			punch_motors.brake();
 		}
 
 		pros::delay(20);
