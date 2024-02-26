@@ -1,5 +1,6 @@
 #include "devices.hpp"
 #include "main.h"
+#include "subsystems/puncher.hpp"
 
 void push_left() {
 	chassis::d_drive(20, 50);
@@ -33,12 +34,17 @@ void push_left() {
 
 void push_right() {
 	odom::calibrate(0_ft, 0_ft, 45_deg);
-	chassis::drive(2.8_ft, 45_deg);
+	puncher::hold();
+	chassis::drive(2_ft, 45_deg);
 	chassis::turn_abs(0_deg);
+	puncher::unhold();
 	chassis::drive(127, 1_s);
-	chassis::drive(-127, 750_ms);
-	chassis::drive(127, 1_s);
-	chassis::drive(-127, 750_ms);
+	chassis::drive(-64, 750_ms);
+	pros::delay(1000);
+	puncher::hold();
+	chassis::drive(127, 0_deg, 1_s);
+	chassis::drive(-64, 0_deg, 750_ms);
+	puncher::unhold();
 
 	/* Temp auton
 	chassis::d_drive(20, 50);
