@@ -12,6 +12,7 @@ extern pros::MotorGroup punch_motors;
 extern pros::Rotation odom_left;
 extern pros::Rotation odom_rear;
 extern pros::Imu imu;
+extern pros::Gps gps;
 
 extern pros::Rotation puncher_rot;
 

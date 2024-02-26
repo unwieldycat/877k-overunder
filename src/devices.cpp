@@ -13,6 +13,7 @@ pros::MotorGroup punch_motors({-4, 5});
 pros::Rotation odom_left(9);
 pros::Rotation odom_rear(10);
 pros::Imu imu(20);
+pros::Gps gps(15);
 
 // Puncher
 pros::Rotation puncher_rot(3);
