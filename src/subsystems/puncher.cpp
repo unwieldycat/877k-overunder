@@ -1,11 +1,22 @@
 #include "main.h"
 
-const int release_angle = -7500; // 7500
+const int release_angle = -7500; // 75 degrees
+const int hold_angle = -3000;    // 30 degrees
 
 bool puncher::is_primed() { return puncher_rot.get_position() <= release_angle; }
+bool puncher::is_hold() { return puncher_rot.get_position() <= hold_angle; }
 
 void puncher::prime() {
 	while (puncher_rot.get_position() > release_angle) {
+		punch_motors.move(127);
+		pros::delay(10);
+	}
+	punch_motors.set_brake_mode(pros::E_MOTOR_BRAKE_HOLD);
+	punch_motors.brake();
+}
+
+void puncher::hold() {
+	while (puncher_rot.get_position() > hold_angle) {
 		punch_motors.move(127);
 		pros::delay(10);
 	}
@@ -18,6 +29,17 @@ void puncher::release() {
 
 	punch_motors.move(127);
 	while (puncher_rot.get_position() <= release_angle)
+		pros::delay(50);
+
+	punch_motors.set_brake_mode(pros::E_MOTOR_BRAKE_COAST);
+	punch_motors.brake();
+}
+
+void puncher::unhold() {
+	if (!puncher::is_hold()) return;
+
+	punch_motors.move(-127);
+	while (puncher_rot.get_position() <= hold_angle)
 		pros::delay(50);
 
 	punch_motors.set_brake_mode(pros::E_MOTOR_BRAKE_COAST);
@@ -47,12 +69,16 @@ void puncher::user() {
 			punch_motors.move(104);
 
 		} else if (controller.get_digital_new_press(pros::E_CONTROLLER_DIGITAL_Y)) {
-			punch_motors.move(-127);
-			pros::delay(500);
-			punch_motors.set_brake_mode(pros::E_MOTOR_BRAKE_COAST);
-			punch_motors.brake();
-		} else {
-			punch_motors.brake();
+			if (!puncher::is_hold())
+				puncher::hold();
+			else {
+				puncher::unhold();
+				pros::delay(250);
+				puncher::hold();
+			}
+
+			pros::delay(20);
+			continue;
 		}
 
 		pros::delay(20);
