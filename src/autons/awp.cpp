@@ -14,7 +14,7 @@ void awp() {
 	left_wing.retract();
 	chassis::drive(-1.9_ft);
 	chassis::turn_abs(90_deg);
-	chassis::drive(1.8_ft, 92_deg);
+	chassis::drive(64, 92_deg, 1.5_s);
 
 	// Touch climbing bar
 	right_wing.extend();
