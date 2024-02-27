@@ -9,9 +9,9 @@ void skills() {
 	odom::calibrate(0_ft, 0_ft, 180_deg);
 
 	// align to launch
-	chassis::drive(23_in);
+	chassis::drive(23_in, 180_deg);
 	chassis::turn_rel(-95_deg);
-	chassis::drive(20_in);
+	chassis::drive(22_in, 85_deg);
 	left_wing.extend();
 
 	// LAUNCH!
@@ -27,7 +27,7 @@ void skills() {
 	// Cross
 	pros::delay(500);
 	left_wing.retract();
-	chassis::drive(-16_in);
+	chassis::drive(-18_in);
 	chassis::turn_rel(-145_deg, chassis::TurnSide::Right);
 	chassis::drive(15_in);
 	chassis::turn_rel(-25_deg, chassis::TurnSide::Right);
@@ -52,6 +52,7 @@ void skills() {
 	chassis::drive(1.5_ft);
 	chassis::turn_rel(90_deg);
 	chassis::drive(127, 2_s);
+	chassis::drive(-64, 2_s);
 
 	// chassis::pursuit("/usd/paths/skills0.csv", true);
 	// chassis::pursuit("/usd/paths/skills1.csv");
