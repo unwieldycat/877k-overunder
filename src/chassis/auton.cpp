@@ -2,8 +2,8 @@
 
 using namespace units::math;
 
-PIDController<inch_t> drive_pid(4, 0.2, 0.6, 750, 1.5);
-PIDController<degree_t> turn_pid(3, 0.3, 0.3, 750, 1.5);
+PIDController<inch_t> drive_pid(4, 0.2, 0.6, 1000, 2);
+PIDController<degree_t> turn_pid(3, 0.3, 0.3, 750, 2);
 PIDController<degree_t> align_pid(5, 0, 0, 1000, 0.5);
 
 // ============================ Helper Functions ============================ //
