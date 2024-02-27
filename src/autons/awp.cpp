@@ -5,6 +5,7 @@ void awp() {
 
 	// Remove triball
 	left_wing.extend();
+	pros::delay(1000);
 	chassis::turn_rel(-37_deg, chassis::TurnSide::Right);
 	pros::delay(2000);
 
