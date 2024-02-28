@@ -3,7 +3,7 @@
 #include "main.h"
 #include <iostream>
 
-const int launch_time = 45000;
+const int launch_time = 28000;
 
 void skills() {
 	odom::calibrate(0_ft, 0_ft, 180_deg);
@@ -16,10 +16,10 @@ void skills() {
 
 	// LAUNCH!
 
-	punch_motors.move(104);
+	punch_motors.move(118);
 
 	int start_time = pros::millis();
-	while (start_time - pros::millis() < launch_time)
+	while (pros::millis() - start_time < launch_time)
 		pros::delay(1000);
 
 	punch_motors.brake();
@@ -29,7 +29,7 @@ void skills() {
 	left_wing.retract();
 	chassis::drive(-18_in);
 	chassis::turn_rel(-145_deg, chassis::TurnSide::Right);
-	chassis::drive(15_in);
+	chassis::drive(16_in);
 	chassis::turn_rel(-25_deg, chassis::TurnSide::Right);
 	chassis::drive(5.4_ft, 275_deg);
 
@@ -46,7 +46,7 @@ void skills() {
 	right_wing.extend();
 	chassis::drive(2_ft);
 	chassis::turn_rel(45_deg, chassis::TurnSide::Left);
-	chassis::drive(127, 4_s);
+	chassis::drive(127, 2_s);
 	chassis::drive(-127, 1.5_s);
 	chassis::turn_rel(-90_deg);
 	chassis::drive(1.5_ft);
